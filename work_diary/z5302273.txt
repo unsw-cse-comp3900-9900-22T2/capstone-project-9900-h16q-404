@@ -1,0 +1,12 @@
+week 1
+The first tutorial was not very good since only three students went there. So we found a group of three and sent mails to other students to ask if they want to join us. We had a brief discussion about the choice of our project. Because we did not want to spend much time on some AI based recommendation system we decided to pick project #7 the event management system. I set up the Microsoft Teams channel and invited members.
+
+week 2
+Before the lab I wrote some user stories to the shared Google document as log.
+During the tutorial we met each other and dicussed about the project. We made our decisions about the novel features, discussed our strength and weakness and briefly allocated some tasks.
+We also discussed about the basic structure of the project. It would be divided into two parts - frontend and backend, and the backend is also made of two parts, functions and database. The frontend would be ReactJS, backend are Flask and sqlite.
+We decided to have another meeting every Sunday morning and my task this week is to choose a design tool and make some prototypes of storyboard so that after the user stories are given we can transform them into storyboards.
+I chose draw.io ( a website ) and make several boards before Sunday.
+TBC
+
+week 3
