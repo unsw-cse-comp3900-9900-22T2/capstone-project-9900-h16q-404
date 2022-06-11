@@ -1,0 +1,24 @@
+Work Diary:
+
+Week 1:
+- Missed the tutorial to travel to Canberra to see my partner for the first time in two months.
+- Joined Group 404 after receiving an email from Yunran.
+- Group 404 decided on project 7 - Event Management System.
+
+Week 2 (Thursday-Sunday):
+- Met with the 404 group for the first time.
+- Facilitiated the first proper meeting where we discussed:
+- - The architecture of the application (Node.js, Flask, SQlite).
+- - Discussed the user stories to be implemented and to start with in week 1.
+- - Asked Dylan if we can host the app locally (we can).
+- - Discussed the teams strengths and weaknesses and documented them.
+- - Discussed sprint stuctures and ceremonies (1 week sprints, standups on Thursday in class and Sunday at 10AM).
+- Finally we discussed what work we wanted to have done by Sunday's standup, keeping in mind that we have the proposal due in week 4.
+- My job was to finish off the "core" user stories as the original set of user stories I had created we too general according to feedback from Dylan, I completed this by Saturday night, in preparation for our Sunday morning meeting.
+- I also prepared the agenda for the Sunday 10AM meeting.
+
+Week 2 (Sunday-Thursday):
+- 
+
+
+Week 3:
