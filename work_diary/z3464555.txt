@@ -18,7 +18,11 @@ Week 2 (Thursday-Sunday):
 - I also prepared the agenda for the Sunday 10AM meeting.
 
 Week 2 (Sunday-Thursday):
-- 
+- I facilitiated the Sunday standup.
+- I drafted the user story and sprint structure sections of the proposal.
+- I created the JIRA cards for the new novel functions developed by Yunran and Yizhi.
+- I performed a major backlog refinement exercise as some user stories were unclear, unlabeled or even duplicated or missing.
+- I also created the agenda for the Sprint 1 planning/project kick-off meeting.
 
 
 Week 3:
