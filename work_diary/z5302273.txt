@@ -10,6 +10,21 @@ The scurm master is given to Ben since he is much experienced in project develop
 We decide to take 1 week sprint since most of us is not too busy so that we can change the plan if something goes wrong.
 We decided to have another meeting every Sunday morning and my task this week is to choose a design tool and make some prototypes of storyboard so that after the user stories are given we can transform them into storyboards.
 I chose draw.io ( a website ) and make several boards before Sunday.
-TBC
+
+Meeting on Sunday and my samples are good. We decide to continue the work and My work is to make all storyboards with Eddie.
 
 week 3
+First two days I worked on boards and on Wednesday I had a meeting with Eddie and we split the workload and finished them later. On Thursday Morning I wrote the description for my storyboards.
+Thursday meeting
+I asked Dylan about the details of payment and refund and got the answer that we do not need to involve actual money but just some mock information.
+Eddie and I showed the boards and desc to the group and discussed about the design. I found some points were not mentioned in user stories.
+I need to finalise the design of the boards and add more text details and descriptions to them.
+Friday and Saturday
+Write details desc and change some design
+Sunday meeting
+We review the draft of the proposal.
+Go through all the boards and find some minor mistakes to fix.
+Unify the different designs between mine and Eddie's.
+I need to design the API between frontend and backend based on the upcoming database (relational model design).
+
+week 4
