@@ -20,3 +20,6 @@ Week 3
 Proposal in progress.
 We exchanged our ideas with Dylan about novel functionalities.
 We synchronised the user stories between proposal documents and Jira Page.
+On Thursday class we decided the finishing-up work on proposal document.
+On Sunday we completed the proposal document and submitted it. 
+On Sunday stand-up, we started Sprint 1 and arranged the coding tasks to every team member.
