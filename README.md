@@ -1,9 +1,9 @@
 # capstone-project-9900-h16q-404
 capstone-project-9900-h16q-404 created by GitHub Classroom
 
-#Event Management System
+# Event Management System
 
-##Group Name: 9900-H16Q-404
+## Group Name: 9900-H16Q-404
 
 Group Members:
 Yunran Chen (z5082610, z5082610@ad.unsw.edu.au)
