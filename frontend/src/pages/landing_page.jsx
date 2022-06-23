@@ -9,7 +9,10 @@ export default function LandingPage () {
       <Link to="login">
         <Button type='primary'>Login</Button>
       </Link>
-      <Button>Register</Button>
+      <Link to='register'>
+        <Button>Register</Button>
+      </Link>
+      
     </div>
   )
 }

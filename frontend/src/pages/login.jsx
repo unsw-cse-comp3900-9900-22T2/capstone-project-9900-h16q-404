@@ -53,24 +53,16 @@ const LoginForm = () => {
       </Form.Item>
 
       <Form.Item
-        name="remember"
-        valuePropName="checked"
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-      </Form.Item>
-
-      <Form.Item
         wrapperCol={{
           offset: 8,
           span: 16,
         }}
       >
         <Button type="primary" htmlType="submit">
-          Submit
+          Login
         </Button>
+        <br />
+        Don't have an account? <a href='register'>Click here to Register!</a>
       </Form.Item>
     </Form>
   );
