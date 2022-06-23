@@ -17,7 +17,7 @@ Week 2 (Thursday-Sunday):
 - My job was to finish off the "core" user stories as the original set of user stories I had created we too general according to feedback from Dylan, I completed this by Saturday night, in preparation for our Sunday morning meeting.
 - I also prepared the agenda for the Sunday 10AM meeting.
 
-Week 2 (Sunday-Thursday):
+Week 3 (Sunday-Thursday):
 - I facilitiated the Sunday standup.
 - I drafted the user story and sprint structure sections of the proposal.
 - I created the JIRA cards for the new novel functions developed by Yunran and Yizhi.
@@ -25,4 +25,16 @@ Week 2 (Sunday-Thursday):
 - I also created the agenda for the Sprint 1 planning/project kick-off meeting.
 
 
-Week 3:
+Week 3 (Thursday-Sunday):
+- As scrum master, I created the agenda for our Sunday morning standup, I then facilitiated our standup.
+- The main goal of the standup was to pull together all the work that was done on the proposal and also assign some work for the application.
+- I spent much of Sunday afternoon formatting and gathering all of the work streams and uniting them into the final report and submitting it.
+- Report was submitted Sunday at 9pm ish after I worked on it for about 8 hours.
+- I also did a major JIRA backlog cleanup.
+
+Week 4 (Sunday 19th June - Thursday 23rd June):
+- Created the agenda for our Thursday meeting
+- After having done most of the leg work for the proposal, and being busy with work and other assignments, and being ill, I had a half week off.
+
+Week 4 (Thursday 23rd June - Sunday 26th June):
+- 
