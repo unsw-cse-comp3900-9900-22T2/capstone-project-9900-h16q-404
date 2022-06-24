@@ -37,4 +37,4 @@ Week 4 (Sunday 19th June - Thursday 23rd June):
 - After having done most of the leg work for the proposal, and being busy with work and other assignments, and being ill, I had a half week off.
 
 Week 4 (Thursday 23rd June - Sunday 26th June):
-- 
+- On Friday morning Ganesh and I did a 3 hour session to setup the basic DB, it now exists, can be filled with some dummy data and also can be called by an Events page.
