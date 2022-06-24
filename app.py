@@ -4,6 +4,9 @@ For COMP9900 Project 7 Event Management System
 
 This file is the entry point for the flask application which will reveive JSON requests from the front end
 
+To run the applicaiton:
+$ flask run
+
 This file performs the below in order:
 1. Call db_main() function in the init_db.py file
     This will create a DB if it does not exist and load it full of data
