@@ -1,3 +1,11 @@
+'''
+Written by: Group 404
+For COMP9900 Project 7 Event Management System
+
+This file defines the Resources that connect the front end URLs to the backend which will call the database.
+
+'''
+
 from flask_restful import Api, Resource, reqparse
 from db.init_db import InitDB
 
