@@ -1,4 +1,5 @@
 from flask_restful import Api, Resource, reqparse
+from db.init_db import InitDB
 
 class SignUp(Resource):
     def get(self):
@@ -67,3 +68,13 @@ class ApiHandler(Resource):
         final_ret = {"status": "Success", "message": message}
 
         return final_ret
+
+class Events(Resource):
+    def get(self):
+        temp_db = InitDB()
+        result = temp_db.select_events(5)
+
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result
+        }
