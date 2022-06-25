@@ -22,7 +22,8 @@ class InitDB:
     # This function is run upon creating an instance of the class
     def __init__(self):
         # create engine and connect to databse in the db folder
-        self.engine = db.create_engine('sqlite:///db\group_404')
+        # PLEASE REMEMBER TO CHANGE ALL '\' into '/' to make it works on CSE machine
+        self.engine = db.create_engine('sqlite:///db/group_404')
         # Metadata is a container object that kees together many of the different features fo a db
         self.metadata = db.MetaData()
         # Define the events tables
@@ -36,7 +37,8 @@ class InitDB:
 
     def fill_with_dummy_data(self):
         # This function will read one or more CSVs and then insert the data from those CSVs into the relevant tables
-        dummy_events_df = pd.read_csv("db\dummy_events.csv")
+        # PLEASE REMEMBER TO CHANGE ALL '\' into '/' to make it works on CSE machine
+        dummy_events_df = pd.read_csv("db/dummy_events.csv")
 
         # Iterate through pandas DF and insert each row into table using insert function
         for index, row in dummy_events_df.iterrows():

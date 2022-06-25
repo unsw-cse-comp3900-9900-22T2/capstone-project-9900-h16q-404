@@ -25,10 +25,8 @@ export default function PageHeader () {
       }}>
         <img src={logo} alt="Logo" style={{width: '45px', height: '45px', marginRight:'5px'}}/>
         <h1 style={{color:'white', fontSize:"bold", marginRight:'15px'}}>LiveKnight</h1>
-        
+        <SearchInput/>
       </div>
-
-      <SearchInput />
 
       <div style={{
         float: 'right',
