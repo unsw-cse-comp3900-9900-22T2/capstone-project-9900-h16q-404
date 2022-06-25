@@ -1,18 +1,40 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from 'antd';
+import { Layout, Card } from 'antd';
+import PageHeader from '../components/page_header';
+
+const { Content, Footer } = Layout;
 
 export default function LandingPage () {
   return (
     <div className='App'>
-      <div>Landing Page</div>
-      <Link to="login">
-        <Button type='primary'>Login</Button>
-      </Link>
-      <Link to='register'>
-        <Button>Register</Button>
-      </Link>
-      
+      <Layout>
+        <PageHeader/>
+        <Content style={{marginTop: '100px'}}>
+          <Card title="testing_card" style={{
+            idth: 300,
+          }}>
+            <p>Card content</p>
+            <p>Card Content</p>
+            <p>Card Content</p>
+            <p>Card content</p>
+            <p>Card Content</p>
+            <p>Card Content</p>
+          </Card>
+          <Card title="testing_card_2" style={{
+            idth: 300,
+          }}>
+            <p>Card content</p>
+            <p>Card Content</p>
+            <p>Card Content</p>
+            <p>Card content</p>
+            <p>Card Content</p>
+            <p>Card Content</p>
+          </Card>
+        </Content>
+        <Footer>
+          9900-H16Q-404
+        </Footer>
+      </Layout>
     </div>
   )
 }
