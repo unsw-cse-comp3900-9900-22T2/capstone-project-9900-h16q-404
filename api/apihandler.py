@@ -7,6 +7,7 @@ This file defines the Resources that connect the front end URLs to the backend w
 '''
 
 from flask_restful import Api, Resource, reqparse
+from flask import request
 from db.init_db import InitDB
 
 class SignUp(Resource):
@@ -17,6 +18,11 @@ class SignUp(Resource):
         }
 
     def post(self): 
+        print("0")
+        print(request.json)
+        print("0.5")
+        data = request.get_json()
+        print(data)
         print(self)
         print("1")
         parser = reqparse.RequestParser()
@@ -24,7 +30,7 @@ class SignUp(Resource):
         parser.add_argument('message', type=str)
         print("2")
         args = parser.parse_args()
-
+        print("2.4")
         print(args)
         print("3")
         # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
@@ -56,14 +62,14 @@ class ApiHandler(Resource):
     def post(self):
         print(self)
         parser = reqparse.RequestParser()
-        parser.add_argument('type', type=str)
-        parser.add_argument('message', type=str)
-
+        parser.add_argument("type", type=str)
+        parser.add_argument("message", type=str)
+        print("a")
         args = parser.parse_args()
-
+        print("b")
         print(args)
         # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
-
+        print("c")
         request_type = args['type']
         request_json = args['message']
         # ret_status, ret_msg = ReturnData(request_type, request_json)
@@ -83,7 +89,7 @@ class ApiHandler(Resource):
 class Events(Resource):
     def get(self):
         temp_db = InitDB()
-        result = temp_db.select_events(5)
+        result = temp_db.select_all_events()
 
         return {
             'resultStatus': 'SUCCESS',

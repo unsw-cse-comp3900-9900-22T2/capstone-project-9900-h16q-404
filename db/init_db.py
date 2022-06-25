@@ -53,6 +53,8 @@ class InitDB:
     def insert_events(self, data):
         # This function takes a JSON object "data" and inserts the object into the DB as a new row
         # But first the function checks if a row with the same ID aleady exists
+        
+        # check for row with existing primary key
         insert_check = True
         check_query = db.select([self.events]).where(self.events.c.id == data["id"])
         check_result = self.engine.execute(check_query)
@@ -61,7 +63,7 @@ class InitDB:
              if data["id"] == (check_result["result"][i]['id']):
                 insert_check = False
 
-
+        # if no row exists with current primary key add new row
         if insert_check == True:
             query = db.insert(self.events).values(
                 id = data["id"],
@@ -76,7 +78,7 @@ class InitDB:
         else:
             print("Item not added as it failed the insert check")
 
-    def select_events(self, id):
+    def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
         query = db.select([self.events])
         try:
