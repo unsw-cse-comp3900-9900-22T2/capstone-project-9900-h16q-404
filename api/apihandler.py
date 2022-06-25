@@ -18,22 +18,25 @@ class SignUp(Resource):
 
     def post(self): 
         print(self)
+        print("1")
         parser = reqparse.RequestParser()
         parser.add_argument('type', type=str)
         parser.add_argument('message', type=str)
-
+        print("2")
         args = parser.parse_args()
 
         print(args)
+        print("3")
         # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
 
         request_type = args['type']
         request_json = args['message']
+        print("4")
         # ret_status, ret_msg = ReturnData(request_type, request_json)
         # currently just returning the req straight
         ret_status = request_type
         ret_msg = request_json
-
+        print("5")
         if ret_msg:
             message = "Your Message Requested: {}".format(ret_msg)
         else:
@@ -81,6 +84,17 @@ class Events(Resource):
     def get(self):
         temp_db = InitDB()
         result = temp_db.select_events(5)
+
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result
+        }
+
+class Login(Resource):
+    def post(self):
+        temp_db = InitDB()
+        result = temp_db.user_check_exists()
+
 
         return {
             'resultStatus': 'SUCCESS',
