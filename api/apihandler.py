@@ -10,7 +10,7 @@ from flask_restful import Api, Resource, reqparse
 from flask import request
 from db.init_db import InitDB
 
-class SignUp(Resource):
+class Register(Resource):
     def get(self):
         return {
             'resultStatus': 'SUCCESS',
@@ -18,41 +18,40 @@ class SignUp(Resource):
         }
 
     def post(self): 
-        print("0")
-        print(request.json)
-        print("0.5")
-        data = request.get_json()
-        print(data)
-        print(self)
-        print("1")
-        parser = reqparse.RequestParser()
-        parser.add_argument('type', type=str)
-        parser.add_argument('message', type=str)
-        print("2")
-        args = parser.parse_args()
-        print("2.4")
-        print(args)
-        print("3")
-        # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
+        # If a post request is sent to /register
 
-        request_type = args['type']
-        request_json = args['message']
-        print("4")
-        # ret_status, ret_msg = ReturnData(request_type, request_json)
-        # currently just returning the req straight
-        ret_status = request_type
-        ret_msg = request_json
-        print("5")
-        if ret_msg:
-            message = "Your Message Requested: {}".format(ret_msg)
-        else:
-            message = "No Msg"
+        # parse request
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str)
+        parser.add_argument('password', type=str)
+        parser.add_argument('confirm', type=str)
+        args = parser.parse_args()
         
-        final_ret = {"status": "Success", "message": message}
+        print(args) # for debugging
+
+        # get email and password
+        request_email = args['email']
+        request_password = args['password']
+
+        temp_db = InitDB()
+        # check user exists
+        user_exists = temp_db.check_user_exists(request_email)
+        # if user does not exists return error
+        if user_exists == True:
+            return {"status": "Error", "message": "User already exists"}
+            
+
+        # TODO here:
+        # if user does not exists, store password and username
+        new_id = temp_db.register_new_user(request_email, request_password)
+        if new_id == -1:
+            return {"status": "Error", "message": "could not register new user"}
+        else:
+            final_ret = {"status": "Success", "message": "new user registerd with id = " +str(new_id)}
 
         return final_ret
 
-class ApiHandler(Resource):
+class Test(Resource):
     def get(self):
         return {
             'resultStatus': 'SUCCESS',
@@ -60,16 +59,12 @@ class ApiHandler(Resource):
         }
 
     def post(self):
-        print(self)
         parser = reqparse.RequestParser()
         parser.add_argument("type", type=str)
         parser.add_argument("message", type=str)
-        print("a")
         args = parser.parse_args()
-        print("b")
         print(args)
         # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
-        print("c")
         request_type = args['type']
         request_json = args['message']
         # ret_status, ret_msg = ReturnData(request_type, request_json)
@@ -98,11 +93,34 @@ class Events(Resource):
 
 class Login(Resource):
     def post(self):
+
+        # parse request
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', type=str)
+        parser.add_argument('password', type=str)
+        args = parser.parse_args()
+        
+        print(args) # for debugging
+
+        # get email and password
+        request_username = args['username']
+        request_password = args['password']
+
         temp_db = InitDB()
-        result = temp_db.user_check_exists()
+        user_exists = temp_db.check_user_exists(request_username)
+        
+        if user_exists == False:
+            return {"status": "Error", "message": "User does not exists"}
+
+        # if user does exist, check passwords match
+        if user_exists == True:
+            passwords_match = temp_db.check_passwords_match(request_username, request_password)
+        
+        if passwords_match == False:
+            return {"status": "Error", "message": "Password is incorrect"}
 
 
         return {
             'resultStatus': 'SUCCESS',
-            'message': result
+            'message': "Passwords match! You are logged in!"
         }
