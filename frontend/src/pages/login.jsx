@@ -1,8 +1,10 @@
 import React from 'react';
 import { Button, Form, Input } from 'antd';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
+  let navigate = useNavigate();
   const onFinish = (values) => {
     console.log('Input:', values);
     axios
@@ -12,6 +14,16 @@ const LoginForm = () => {
       })
       .then((res) => {
         console.log(res.data);
+        let status = res.data.status;
+        let message = res.data.message;
+        if (status==='Error') {
+          alert(message);
+        }
+        else{
+          localStorage.setItem('username', values.username);
+          console.log(localStorage.getItem('username'));
+          navigate('/');
+        }
       }, []);
     }
 
