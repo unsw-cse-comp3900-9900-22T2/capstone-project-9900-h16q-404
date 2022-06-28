@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input } from 'antd';
+import { Input, Space } from 'antd';
 
 const { Search } = Input;
 
@@ -7,5 +7,9 @@ const { Search } = Input;
 const onSearch = (value) => console.log(value);
 
 export default function SearchInput () {
-  <Search placeholder="input search text" onSearch={onSearch} enterButton />
+  return(
+  <Space direction='vertical'>
+    <Search placeholder="input search text" onSearch={onSearch} enterButton />
+  </Space>
+  )
 }

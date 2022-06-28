@@ -23,3 +23,12 @@ We synchronised the user stories between proposal documents and Jira Page.
 On Thursday class we decided the finishing-up work on proposal document.
 On Sunday we completed the proposal document and submitted it. 
 On Sunday stand-up, we started Sprint 1 and arranged the coding tasks to every team member.
+
+Week 4
+Proposal document submitted on last Sunday.
+Started sprint 1 and working on code.
+I am assigned to build the frontend of landing page.
+I have completed the landing page UI, the login page and register page UI by Thursday.
+On Saturday we had a small meeting and connected the frontend to backend.
+On Sunday stand-up I have reported my problems to the team.
+On Sunday I have fixed my problems and make frontend work.
