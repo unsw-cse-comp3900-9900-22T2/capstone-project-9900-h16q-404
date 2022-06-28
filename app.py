@@ -19,13 +19,9 @@ This file performs the below in order:
 
 from flask import Flask, send_from_directory
 from flask_restful import Api, Resource, reqparse
-<<<<<<< HEAD
 # Yunran: since we are not deploying we need to have CORS
 from flask_cors import CORS
-from api.apihandler import ApiHandler, SignUp, Events
-=======
 from api.apihandler import Test, Register, Events, Login
->>>>>>> master
 from db.init_db import db_main
 
 # Run db_main() in the init_db.py file to create the DB and fill it with data
