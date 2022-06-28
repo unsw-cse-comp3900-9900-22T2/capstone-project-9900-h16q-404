@@ -19,9 +19,13 @@ This file performs the below in order:
 
 from flask import Flask, send_from_directory
 from flask_restful import Api, Resource, reqparse
+<<<<<<< HEAD
 # Yunran: since we are not deploying we need to have CORS
 from flask_cors import CORS
 from api.apihandler import ApiHandler, SignUp, Events
+=======
+from api.apihandler import Test, Register, Events, Login
+>>>>>>> master
 from db.init_db import db_main
 
 # Run db_main() in the init_db.py file to create the DB and fill it with data
@@ -34,6 +38,7 @@ CORS(app, supports_credentials=True)
 api = Api(app)
 
 # Matches URLs to resources defined in apihandler.py
-api.add_resource(ApiHandler, '/flask/hello')
-api.add_resource(SignUp, '/signup')
+api.add_resource(Test, '/test')
+api.add_resource(Register, '/register')
 api.add_resource(Events, '/events')
+api.add_resource(Login, '/login')
