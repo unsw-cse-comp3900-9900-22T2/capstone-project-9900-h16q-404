@@ -32,3 +32,9 @@ week 4
 I thought about the API design of the background and had a look at some old projects
 But I think I need more infomation on this.
 Overall API can be divided into two parts: User related API and event related API. And some content may require a combination of several APIs.
+We start to build the frontend and backend. Ben sent me an article about the structure of a similar and simple project and he showed me how the backend is built up and how to add more functions and resources to the backend.
+I discuss the connection between the backend and frontend with the group and decide the structure of the requests. I need to think about the user tokens
+
+week 5
+I wrote the function of login (send request to backend and show the message based on the response) and I had a further look into the tokens.
+I also worked out two topbar buttons.
