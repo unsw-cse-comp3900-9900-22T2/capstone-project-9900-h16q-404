@@ -1,0 +1,11 @@
+Week1
+Team formed on Week 1 and I read through all the available projects. I selected the project no. 7 - Event Management System for the team as I had prior experience on working on a relational model for a similar event management system.
+
+Week2:
+I worked on the System architecture part of the proposal. I read through different software architecture in existence and figured out two architectures: MVC (Model View Controller) and Multi-Layered as most prevalent for web applications. I proposed these two designs to the team during Sunday standups and based on the teammate's skills we chose the multi-layered architecture for the project.
+
+Week3:
+I worked on the system architecture diagram for the proposal; choosing the functions and tech stack for each layer.
+
+Week4:
+I developed the relational model for the project. The result was a set of ER diagrams and a SQL schema for the data model.
