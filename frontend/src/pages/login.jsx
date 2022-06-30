@@ -1,10 +1,32 @@
 import React from 'react';
 import { Button, Form, Input } from 'antd';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
+  let navigate = useNavigate();
   const onFinish = (values) => {
-    console.log('Success:', values);
-  };
+    console.log('Input:', values);
+    axios
+      .post('http://127.0.0.1:5000/login', {
+        username: values.username,
+        password: values.password,
+      })
+      .then((res) => {
+        console.log(res.data);
+        let status = res.data.status;
+        let message = res.data.message;
+        if (status==='Error') {
+          alert(message);
+        }
+        else{
+          localStorage.setItem('username', values.username);
+          console.log(localStorage.getItem('username'));
+          navigate('/');
+        }
+      }, []);
+    }
+
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
@@ -12,7 +34,7 @@ const LoginForm = () => {
 
   return (
     <Form
-      name="basic"
+      name='basic'
       labelCol={{
         span: 8,
       }}
@@ -24,11 +46,11 @@ const LoginForm = () => {
       }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
-      autoComplete="off"
+      autoComplete='off'
     >
       <Form.Item
-        label="Username"
-        name="username"
+        label='Username'
+        name='username'
         rules={[
           {
             required: true,
@@ -40,8 +62,8 @@ const LoginForm = () => {
       </Form.Item>
 
       <Form.Item
-        label="Password"
-        name="password"
+        label='Password'
+        name='password'
         rules={[
           {
             required: true,
@@ -58,7 +80,7 @@ const LoginForm = () => {
           span: 16,
         }}
       >
-        <Button type="primary" htmlType="submit">
+        <Button type='primary' htmlType='submit'>
           Login
         </Button>
         <br />
@@ -66,10 +88,8 @@ const LoginForm = () => {
       </Form.Item>
     </Form>
   );
-}
+};
 
-export default function LoginPage () {
-  return (
-    <LoginForm></LoginForm>
-  )
+export default function LoginPage() {
+  return <LoginForm></LoginForm>;
 }
