@@ -3,7 +3,6 @@ import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
 import { Layout, List, Space, Avatar } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios'
-//import request from '../utils/request';
 
 const { Content, Footer } = Layout;
 
