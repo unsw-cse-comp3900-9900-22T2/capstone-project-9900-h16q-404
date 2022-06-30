@@ -1,9 +1,12 @@
 import {
   Form,
   Input,
-  Button
+  Button,
+  message
 } from 'antd';
+import axios from 'axios';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const formItemLayout = {
   labelCol: {
@@ -39,9 +42,26 @@ const tailFormItemLayout = {
 
 const RegisterForm = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+    //console.log('Received values of form: ', values);
+    axios.post('http://127.0.0.1:5000/register',values)
+    .then(response => response.data)
+    .then(
+      data => {
+        if(data.status === "Success"){
+          message.success("Register successful! Redirecting to login page...", 2);
+          navigate("/login");
+        }
+        else{
+          message.error("Something wrong when registering...",2);
+        }
+      }
+    )
+    .catch(function(error){
+      console.log(error)
+    });
   };
 
   return (
