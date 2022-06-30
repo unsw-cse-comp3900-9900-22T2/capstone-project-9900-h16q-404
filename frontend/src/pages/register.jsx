@@ -55,12 +55,13 @@ const RegisterForm = () => {
           navigate("/login");
         }
         else{
-          message.error("Something wrong when registering...",2);
+          message.error(data.message,2);
         }
       }
     )
     .catch(function(error){
-      console.log(error)
+      //console.log(error)
+      message.error("Something wrong when registering...",2);
     });
   };
 
