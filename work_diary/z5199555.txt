@@ -11,3 +11,12 @@ Help teammate to make novel idea.
 Week3
 
 Help to build story board and flow diagrams.
+
+Week4
+
+Update some user story and add new chart to flow diagrams.
+
+Week5
+
+Program sprint 1 start.
+Get to know what the structure the web is and try to make some contribute to next print.
