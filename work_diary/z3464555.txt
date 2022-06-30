@@ -39,3 +39,9 @@ Week 4 (Sunday 19th June - Thursday 23rd June):
 Week 4 (Thursday 23rd June - Sunday 26th June):
 - On Friday morning Ganesh and I did a 3 hour session to setup the basic DB, it now exists, can be filled with some dummy data and also can be called by an Events page.
 - I also updated the JIRA cards, added comments to the code and also started the Agenda for our Sunday morning standup
+
+Week 5 (Sunday 26th June - Thursday 30th June):
+- On Tuesday I caught up with Karl (Dezhou) and Ganesh and we had a quick discussion about what further work needs to be done.
+- The whole team then met early on Thursday and we finished the register page feature, tested it together and then merged to main.
+- We then had a discussion about how to perform the demo.
+- I then fixed up the requirements and README for the backend and prepared the sprint review, sprint retro and sprint planning agendas.
