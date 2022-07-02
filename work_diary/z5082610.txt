@@ -36,5 +36,6 @@ On Sunday I have fixed my problems and make frontend work.
 Week 5
 Sprint 1 completed.
 Planned Sprint 2 works
+I am assigned the frontend of profile page and update profile page.
 progressive demo 1 completed.
 Started the sprint 2.
