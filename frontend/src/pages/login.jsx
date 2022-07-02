@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,16 +13,19 @@ const LoginForm = () => {
         password: values.password,
       })
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         let status = res.data.status;
-        let message = res.data.message;
+        // changed var name to use message function
+        let info = res.data.message;
         if (status==='Error') {
-          alert(message);
+          // change alert to antd message
+          message.error(info);
         }
         else{
           localStorage.setItem('username', values.username);
-          console.log(localStorage.getItem('username'));
-          navigate('/');
+          //console.log(localStorage.getItem('username'));
+          message.success("Login Successful!",2)
+            .then(navigate('/'));
         }
       }, []);
     }

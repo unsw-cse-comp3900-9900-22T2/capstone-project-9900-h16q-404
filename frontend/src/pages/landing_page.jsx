@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
 import { Layout, List, Space, Avatar } from 'antd';
+import { Link } from 'react-router-dom'
 import PageHeader from '../components/page_header';
 import axios from 'axios'
 
@@ -63,7 +64,8 @@ export default function LandingPage () {
               <List.Item.Meta
                 avatar={<Avatar src={'https://joeschmoe.io/api/v1/random'}></Avatar>}
                 title={item.event_name}
-                description={"This is description"}
+                // IMPORTANT: change the self=false to userId=xxx when user backend is done!
+                description={<Link to='/user?self=false'>Mock User {item.id}</Link>}
               />
               {"Event date: " + item.event_date}
             </List.Item>
