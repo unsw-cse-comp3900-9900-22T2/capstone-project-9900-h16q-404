@@ -32,3 +32,9 @@ I have completed the landing page UI, the login page and register page UI by Thu
 On Saturday we had a small meeting and connected the frontend to backend.
 On Sunday stand-up I have reported my problems to the team.
 On Sunday I have fixed my problems and make frontend work.
+
+Week 5
+Sprint 1 completed.
+Planned Sprint 2 works
+progressive demo 1 completed.
+Started the sprint 2.
