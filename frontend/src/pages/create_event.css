@@ -1,0 +1,13 @@
+.new_event {
+  margin-top: 64px;
+  margin: auto;
+  flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  max-width: 800px;
+}
+
+.InputComp {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
