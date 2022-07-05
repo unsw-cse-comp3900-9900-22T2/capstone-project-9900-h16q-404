@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
-import { Layout, List, Space, Avatar, Button } from 'antd';
+import { Layout, Button } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
 import { Input } from 'antd';
 import './create_event.css';
 import PropTypes from 'prop-types';
 
-const { Content, Footer } = Layout;
+const { Content } = Layout;
 const { TextArea } = Input;
 /*
 Event name
@@ -37,11 +36,20 @@ export default function CreateEvent() {
     } else {
       setToken('None');
     }
-  }, [setToken]);
+    setDesc('test');
+  }, [setToken, setDesc]);
 
   const create = () => {
-    console.log(token, title, type);
-    console.log(startTime, endTime);
+    let new_event = JSON.stringify({
+      token: token,
+      title: title,
+      type: type,
+      starttime: startTime,
+      endtime: endTime,
+      location: location,
+      desc: desc
+    });
+    console.log(new_event);
   };
 
   return (
@@ -56,36 +64,44 @@ export default function CreateEvent() {
             <InputComp
               addon={'Title'}
               defValue={''}
-              value={''}
-              placeholder={'Sydney Vivid 2023'}
+              value={title || ''}
+              placeholder={'UNSW Show'}
               setter={setTitle}
             />
             <InputComp
               addon={'Type'}
               defValue={''}
-              value={''}
+              value={type || ''}
               placeholder={'Show'}
               setter={setType}
             />
             <InputComp
               addon={'Start Time'}
               defValue={''}
-              value={''}
-              placeholder={'YYYY-MM-DD'}
-              setter={setTitle}
+              value={startTime || ''}
+              placeholder={'2023-01-22'}
+              setter={setStartTime}
             />
             <InputComp
               addon={'End Time'}
               defValue={''}
-              value={''}
-              placeholder={'YYYY-MM-DD'}
-              setter={setTitle}
+              value={endTime || ''}
+              placeholder={'2023-01-25'}
+              setter={setEndTime}
             />
+            <InputComp
+              addon={'Location'}
+              defValue={''}
+              value={location || ''}
+              placeholder={'High st 5 Kensington, NSW 2033'}
+              setter={setLocation}
+            />
+            <h3>Description</h3>
             <TextArea
               rows={3}
               placeholder='Please type the description'
               showCount='true'
-              defaultValue='test'
+              value={desc || ''}
               onChange={(e) => {
                 setDesc(e.target.value);
               }}
