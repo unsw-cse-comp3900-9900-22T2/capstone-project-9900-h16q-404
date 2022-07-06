@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Button } from 'antd';
 import PageHeader from '../components/page_header';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Input } from 'antd';
+import { Input, Checkbox } from 'antd';
+
 import './create_event.css';
 import PropTypes from 'prop-types';
 
@@ -28,7 +30,11 @@ export default function CreateEvent() {
   const [location, setLocation] = useState('');
   const [desc, setDesc] = useState('');
   const [image, setImage] = useState('');
-  const [cond, setCond] = useState();
+
+  const [adultEvent, setAdult] = useState(false);
+  const [vaxReq, setVax] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (localStorage.getItem('username')) {
@@ -43,7 +49,19 @@ export default function CreateEvent() {
     setDesc('test');
   };
 
+  const back = () => {
+    navigate(-1);
+  };
+
+  const checkboxChange = (e, setter) => {
+    setter(e.target.checked);
+  };
+
   const create = () => {
+    let condition = {
+      adult: adultEvent,
+      vax: vaxReq,
+    };
     let new_event = JSON.stringify({
       token: token,
       title: title,
@@ -51,6 +69,7 @@ export default function CreateEvent() {
       starttime: startTime,
       endtime: endTime,
       location: location,
+      cond: condition,
       desc: desc,
     });
     console.log(new_event);
@@ -100,6 +119,26 @@ export default function CreateEvent() {
               placeholder={'High st 5 Kensington, NSW 2033'}
               setter={setLocation}
             />
+            <div className='conditionSect'>
+              <h3>Additonal Conditions</h3>
+              <p>
+                <Checkbox
+                  checked={adultEvent}
+                  onChange={(event) => checkboxChange(event, setAdult)}
+                >
+                  This is an adult-only event.
+                </Checkbox>
+              </p>
+              <p>
+                <Checkbox
+                  checked={vaxReq}
+                  onChange={(event) => checkboxChange(event, setVax)}
+                >
+                  Customers must be fully vaccinated.
+                </Checkbox>
+              </p>
+            </div>
+
             <h3>Description</h3>
             <TextArea
               rows={3}
@@ -111,10 +150,12 @@ export default function CreateEvent() {
               }}
             />
             <div className='ButtonSet'>
-              <Button onClick={create} type='primary'>
+              <Button onClick={create} type='primary' className='Sendbutton'>
                 Send
               </Button>
-              <Button>Cancel</Button>
+              <Button onClick={back} className='Sendbutton'>
+                Back
+              </Button>
             </div>
           </div>
         </Content>

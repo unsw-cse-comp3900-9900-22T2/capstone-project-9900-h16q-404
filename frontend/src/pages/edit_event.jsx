@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Button } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
-import { Input } from 'antd';
+import { Input, Checkbox } from 'antd';
 import './create_event.css';
 import { InputComp } from './create_event';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -25,7 +25,7 @@ No tickets yet
 export default function EditEvent() {
   const params = useParams();
   const eventid = params.eventid;
-  const gameId = params.gameId;
+
   const [token, setToken] = useState('');
   const [title, setTitle] = useState('');
   const [type, setType] = useState('');
@@ -34,7 +34,11 @@ export default function EditEvent() {
   const [location, setLocation] = useState('');
   const [desc, setDesc] = useState('');
   const [image, setImage] = useState('');
-  const [cond, setCond] = useState();
+
+  const [adultEvent, setAdult] = useState(false);
+  const [vaxReq, setVax] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (localStorage.getItem('username')) {
@@ -47,9 +51,16 @@ export default function EditEvent() {
 
   const test = () => {
     setDesc('test');
+    setTitle('test');
+    setAdult(true);
+    setVax(true);
   };
 
   const confirmEdit = () => {
+    let condition = {
+      adult: adultEvent,
+      vax: vaxReq,
+    };
     let new_event = JSON.stringify({
       id: eventid,
       token: token,
@@ -57,10 +68,19 @@ export default function EditEvent() {
       type: type,
       starttime: startTime,
       endtime: endTime,
+      cond: condition,
       location: location,
       desc: desc,
     });
     console.log(new_event);
+  };
+
+  const back = () => {
+    navigate(-1);
+  };
+
+  const checkboxChange = (e, setter) => {
+    setter(e.target.checked);
   };
 
   return (
@@ -107,6 +127,25 @@ export default function EditEvent() {
               placeholder={'High st 5 Kensington, NSW 2033'}
               setter={setLocation}
             />
+            <div className='conditionSect'>
+              <h3>Additonal Conditions</h3>
+              <p>
+                <Checkbox
+                  checked={adultEvent}
+                  onChange={(event) => checkboxChange(event, setAdult)}
+                >
+                  This is an adult-only event.
+                </Checkbox>
+              </p>
+              <p>
+                <Checkbox
+                  checked={vaxReq}
+                  onChange={(event) => checkboxChange(event, setVax)}
+                >
+                  Customers must be fully vaccinated.
+                </Checkbox>
+              </p>
+            </div>
             <h3>Description</h3>
             <TextArea
               rows={3}
@@ -118,10 +157,12 @@ export default function EditEvent() {
               }}
             />
             <div className='ButtonSet'>
-              <Button onClick={confirmEdit} type='primary'>
+              <Button onClick={confirmEdit} type='primary' className='Sendbutton'>
                 Send
               </Button>
-              <Button>Cancel</Button>
+              <Button onClick={back} className='Sendbutton'>
+                Back
+              </Button>
             </div>
           </div>
         </Content>
