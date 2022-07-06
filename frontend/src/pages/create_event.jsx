@@ -36,8 +36,12 @@ export default function CreateEvent() {
     } else {
       setToken('None');
     }
-    setDesc('test');
+    test();
   }, [setToken, setDesc]);
+
+  const test = () => {
+    setDesc('test');
+  };
 
   const create = () => {
     let new_event = JSON.stringify({
@@ -47,7 +51,7 @@ export default function CreateEvent() {
       starttime: startTime,
       endtime: endTime,
       location: location,
-      desc: desc
+      desc: desc,
     });
     console.log(new_event);
   };
