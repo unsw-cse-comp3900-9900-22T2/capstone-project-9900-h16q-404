@@ -3,7 +3,7 @@ import { Layout, Avatar, Rate, Button, message } from "antd";
 import PageHeader from '../components/page_header';
 import "./user_profile.css"
 import { UserOutlined } from '@ant-design/icons';
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 
 const { Content, Footer } = Layout;
 
@@ -11,6 +11,7 @@ export default function UserProfilePage () {
 
   const [searchParams] = useSearchParams();
   const [isSelfProfle, setSelfProfile] = useState(false);
+  const [followed, setFollow] = useState(false);
   //const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +22,14 @@ export default function UserProfilePage () {
     else if (searchParams.get("self") === "false") {
       setSelfProfile(false);
       //console.log("others")
+      if(searchParams.get("followed") === "true"){
+        console.log("followed");
+        setFollow(true);
+      }
+      else {
+        console.log("unfollowed");
+        setFollow(false);
+      }
     }
     else{
       message.error("Oops... Something went wrong")
@@ -30,6 +39,7 @@ export default function UserProfilePage () {
 
   // WARNING
   // All "self=" related searchParames MUST be changed to userID after backend is completed
+  // /user?userId=xxxx
 
   return (
     <div>
@@ -38,7 +48,16 @@ export default function UserProfilePage () {
         <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
           <div className="basic-profile-zone">
             <div className="name-zone">
-              <h1>Nickname</h1>
+              <h1>
+                Nickname
+                { 
+                  isSelfProfle ? 
+                    <Link to='/edit_profile'>
+                      <Button>Edit Profile</Button>
+                    </Link>
+                  : 
+                    <></>}
+              </h1>
               <h3>email</h3>
               <h3>dob</h3>
               <h3>Gender</h3>
@@ -50,7 +69,16 @@ export default function UserProfilePage () {
                 isSelfProfle? 
                   <Button type="primary" size="small" style={{marginTop:'5px'}}>Watchlist</Button>
                 : 
-                  <Button size="small" style={{marginTop:'5px'}}>Follow</Button>
+                  (
+                    followed? 
+                      <Link to='/user?self=false&followed=false'>
+                        <Button size="small" style={{marginTop:'5px'}}>Unfollow</Button>
+                      </Link>
+                    :
+                      <Link to='/user?self=false&followed=true'>
+                        <Button size="small" style={{marginTop:'5px'}}>Follow</Button>
+                      </Link>  
+                  )
               }
             </div>
           </div>

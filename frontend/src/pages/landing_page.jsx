@@ -65,7 +65,7 @@ export default function LandingPage () {
                 avatar={<Avatar src={'https://joeschmoe.io/api/v1/random'}></Avatar>}
                 title={item.event_name}
                 // IMPORTANT: change the self=false to userId=xxx when user backend is done!
-                description={<Link to='/user?self=false'>Mock User {item.id}</Link>}
+                description={<Link to='/user?self=false&followed=true'>Mock Followed User {item.id}</Link>}
               />
               {"Event date: " + item.event_date}
             </List.Item>

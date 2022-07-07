@@ -10,7 +10,7 @@ import { Button } from 'antd';
 
 export default function RegisterButton () {
   return (
-    <Link to='register'>
+    <Link to='/register'>
       <Button>Register</Button>
     </Link>
   )
