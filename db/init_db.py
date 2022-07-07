@@ -131,6 +131,18 @@ class InitDB:
         except IntegrityError as e:
             return (400, "could not find event")
 
+    def select_event_id(self, event_id):
+        # This functions searches for events with id as event_id and returns a list of all events
+        query = db.select([self.events]).where(self.events.c.id == event_id)
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['event_date'] = str(result["result"][i]['event_date'])
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+
 
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table

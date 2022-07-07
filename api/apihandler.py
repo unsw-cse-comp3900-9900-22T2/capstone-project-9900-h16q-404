@@ -127,17 +127,39 @@ class Login(Resource):
 
 class Event(Resource):
     def get(self):
+        # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
         parser.add_argument('event_name', type=str)
+        parser.add_argument('event_id', type=int)
         args = parser.parse_args()
 
+        # assign variables
         event_name = args['event_name']
+        event_id = args['event_id']
 
-        print(event_name) # for debugging, delete later
-
+        # create db engine
         temp_db = InitDB()
-        result = temp_db.select_event_name(event_name)
 
+        if event_id and event_name:
+            # if both parameters are provided, return error
+            return {
+            'resultStatus': 'Error',
+            'message': 'Both event ID and event name supplied, please supply only one'
+            }
+        elif event_name:
+            # if event_name provided
+            result = temp_db.select_event_name(event_name)
+        elif event_id:
+            # if event_id provided
+            result = temp_db.select_event_id(event_id)
+        else:
+            # if neither event_id or event_name provided return error
+            return {
+            'resultStatus': 'Error',
+            'message': 'Both event ID and event name were not supplied, please supply one'
+            }
+
+        # finally return result
         return {
             'resultStatus': 'SUCCESS',
             'message': result
