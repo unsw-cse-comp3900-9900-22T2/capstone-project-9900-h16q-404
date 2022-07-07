@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Button } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
-import { Input, Checkbox } from 'antd';
+import moment from 'moment';
+import { Input, Checkbox, DatePicker, TimePicker } from 'antd';
 import './create_event.css';
 import { InputComp } from './create_event';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -26,14 +27,20 @@ export default function EditEvent() {
   const params = useParams();
   const eventid = params.eventid;
 
-  const [token, setToken] = useState('');
-  const [title, setTitle] = useState('');
-  const [type, setType] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [location, setLocation] = useState('');
-  const [desc, setDesc] = useState('');
-  const [image, setImage] = useState('');
+  const [token, setToken] = useState();
+  const [title, setTitle] = useState();
+  const [type, setType] = useState();
+  const [startDate, setStartDate] = useState();
+  const [startTime, setStartTime] = useState();
+  const [endDate, setEndDate] = useState();
+  const [endTime, setEndTime] = useState();
+
+  const [location, setLocation] = useState();
+  const [desc, setDesc] = useState();
+  const [image, setImage] = useState();
+
+  const dateFormat = 'YYYY-MM-DD';
+  const timeFormat = 'HH:mm:ss';
 
   const [adultEvent, setAdult] = useState(false);
   const [vaxReq, setVax] = useState(false);
@@ -46,12 +53,31 @@ export default function EditEvent() {
     } else {
       setToken('None');
     }
-    test();
-  }, [setToken, setDesc]);
+    axios
+      .get(`https://48c72885-2eec-4a6a-aa5c-c752ef2afe8e.mock.pstmn.io/event`)
+      .then((res) => {
+        console.log(res.data);
+        let data = res.data.detail;
+        setTitle(data.title);
+        setType(data.type);
+        setStartDate(data.startdate);
+        setStartTime(data.starttime);
+        setEndDate(data.enddate);
+        setEndTime(data.enddate);
+        setLocation(data.location);
+        setAdult(true);
+        setVax(true);
+        setDesc(data.desc);
+      }, []);
+  }, []);
 
   const test = () => {
     setDesc('test');
     setTitle('test');
+    setStartDate('2020-01-01');
+    setStartTime('01:01:01');
+    setEndDate('2021-01-01');
+    setEndTime('02:02:02');
     setAdult(true);
     setVax(true);
   };
@@ -61,18 +87,35 @@ export default function EditEvent() {
       adult: adultEvent,
       vax: vaxReq,
     };
-    let new_event = JSON.stringify({
-      id: eventid,
+    let requestbody = JSON.stringify({
       token: token,
-      title: title,
-      type: type,
-      starttime: startTime,
-      endtime: endTime,
-      cond: condition,
-      location: location,
-      desc: desc,
+      id: eventid,
+      detail: {
+        title: title,
+        type: type,
+        startdate: startDate,
+        starttime: startTime,
+        enddate: endDate,
+        endtime: endTime,
+        location: location,
+        cond: condition,
+        desc: desc,
+      },
     });
-    console.log(new_event);
+    console.log(requestbody);
+    console.log('update');
+    axios
+      .put(
+        'https://48c72885-2eec-4a6a-aa5c-c752ef2afe8e.mock.pstmn.io/updateevent',
+        requestbody
+      )
+      .then((res) => {
+        console.log(res.data);
+        let status = res.data.status;
+        if (status !== 'Error') {
+          console.log('success');
+        }
+      });
   };
 
   const back = () => {
@@ -106,20 +149,38 @@ export default function EditEvent() {
               placeholder={'Show'}
               setter={setType}
             />
-            <InputComp
-              addon={'Start Time'}
-              defValue={''}
-              value={startTime || ''}
-              placeholder={'2023-01-22'}
-              setter={setStartTime}
-            />
-            <InputComp
-              addon={'End Time'}
-              defValue={''}
-              value={endTime || ''}
-              placeholder={'2023-01-25'}
-              setter={setEndTime}
-            />
+            <div>
+              Start data and time
+              <DatePicker
+                placeholder={'2023-01-22'}
+                value={moment(startDate) || null}
+                onChange={(date, dateString) => {
+                  setStartDate(dateString);
+                }}
+              />
+              <TimePicker
+                value={moment(startTime, timeFormat) || null}
+                onChange={(time, timeString) => {
+                  setStartTime(timeString);
+                }}
+              />
+            </div>
+            <div>
+              End date and time
+              <DatePicker
+                placeholder={'2023-01-25'}
+                value={moment(endDate) || null}
+                onChange={(date, dateString) => {
+                  setEndDate(dateString);
+                }}
+              />
+              <TimePicker
+                value={moment(endTime, timeFormat) || null}
+                onChange={(time, timeString) => {
+                  setEndTime(timeString);
+                }}
+              />
+            </div>
             <InputComp
               addon={'Location'}
               defValue={''}
@@ -157,7 +218,11 @@ export default function EditEvent() {
               }}
             />
             <div className='ButtonSet'>
-              <Button onClick={confirmEdit} type='primary' className='Sendbutton'>
+              <Button
+                onClick={confirmEdit}
+                type='primary'
+                className='Sendbutton'
+              >
                 Send
               </Button>
               <Button onClick={back} className='Sendbutton'>

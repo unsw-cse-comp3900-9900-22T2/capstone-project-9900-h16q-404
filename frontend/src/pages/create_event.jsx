@@ -3,7 +3,8 @@ import { Layout, Button } from 'antd';
 import PageHeader from '../components/page_header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Input, Checkbox } from 'antd';
+import moment from 'moment';
+import { Input, Checkbox, DatePicker, TimePicker } from 'antd';
 
 import './create_event.css';
 import PropTypes from 'prop-types';
@@ -22,14 +23,20 @@ Pictures (optional - if we have time and its easy)
 No tickets yet
 */
 export default function CreateEvent() {
-  const [token, setToken] = useState('');
-  const [title, setTitle] = useState('');
-  const [type, setType] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [location, setLocation] = useState('');
-  const [desc, setDesc] = useState('');
-  const [image, setImage] = useState('');
+  const [token, setToken] = useState();
+  const [title, setTitle] = useState();
+  const [type, setType] = useState();
+
+  const [startDate, setStartDate] = useState();
+  const [startTime, setStartTime] = useState();
+  const [endDate, setEndDate] = useState();
+  const [endTime, setEndTime] = useState();
+  const [location, setLocation] = useState();
+  const [desc, setDesc] = useState();
+  const [image, setImage] = useState();
+
+  const dateFormat = 'YYYY-MM-DD';
+  const timeFormat = 'HH:mm:ss';
 
   const [adultEvent, setAdult] = useState(false);
   const [vaxReq, setVax] = useState(false);
@@ -62,17 +69,34 @@ export default function CreateEvent() {
       adult: adultEvent,
       vax: vaxReq,
     };
-    let new_event = JSON.stringify({
+    let requestbody = JSON.stringify({
       token: token,
-      title: title,
-      type: type,
-      starttime: startTime,
-      endtime: endTime,
-      location: location,
-      cond: condition,
-      desc: desc,
+      detail: {
+        title: title,
+        type: type,
+        startdate: startDate,
+        starttime: startTime,
+        enddate: endDate,
+        endtime: endTime,
+        location: location,
+        cond: condition,
+        desc: desc,
+      },
     });
-    console.log(new_event);
+    console.log(requestbody);
+    axios
+      .post(
+        'https://48c72885-2eec-4a6a-aa5c-c752ef2afe8e.mock.pstmn.io/createevent',
+        requestbody
+      )
+      .then((res) => {
+        console.log(res.data);
+        let status = res.data.status;
+        let id = res.data.id;
+        if (status !== 'Error') {
+          console.log(id);
+        }
+      });
   };
 
   return (
@@ -98,20 +122,34 @@ export default function CreateEvent() {
               placeholder={'Show'}
               setter={setType}
             />
-            <InputComp
-              addon={'Start Time'}
-              defValue={''}
-              value={startTime || ''}
-              placeholder={'2023-01-22'}
-              setter={setStartTime}
-            />
-            <InputComp
-              addon={'End Time'}
-              defValue={''}
-              value={endTime || ''}
-              placeholder={'2023-01-25'}
-              setter={setEndTime}
-            />
+            <div>
+              Start data and time
+              <DatePicker
+                placeholder={'2023-01-22'}
+                onChange={(date, dateString) => {
+                  setStartDate(dateString);
+                }}
+              />
+              <TimePicker
+                onChange={(time, timeString) => {
+                  setStartTime(timeString);
+                }}
+              />
+            </div>
+            <div>
+              End date and time
+              <DatePicker
+                placeholder={'2023-01-25'}
+                onChange={(date, dateString) => {
+                  setEndDate(dateString);
+                }}
+              />
+              <TimePicker
+                onChange={(time, timeString) => {
+                  setEndTime(timeString);
+                }}
+              />
+            </div>
             <InputComp
               addon={'Location'}
               defValue={''}
