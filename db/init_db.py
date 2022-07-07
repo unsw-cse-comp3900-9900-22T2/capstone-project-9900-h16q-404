@@ -169,7 +169,7 @@ class InitDB:
             except IntegrityError as e:
                 return ("Error updating delete column for " + event_id)
         else:
-            return ("Error finding event " + event_id + " in events table")
+            return ("Error finding event " + str(event_id) + " in events table")
             
 
     def select_all_events(self):

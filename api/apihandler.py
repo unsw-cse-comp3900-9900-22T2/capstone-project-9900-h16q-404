@@ -159,6 +159,12 @@ class Event(Resource):
             'message': 'Both event ID and event name were not supplied, please supply one'
             }
 
+        if not result:
+            return {
+            'resultStatus': 'ERROR',
+            'message': 'event not found'
+        }
+
         # finally return result
         return {
             'resultStatus': 'SUCCESS',
@@ -188,9 +194,11 @@ class Event(Resource):
         elif event_name:
             # if event_name provided
             result = temp_db.delete_event_name(event_name)
+            event_details = event_name
         elif event_id:
             # if event_id provided
             result = temp_db.delete_event_id(event_id)
+            event_details = event_id
         else:
             # if neither event_id or event_name provided return error
             return {
@@ -199,13 +207,15 @@ class Event(Resource):
             }
 
         if result == True:
-        # finally return result
+        # If result is True, return SUCCESS and event details
             return {
                 'resultStatus': 'SUCCESS',
-                'message': result
+                'event': event_details,
+                'message': 'event deleted'
             }
 
         if "Error" in result:
+        # if result != True, return ERROR and error message
             return {
                 'resultStatus': 'ERROR',
                 'message': result
