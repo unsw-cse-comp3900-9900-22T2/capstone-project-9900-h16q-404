@@ -124,3 +124,21 @@ class Login(Resource):
             'resultStatus': 'SUCCESS',
             'message': "Passwords match! You are logged in!"
         }
+
+class Event(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('event_name', type=str)
+        args = parser.parse_args()
+
+        event_name = args['event_name']
+
+        print(event_name) # for debugging, delete later
+
+        temp_db = InitDB()
+        result = temp_db.select_event_name(event_name)
+
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result
+        }

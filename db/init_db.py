@@ -119,6 +119,19 @@ class InitDB:
         else:
             print("Item " + str(data["event_name"]) + " not added to events table as it failed the insert check")
 
+    def select_event_name(self, event_name):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.events]).where(self.events.c.event_name == event_name)
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['event_date'] = str(result["result"][i]['event_date'])
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+
+
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
         query = db.select([self.events])
