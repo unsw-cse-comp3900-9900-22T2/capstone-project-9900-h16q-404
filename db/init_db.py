@@ -12,6 +12,7 @@ the database.
 
 from asyncio import events
 from psycopg2 import IntegrityError
+from requests import delete
 import sqlalchemy as db
 from sqlalchemy import select, and_, func
 import pandas as pd
@@ -31,7 +32,8 @@ class InitDB:
         self.events = db.Table('events', self.metadata,
             db.Column('id', db.Integer(), primary_key=True),
             db.Column('event_name', db.String(255), nullable=False),
-            db.Column('event_date', db.Date, nullable=False)
+            db.Column('event_date', db.Date, nullable=False),
+            db.Column('deleted', db.Boolean, nullable=True)
         )
 
         self.users = db.Table('users', self.metadata,
@@ -54,7 +56,8 @@ class InitDB:
             data = {
                 "id":row.id, 
                 "event_name": row.event_name,
-                "event_date": datetime.fromisoformat(row.event_date)
+                "event_date": datetime.fromisoformat(row.event_date),
+                "deleted": False
             }
             self.insert_events(data)
 
@@ -110,7 +113,8 @@ class InitDB:
             query = db.insert(self.events).values(
                 id = data["id"],
                 event_name = data["event_name"],
-                event_date = data["event_date"]
+                event_date = data["event_date"],
+                deleted = data["deleted"]
             )
             try:
                 return self.engine.execute(query).inserted_primary_key 
@@ -143,6 +147,30 @@ class InitDB:
         except IntegrityError as e:
             return (400, "could not find event")
 
+    def delete_event_name(self, event_name):
+        if self.check_event_exists(event_name, "event_name"):
+            try:
+                query = self.events.update().values(deleted=True).where(self.events.c.event_name == event_name)
+                result = self.engine.execute(query)
+                if result:
+                    return (True)
+            except IntegrityError as e:
+                return (400, "Error updating delete column for " + event_name)
+        else:
+            return ("Error finding event " + event_name + " in events table")
+
+    def delete_event_id(self, event_id):
+        if self.check_event_exists(event_id, "id"):
+            try:
+                query = self.events.update().values(deleted=True).where(self.events.c.id == event_id)
+                result = self.engine.execute(query)
+                if result:
+                    return (True)
+            except IntegrityError as e:
+                return ("Error updating delete column for " + event_id)
+        else:
+            return ("Error finding event " + event_id + " in events table")
+            
 
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
@@ -155,6 +183,19 @@ class InitDB:
             return result["result"]
         except IntegrityError as e:
             return (400, "Could not select from table")
+
+    def check_event_exists(self, event_detail, event_col):
+        event_exists = False
+
+        if event_col == "id":
+            check_query = db.select([self.events]).where(self.events.c.id == event_detail)
+        else: 
+            check_query = db.select([self.events]).where(self.events.c.event_name == event_detail)
+        
+        check_result = self.engine.execute(check_query).fetchall()
+        if len(check_result) > 0:
+            event_exists = True
+        return event_exists
 
     def check_user_exists(self, username):
         user_exists = False
