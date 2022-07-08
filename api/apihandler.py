@@ -221,3 +221,20 @@ class Event(Resource):
                 'message': result
             }    
 
+    def post(self):
+        # parse the event_id and/or event_name arguments
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str)
+        parser.add_argument('detail', type=dict)
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+        event_details = args['detail']
+
+        # create db engine
+        temp_db = InitDB()
+
+        print(event_details)
+        temp_db.create_event(token, event_details)
+

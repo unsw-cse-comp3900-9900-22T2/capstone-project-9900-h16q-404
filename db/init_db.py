@@ -16,7 +16,7 @@ from requests import delete
 import sqlalchemy as db
 from sqlalchemy import select, and_, func
 import pandas as pd
-from datetime import datetime
+import datetime
 from flask import jsonify
 
 # InitDB class
@@ -32,8 +32,17 @@ class InitDB:
         self.events = db.Table('events', self.metadata,
             db.Column('id', db.Integer(), primary_key=True),
             db.Column('event_name', db.String(255), nullable=False),
-            db.Column('event_date', db.Date, nullable=False),
-            db.Column('deleted', db.Boolean, nullable=True)
+            db.Column('host', db.Integer(), nullable=True),
+            db.Column('type', db.String(255), nullable=True),
+            db.Column('start_date', db.Date, nullable=True),
+            db.Column('start_time', db.Time, nullable=True),
+            db.Column('end_date', db.Date, nullable=True),
+            db.Column('end_time', db.Time, nullable=True),
+            db.Column('deleted', db.Boolean, nullable=True),
+            db.Column('location', db.String(255), nullable=True),
+            db.Column('adult_only', db.Boolean, nullable=True),
+            db.Column('vax_only', db.Boolean, nullable=True),
+            db.Column('description', db.String(255), nullable=True)
         )
 
         self.users = db.Table('users', self.metadata,
@@ -56,10 +65,23 @@ class InitDB:
             data = {
                 "id":row.id, 
                 "event_name": row.event_name,
-                "event_date": datetime.fromisoformat(row.event_date),
-                "deleted": False
+                "host": row.host,
+                "type": row.type,
+                "start_date": datetime.datetime.strptime(row.start_date, "%d-%m-%Y").date(),
+                "start_time": datetime.datetime.strptime(row.start_time, "%H:%M").time(),
+                "end_date": datetime.datetime.strptime(row.end_date, "%d-%m-%Y").date(),
+                "end_time": datetime.datetime.strptime(row.end_time, "%H:%M").time(),
+                "deleted": row.deleted,
+                "location": row.location,
+                "adult_only": row.adult_only,
+                "vax_only": row.vax_only,
+                "description": row.description
             }
-            self.insert_events(data)
+            result = self.insert_events(data)
+            if result == None or result == -1:
+                print(data["event_name"] + " Not Added")
+            else:
+                print("Added new event with ID = " + str(result))
 
         for index, row in dummy_users_df.iterrows():
             data = {
@@ -113,8 +135,17 @@ class InitDB:
             query = db.insert(self.events).values(
                 id = data["id"],
                 event_name = data["event_name"],
-                event_date = data["event_date"],
-                deleted = data["deleted"]
+                host = data["host"],
+                type = data["type"],
+                start_date = data["start_date"],
+                start_time = data["start_time"],
+                end_date = data["end_date"],
+                end_time = data["end_time"],
+                deleted = data["deleted"],
+                location = data["location"],
+                adult_only = data["adult_only"],
+                vax_only = data["vax_only"],
+                description = data["description"]
             )
             try:
                 return self.engine.execute(query).inserted_primary_key 
@@ -142,7 +173,10 @@ class InitDB:
             result = self.engine.execute(query)
             result = ({'result': [dict(row) for row in result]})
             for i in range(len(result['result'])):
-                result["result"][i]['event_date'] = str(result["result"][i]['event_date'])
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
             return result["result"]
         except IntegrityError as e:
             return (400, "could not find event")
@@ -171,6 +205,11 @@ class InitDB:
         else:
             return ("Error finding event " + str(event_id) + " in events table")
             
+    def create_event(self, token, event_details):
+        print(token)
+        print(event_details)
+        
+        pass
 
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
