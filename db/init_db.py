@@ -219,6 +219,32 @@ class InitDB:
         else:
             return -1
     
+    def check_usertoken_exists(self, usertoken):
+        user_exists = False
+        check_query = db.select([self.users]).where(self.users.c.token == usertoken)
+        check_result = self.engine.execute(check_query).fetchall()
+        print(usertoken)
+        print(check_result)
+        if len(check_result) > 0:
+            user_exists = True
+        return user_exists
+    
+    def update_user_details(self, params, token):
+        # update_query = self.users.update(). \
+        # values({
+        #     'phone': bindparam('phone'),
+        #     'firstname': bindparam('firstname'),
+        #     'lastname': bindparam('lastname')
+        # }).where(self.users.c.token == token)
+        update_query = self.users.update().values(params).where(self.users.c.token == token)
+        a = self.engine.execute(update_query)
+        
+        try:
+            return self.engine.execute(update_query)
+        except:
+            return -1
+    
+    
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
     db = InitDB()
