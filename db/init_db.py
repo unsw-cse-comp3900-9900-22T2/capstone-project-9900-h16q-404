@@ -11,7 +11,7 @@ the database.
 '''
 
 from asyncio import events
-from psycopg2 import IntegrityError
+from sqlalchemy.exc import IntegrityError
 import sqlalchemy as db
 from sqlalchemy import select, and_, func
 import pandas as pd
@@ -34,11 +34,19 @@ class InitDB:
             db.Column('event_date', db.Date, nullable=False)
         )
 
+        # define the users tables
         self.users = db.Table('users', self.metadata,
             db.Column('id', db.Integer(), primary_key=True),
             db.Column('username', db.String(255), nullable=False),
             db.Column('password', db.String(255), nullable=False),
-            db.Column('token', db.String(255), nullable=False)
+            db.Column('token', db.String(255), nullable=False),
+            db.Column('email', db.String(255), nullable=False),
+            db.Column('firstName', db.String(255), nullable=True),
+            db.Column('lastName', db.String(255), nullable=True),
+            db.Column('dateOfBirth', db.Date, nullable=True),
+            db.Column('gender', db.String(255), nullable=True),
+            db.Column('phone', db.String(255), nullable=True),
+            db.Column('vaccinated', db.Boolean(), nullable=True)
         )
         
         # create all objects in the metadata object
@@ -63,15 +71,25 @@ class InitDB:
                 "id":row.id, 
                 "username": row.username,
                 "password": row.password,
-                "token": row.token
+                "token": row.token,
+                "email" : row.username,
+                "firstName" : '',
+                "lastName" : '',
+                "dateOfBirth" : '',
+                "gender" : '',
+                "phone" : '',
+                "vaccinated" : ''
             }
+            #print(data)
             new_id = self.insert_users(data)
+            print(new_id)
 
     def insert_users(self, data):
         insert_check = True
         check_query = db.select([self.users]).where(self.users.c.id == data["id"])
         check_result = self.engine.execute(check_query)
         check_result = ({'result': [dict(row) for row in check_result]})
+        print(check_result)
         for i in range(len(check_result['result'])):
              if data["id"] == (check_result["result"][i]['id']):
                 insert_check = False
@@ -82,7 +100,14 @@ class InitDB:
                 id = data["id"],
                 username = data["username"],
                 password = data["password"],
-                token = data["token"]
+                token = data["token"],
+                email = data['username']
+                #firstName = '',
+                #lastName = '',
+                #dateOfBirth = '',
+                #gender = '',
+                #phone = '',
+                #vaccinated = ''
             )
             try:
                 return self.engine.execute(query).inserted_primary_key 
@@ -173,6 +198,25 @@ class InitDB:
             new_id = self.insert_users(data)        
             return new_id
         except:
+            return -1
+
+    
+    def check_userid_exists(self, userid):
+        user_exists = False
+        check_query = db.select([self.users]).where(self.users.c.id == userid)
+        check_result = self.engine.execute(check_query).fetchall()
+        print(check_result)
+        if len(check_result) > 0:
+            user_exists = True
+        return user_exists
+    
+    def get_user_record(self, userid):
+        user_query = db.select([self.users]).where(self.users.c.id == userid)
+        user_result = self.engine.execute(user_query).fetchall()
+        #print(user_result)
+        if len(user_result) > 0:
+            return user_result
+        else:
             return -1
     
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method

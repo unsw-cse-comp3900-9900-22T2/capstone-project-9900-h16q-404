@@ -124,3 +124,40 @@ class Login(Resource):
             'resultStatus': 'SUCCESS',
             'message': "Passwords match! You are logged in!"
         }
+
+
+class User(Resource):
+    def get(self):
+        # parse request
+        parser = reqparse.RequestParser()
+        parser.add_argument('userId', type=int)
+        args = parser.parse_args()
+
+        request_userId = args['userId']
+
+        temp_db = InitDB()
+        user_exists = temp_db.check_userid_exists(request_userId)
+        
+        if (user_exists):
+            user_record = temp_db.get_user_record(request_userId)
+            result_dict = {}
+            result_dict['userId'] = user_record[0][0]
+            result_dict['email'] = user_record[0][4]
+            result_dict['firstname'] = user_record[0][5]
+            result_dict['lastname'] = user_record[0][6]
+            result_dict['dateOfBirth'] = user_record[0][7]
+            result_dict['gender'] = user_record[0][8]
+            result_dict['phone'] = user_record[0][9]
+            result_dict['vac'] = user_record[0][10]
+            
+            return {
+            'resultStatus': 'SUCCESS',
+            'message': result_dict
+            }
+
+        else:
+            return {"status": "Error", "message": "User does not exists"}
+        
+
+
+
