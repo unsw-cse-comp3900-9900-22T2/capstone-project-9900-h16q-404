@@ -219,6 +219,15 @@ class InitDB:
         else:
             return -1
     
+    def get_user_record_byname(self, username):
+        user_query = db.select([self.users]).where(self.users.c.username == username)
+        user_result = self.engine.execute(user_query).fetchall()
+        #print(user_result)
+        if len(user_result) > 0:
+            return user_result
+        else:
+            return -1
+    
     def check_usertoken_exists(self, usertoken):
         user_exists = False
         check_query = db.select([self.users]).where(self.users.c.token == usertoken)
