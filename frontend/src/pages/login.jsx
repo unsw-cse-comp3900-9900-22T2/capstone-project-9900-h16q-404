@@ -23,6 +23,7 @@ const LoginForm = () => {
         }
         else{
           localStorage.setItem('username', values.username);
+          localStorage.setItem('token', values.username);
           //console.log(localStorage.getItem('username'));
           message.success("Login Successful!",2)
             .then(navigate('/'));

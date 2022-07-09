@@ -1,6 +1,7 @@
-import React from 'react';
-import { Form, Input, Button, Layout } from 'antd'
+import React, { useEffect } from 'react';
+import { Form, Input, Button, Layout, message } from 'antd'
 import PageHeader from '../components/page_header';
+import { useNavigate } from 'react-router-dom';
 
 const { Content, Footer } = Layout;
 
@@ -14,6 +15,7 @@ const { Content, Footer } = Layout;
 
 const EditLoginCredentialForm = () => {
   const [form] = Form.useForm();
+
   const onFinishLoginCredential = (values) => {
     console.log(values);
     // REMEMBER: if successful, logout the current user!
@@ -91,7 +93,14 @@ const EditLoginCredentialForm = () => {
 }
 
 export default function EditLoginCredential () {
-
+  const navigate = useNavigate();
+  // check login status, if not login redirect to landing page
+  useEffect(()=>{
+    if (localStorage.getItem('token') === null) {
+      message.error("Please login first!", 2);
+      navigate("/");
+    }
+  }, [navigate])
   return (
     <>
       <Layout>

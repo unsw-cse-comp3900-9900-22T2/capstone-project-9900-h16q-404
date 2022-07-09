@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { UploadOutlined } from '@ant-design/icons';
-import { Form, Input, Button, Layout, DatePicker, Radio } from 'antd';
+import { Form, Input, Button, Layout, DatePicker, Radio, message } from 'antd';
 import PageHeader from "../components/page_header";
+import { useNavigate  } from "react-router-dom";
 
 const { Content, Footer } = Layout;
 
 export default function EditProfile () {
 
-  // login check: waiting for merge from Karl's branch and then decide the localStorage stuff
+  const navigate = useNavigate();
+  // check login status, if not login redirect to landing page
+  useEffect(()=>{
+    if (localStorage.getItem('token') === null) {
+      message.error("Please login first!", 2);
+      navigate("/");
+    }
+  }, [navigate])
 
   const onFinish = (values) => {
     console.log(values);
