@@ -11,8 +11,8 @@ import { useNavigate } from 'react-router-dom';
 export default function LogoutButton() {
   const navigate = useNavigate();
   const func = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('token');
+    // since we are storing more items in localStorage, using clear to remove all when logout.
+    localStorage.clear();
     // improve: give some UI feedback when user logout
     message.success("Logout Successful!", 3)
       // and use navigate function to switch to main page instead

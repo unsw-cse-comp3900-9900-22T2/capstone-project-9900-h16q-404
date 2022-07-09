@@ -4,35 +4,40 @@ import PageHeader from '../components/page_header';
 import "./user_profile.css"
 import { UserOutlined } from '@ant-design/icons';
 import { useSearchParams, Link } from "react-router-dom";
+import axios from "axios";
 
 const { Content, Footer } = Layout;
-
-const followButtonOnClick = () => {
-  console.log("Trying to follow...");
-}
-
-const unfollowButtonOnClick = () => {
-  console.log("Trying to unfollow...");
-}
 
 export default function UserProfilePage () {
 
   const [searchParams] = useSearchParams();
   const [isSelfProfle, setSelfProfile] = useState(false);
   const [followed, setFollow] = useState(false);
+  const [details, setDetails] = useState({});
   //const navigate = useNavigate();
+
+  const followButtonOnClick = () => {
+    console.log("Trying to follow...");
+    setFollow(true);
+  }
+  
+  const unfollowButtonOnClick = () => {
+    console.log("Trying to unfollow...");
+    setFollow(false);
+  }
+  
 
   useEffect(() => {
 
-    // THESE PARTS TO BE CHANGED! 
-
-    if(searchParams.get("self") === "true"){
+    // compare the userId in params with userId in localStorage
+    if(searchParams.get("userId") === localStorage.getItem('userId')){
       setSelfProfile(true);
-      //console.log("self")
     }
-    else if (searchParams.get("self") === "false") {
+    else if (searchParams.get("userId") !== localStorage.getItem('userId')) {
       setSelfProfile(false);
-      //console.log("others")
+      setFollow(false);
+      // get rid of followed or not in this stage
+      /*
       if(searchParams.get("followed") === "true"){
         //console.log("followed");
         setFollow(true);
@@ -41,16 +46,32 @@ export default function UserProfilePage () {
         //console.log("unfollowed");
         setFollow(false);
       }
+      */
     }
     else{
       message.error("Oops... Something went wrong")
     }
-    //console.log(searchParams.get("self"))
+
+    const requestURL = 'http://127.0.0.1:5000/user?userId=' + searchParams.get("userId")
+    axios.get(requestURL, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(res => res.data.message)
+      .then(data => {
+        //console.log(data);
+        setDetails(data);
+      });
   },[searchParams])
 
-  // WARNING
-  // All "self=" related searchParames MUST be changed to userID after backend is completed
-  // /user?userId=xxxx
+  let fullname = "";
+  if (details.firstname === null && details.lastname === null){
+    fullname="Anonymous user";
+  }
+  else{
+    fullname = details.firstname +" "+ details.lastname;
+  }
 
   return (
     <div>
@@ -60,7 +81,7 @@ export default function UserProfilePage () {
           <div className="basic-profile-zone">
             <div className="name-zone">
               <h1>
-                Anonymous User
+                {"Welcome, " + fullname}
                 { 
                   isSelfProfle ? 
                     <Link to='/edit_profile'>
@@ -69,11 +90,11 @@ export default function UserProfilePage () {
                   : 
                     <></>}
               </h1>
-              <h3>email</h3>
-              <h3>dob</h3>
-              <h3>Gender</h3>
-              <h3>Phone</h3>
-              <h3>COVID-19 Vaccination Proof</h3>
+              <h3>Email: {details.email}</h3>
+              <h3>Date of birth: {details.dateOfBirth === null? "Unknown" : details.dateOfBirth}</h3>
+              <h3>Gender: {details.gender === null? "Not Specified" : details.gender}</h3>
+              <h3>Phone: {details.phone === null? "Unknown" : details.phone} </h3>
+              <h3>COVID-19 Vaccination Proof: {details.vac === true? "Verified" : "Not verified"}</h3>
             </div>
             <div className="picture-zone">
               <Avatar size={128} icon={<UserOutlined />} style={{marginTop:'20px'}}/>
@@ -83,13 +104,9 @@ export default function UserProfilePage () {
                 : 
                   (
                     followed? 
-                      <Link to='/user?self=false&followed=false'>
-                        <Button size="small" style={{marginTop:'5px'}} onClick={unfollowButtonOnClick}>Unfollow</Button>
-                      </Link>
+                    <Button size="small" style={{marginTop:'5px'}} onClick={unfollowButtonOnClick}>Unfollow</Button>
                     :
-                      <Link to='/user?self=false&followed=true'>
-                        <Button size="small" style={{marginTop:'5px'}} onClick={followButtonOnClick}>Follow</Button>
-                      </Link>  
+                    <Button size="small" style={{marginTop:'5px'}} onClick={followButtonOnClick}>Follow</Button>
                   )
               }
             </div>

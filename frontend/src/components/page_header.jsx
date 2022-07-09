@@ -7,6 +7,7 @@ import UserButton from '../components/user_button';
 import LogoutButton from '../components/logout_button';
 import RegisterButton from '../components/register_button';
 import SearchInput from './search_input';
+import './page_header.css'
 
 const { Header } = Layout;
 
@@ -30,8 +31,8 @@ export default function PageHeader() {
           height: '100%',
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center',
-          justifyItems: 'center',
+          alignContent: 'center',
+          justifyContent: 'center',
           textAlign: 'center',
         }}
       >
@@ -45,7 +46,9 @@ export default function PageHeader() {
         <h1 style={{ color: 'white', fontSize: 'bold', marginRight: '15px' }}>
           LiveKnight
         </h1>
-        <SearchInput />
+        <div style={{marginTop:'15px'}}>
+          <SearchInput />
+        </div>
       </div>
 
       <div
@@ -60,13 +63,21 @@ export default function PageHeader() {
       >
         {username ? (
           <>
-            <UserButton />
-            <LogoutButton />
+            <div style={{margin:"0 5px"}}>
+              <UserButton  />
+            </div>
+            <div style={{margin:"0 5px"}}>
+              <LogoutButton  />
+            </div>
           </>
         ) : (
           <>
-            <LoginButton />
-            <RegisterButton />
+            <div style={{margin:"0 5px"}}>
+              <LoginButton  />
+            </div>
+            <div>
+              <RegisterButton style={{margin:"0 5px"}} />
+            </div>
           </>
         )}
       </div>

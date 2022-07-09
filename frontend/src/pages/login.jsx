@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const LoginForm = () => {
   let navigate = useNavigate();
   const onFinish = (values) => {
-    console.log('Input:', values);
+    // console.log('Input:', values);
     axios
       .post('http://127.0.0.1:5000/login', {
         username: values.username,
@@ -22,18 +22,19 @@ const LoginForm = () => {
           message.error(info);
         }
         else{
-          localStorage.setItem('username', values.username);
-          localStorage.setItem('token', values.username);
-          //console.log(localStorage.getItem('username'));
+          //console.log(JSON.stringify(res.data))
+          localStorage.setItem('username', info.email);
+          localStorage.setItem('token', info.email);
+          localStorage.setItem('userId', info.userId);
           message.success("Login Successful!",2)
             .then(navigate('/'));
         }
       }, []);
     }
 
-
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    //console.log('Failed:', errorInfo);
+    message.error(errorInfo)
   };
 
   return (

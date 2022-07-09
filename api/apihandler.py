@@ -147,7 +147,7 @@ class User(Resource):
     def get(self):
         # parse request
         parser = reqparse.RequestParser()
-        parser.add_argument('userId', type=int)
+        parser.add_argument('userId', type=int, location='args')
         args = parser.parse_args()
 
         request_userId = args['userId']
@@ -237,6 +237,13 @@ class UserChangePassword(Resource):
         
         if (user_exists == False):
             return {"status": "Error", "message": "User does not exists"}
+
+        # Yunran: Please include check old password here
+        old_password = request.json['oldpassword']
+        password_match = temp_db.check_passwords_match(user_token, old_password)
+        if password_match == False:
+            return {"status": "Error", "message": "Old password is not correct"}
+        # Yunran: TODO: Please include update email here; can update email only or password only
         
         user_details_params = {}
         user_details_params['password'] = request.json['newpassword']

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input, Button, Layout, message } from 'antd'
 import PageHeader from '../components/page_header';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const { Content, Footer } = Layout;
 
@@ -15,10 +16,36 @@ const { Content, Footer } = Layout;
 
 const EditLoginCredentialForm = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
+  // check login status, if not login redirect to landing page
+  useEffect(()=>{
+    if (localStorage.getItem('token') === null) {
+      message.error("Please login first!", 2);
+      navigate("/");
+    }
+  }, [navigate])
 
   const onFinishLoginCredential = (values) => {
-    console.log(values);
-    // REMEMBER: if successful, logout the current user!
+    const body = {
+      "oldpassword": values.oldPassword,
+      "newpassword": values.newPassword,
+      "token": localStorage.getItem("token")
+    }
+    axios.patch("http://127.0.0.1:5000/user/login_credentials", body)
+      .then(res => res.data)
+      .then(data => {
+        const resultStatus= data.resultStatus;
+        const info = data.message;
+        if (resultStatus === "SUCCESS"){
+          //if successful, logout the current user!
+          message.success(info);
+          localStorage.clear();
+          navigate("/");
+        }
+        else {
+          message.error(info);
+        }
+      })
   }
 
   return (
@@ -27,18 +54,6 @@ const EditLoginCredentialForm = () => {
       form={form}
       onFinish={onFinishLoginCredential}
     >
-      <Form.Item
-        label="E-mail"
-        name="email"
-        rules={[
-          {
-            type: 'email',
-            message: 'The input is not valid E-mail!',
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
       <Form.Item
         label="Old Password"
         name="oldPassword"
@@ -93,14 +108,7 @@ const EditLoginCredentialForm = () => {
 }
 
 export default function EditLoginCredential () {
-  const navigate = useNavigate();
-  // check login status, if not login redirect to landing page
-  useEffect(()=>{
-    if (localStorage.getItem('token') === null) {
-      message.error("Please login first!", 2);
-      navigate("/");
-    }
-  }, [navigate])
+  
   return (
     <>
       <Layout>

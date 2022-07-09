@@ -3,6 +3,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Form, Input, Button, Layout, DatePicker, Radio, message } from 'antd';
 import PageHeader from "../components/page_header";
 import { useNavigate  } from "react-router-dom";
+import axios from "axios";
 
 const { Content, Footer } = Layout;
 
@@ -18,12 +19,49 @@ export default function EditProfile () {
   }, [navigate])
 
   const onFinish = (values) => {
-    console.log(values);
+    const body = {
+      "firstName": values.firstname,
+      "lastName": values.lastname,
+      "phone": values.phone,
+      "token": localStorage.getItem('token')
+    }
+    axios.patch("http://127.0.0.1:5000/user/details", body)
+      .then(res => res.data)
+      .then(data => {
+        const resultStatus= data.resultStatus;
+        const info = data.message;
+        if (resultStatus === "SUCCESS") {
+          message.success(info);
+          const detailsLocation = '/user?userId='+localStorage.getItem('userId');
+          navigate(detailsLocation);
+        }
+        else{
+          message.error(info);
+        }
+      })
   };
 
   const onFinishSensitive = (values) => {
     values.dateOfBirth = values.dateOfBirth.format("YYYY-MM-DD");
-    console.log(values);
+    values = {
+      ...values,
+      'vaccinated': false,
+      'token': localStorage.getItem('token')
+    }
+    axios.patch('http://127.0.0.1:5000/user/sensitive_details', values)
+      .then(res => res.data)
+      .then(data => {
+        const resultStatus= data.resultStatus;
+        const info = data.message;
+        if (resultStatus === "SUCCESS") {
+          message.success(info);
+          const detailsLocation = '/user?userId='+localStorage.getItem('userId');
+          navigate(detailsLocation);
+        }
+        else{
+          message.error(info);
+        }
+      })
   }
 
   return (
@@ -79,10 +117,10 @@ export default function EditProfile () {
               label="Gender"
             >
               <Radio.Group buttonStyle="solid">
-                <Radio.Button value="male">Male</Radio.Button>
-                <Radio.Button value="female">Female</Radio.Button>
-                <Radio.Button value="lgbtqi+">LGBTQI+</Radio.Button>
-                <Radio.Button value="not-specified">Not Specified</Radio.Button>
+                <Radio.Button value="Male">Male</Radio.Button>
+                <Radio.Button value="Female">Female</Radio.Button>
+                <Radio.Button value="LGBTQI+">LGBTQI+</Radio.Button>
+                <Radio.Button value="Not Specified">Not Specified</Radio.Button>
               </Radio.Group>
             </Form.Item>
             <Form.Item>
