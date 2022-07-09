@@ -7,7 +7,6 @@ import UserButton from '../components/user_button';
 import LogoutButton from '../components/logout_button';
 import RegisterButton from '../components/register_button';
 import SearchInput from './search_input';
-import './page_header.css'
 
 const { Header } = Layout;
 
