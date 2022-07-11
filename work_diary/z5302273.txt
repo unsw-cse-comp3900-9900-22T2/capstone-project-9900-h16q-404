@@ -38,3 +38,8 @@ I discuss the connection between the backend and frontend with the group and dec
 week 5
 I wrote the function of login (send request to backend and show the message based on the response) and I had a further look into the tokens.
 I also worked out two topbar buttons.
+Think about the APIs of create and edit events.
+
+week 6
+I worked out the frontends of create events page and edit events page (without add ticketing).
+We don't have lab/tut this week dut to flex week so we meet online. I introduced what I have worked to others. I tested the frontend with Postman.
