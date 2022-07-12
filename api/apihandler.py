@@ -174,8 +174,8 @@ class Event(Resource):
     def delete(self):
         # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
-        parser.add_argument('event_name', type=str)
-        parser.add_argument('event_id', type=int)
+        parser.add_argument('event_name', type=str, location="args")
+        parser.add_argument('event_id', type=int, location="args")
         args = parser.parse_args()
 
         # assign variables
@@ -238,9 +238,9 @@ class Event(Resource):
         try:
             new_id, insert_data = temp_db.create_event(token, event_details)
             insert_data['start_date'] = str(insert_data['start_date'])
-            insert_data['start_time'] = str(insert_data['start_time'])
+            insert_data['start_time'] = str(insert_data['start_time'])[:-3]
             insert_data['end_date'] = str(insert_data['end_date'])
-            insert_data['end_time'] = str(insert_data['end_time'])
+            insert_data['end_time'] = str(insert_data['end_time'])[:-3]
             return {
                 'resultStatus': 'SUCCESS',
                 'new_event_id': new_id,

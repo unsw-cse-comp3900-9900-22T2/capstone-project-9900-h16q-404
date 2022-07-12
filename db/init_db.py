@@ -177,9 +177,9 @@ class InitDB:
             result = ({'result': [dict(row) for row in result]})
             for i in range(len(result['result'])):
                 result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])[:-3]
                 result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])[:-3]
             return result["result"]
         except IntegrityError as e:
             return (400, "could not find event")
@@ -234,9 +234,9 @@ class InitDB:
         insert_data['adult_only'] = event_details['cond_adult']
         insert_data['vax_only'] = event_details['cond_vax'] 
         insert_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
-        insert_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M:%S").time()
+        insert_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
         insert_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
-        insert_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M:%S").time()
+        insert_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
         insert_data['id'] = new_id
 
         return self.insert_events(insert_data), insert_data
