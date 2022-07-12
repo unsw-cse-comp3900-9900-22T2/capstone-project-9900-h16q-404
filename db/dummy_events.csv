@@ -1,6 +1,6 @@
-id,event_name,host,type,start_date,start_time,end_date,end_time,deleted,location,adult_only,vax_only,description
-1,Gang of Youths,5,Concert,08-07-2022,18:00,08-07-2022,21:00,false,Hordern Pavillion,true,true,A late night musical event
-2,Diwali,4,Festival,18-02-2022,12:00,19-02-2022,20:00,false,India,false,false,A traditional Indian festival
-3,Christmas,3,Holiday,25-12-2022,09:00,25-12-2022,23:59,false,The Beach,false,false,A christian holiday
-4,Idul Fitri,2,Festival,08-08-2022,18:00,10-08-2022,21:00,false,Indonesia,true,false,A muslim holiday
-5,Chinese New Year,1,Holiday,08-03-2022,08:00,08-03-2022,23:59,false,China,false,true,A chinese holiday
+id,event_name,host,host_username,type,start_date,start_time,end_date,end_time,deleted,location,adult_only,vax_only,description
+1,Gang of Youths,1,ben_mccoy@gmail.com,Concert,08-07-2022,18:00,08-07-2022,21:00,false,Hordern Pavillion,true,true,A late night musical event
+2,Diwali,1,ben_mccoy@gmail.com,Festival,18-02-2022,12:00,19-02-2022,20:00,false,India,false,false,A traditional Indian festival
+3,Christmas,1,ben_mccoy@gmail.com,Holiday,25-12-2022,09:00,25-12-2022,23:59,false,The Beach,false,false,A christian holiday
+4,Idul Fitri,2,john_wayne@hotmail.com,Festival,08-08-2022,18:00,10-08-2022,21:00,false,Indonesia,true,false,A muslim holiday
+5,Chinese New Year,2,john_wayne@hotmail.com,Holiday,08-03-2022,08:00,08-03-2022,23:59,false,China,false,true,A chinese holiday

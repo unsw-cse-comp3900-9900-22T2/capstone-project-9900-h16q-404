@@ -235,6 +235,21 @@ class Event(Resource):
         # create db engine
         temp_db = InitDB()
 
-        print(event_details)
-        temp_db.create_event(token, event_details)
+        try:
+            new_id, insert_data = temp_db.create_event(token, event_details)
+            insert_data['start_date'] = str(insert_data['start_date'])
+            insert_data['start_time'] = str(insert_data['start_time'])
+            insert_data['end_date'] = str(insert_data['end_date'])
+            insert_data['end_time'] = str(insert_data['end_time'])
+            return {
+                'resultStatus': 'SUCCESS',
+                'new_event_id': new_id,
+                'event_details': insert_data
+            }
+        except:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'failed to insert new event into events table'
+            }
+
 

@@ -33,6 +33,7 @@ class InitDB:
             db.Column('id', db.Integer(), primary_key=True),
             db.Column('event_name', db.String(255), nullable=False),
             db.Column('host', db.Integer(), nullable=True),
+            db.Column('host_username', db.String(255), nullable=True),
             db.Column('type', db.String(255), nullable=True),
             db.Column('start_date', db.Date, nullable=True),
             db.Column('start_time', db.Time, nullable=True),
@@ -66,6 +67,7 @@ class InitDB:
                 "id":row.id, 
                 "event_name": row.event_name,
                 "host": row.host,
+                "host_username": row.host_username,
                 "type": row.type,
                 "start_date": datetime.datetime.strptime(row.start_date, "%d-%m-%Y").date(),
                 "start_time": datetime.datetime.strptime(row.start_time, "%H:%M").time(),
@@ -136,6 +138,7 @@ class InitDB:
                 id = data["id"],
                 event_name = data["event_name"],
                 host = data["host"],
+                host_username = data['host_username'],
                 type = data["type"],
                 start_date = data["start_date"],
                 start_time = data["start_time"],
@@ -206,10 +209,37 @@ class InitDB:
             return ("Error finding event " + str(event_id) + " in events table")
             
     def create_event(self, token, event_details):
-        print(token)
-        print(event_details)
-        
-        pass
+        # TODO:
+        # 1. Flatten event details - DONE
+        # 2. Get new Event ID - DONE
+        # 3. Ensure all variables have the right formatting - DONE
+        # 4. Get the host ID from the user table - DONE
+        # 5. Insert Event details into table - DONE
+        # 6. Return Success or Error and new event 
+
+        event_details = self.flatten_details(event_details)
+        new_id = self.get_new_event_id()
+
+        host = self.get_host_id_from_token(token)
+        host_username = self.get_host_username_from_token(token)
+
+        insert_data = {}
+        insert_data['event_name'] = event_details['title']
+        insert_data['type'] = event_details['type']
+        insert_data['location'] = event_details['location']
+        insert_data['host'] = host
+        insert_data['host_username'] = host_username
+        insert_data['deleted'] = False 
+        insert_data['description'] = event_details['desc']
+        insert_data['adult_only'] = event_details['cond_adult']
+        insert_data['vax_only'] = event_details['cond_vax'] 
+        insert_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
+        insert_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M:%S").time()
+        insert_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
+        insert_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M:%S").time()
+        insert_data['id'] = new_id
+
+        return self.insert_events(insert_data), insert_data
 
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
@@ -218,7 +248,10 @@ class InitDB:
             result = self.engine.execute(query)
             result = ({'result': [dict(row) for row in result]})
             for i in range(len(result['result'])):
-                result["result"][i]['event_date'] = str(result["result"][i]['event_date'])
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
             return result["result"]
         except IntegrityError as e:
             return (400, "Could not select from table")
@@ -279,7 +312,35 @@ class InitDB:
             return new_id
         except:
             return -1
-    
+
+    def get_new_event_id(self):
+        # returns the highest id in the user table plus 1
+        query_max_id = db.select([db.func.max(self.events.columns.id)])
+        max_id = self.engine.execute(query_max_id).scalar()
+        return max_id + 1
+
+    def flatten_details(self, data):
+        return pd.json_normalize(data, sep='_').to_dict(orient='records')[0]
+
+    def get_host_id_from_token(self, token):
+        check_query = db.select([self.users]).where(self.users.c.token == token)
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        list_result = check_result['result']
+        if len(list_result) > 1:
+            return "Error - more than one user with this token"
+        else:
+            return list_result[0]['id']
+
+    def get_host_username_from_token(self, token):
+        check_query = db.select([self.users]).where(self.users.c.token == token)
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        list_result = check_result['result']
+        if len(list_result) > 1:
+            return "Error - more than one user with this token"
+        else:
+            return list_result[0]['username']
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
     db = InitDB()
