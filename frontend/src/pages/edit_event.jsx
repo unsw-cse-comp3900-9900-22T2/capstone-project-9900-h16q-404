@@ -62,7 +62,7 @@ export default function EditEvent() {
       setToken('None');
     }
     axios
-      .get(`https://48c72885-2eec-4a6a-aa5c-c752ef2afe8e.mock.pstmn.io/event`, {
+      .get(`https://localhost:5000/event`, {
         params: {
           eventid: eventid,
         },
