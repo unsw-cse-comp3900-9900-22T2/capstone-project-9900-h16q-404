@@ -270,9 +270,6 @@ class InitDB:
         except:
             return False
 
-        print(result)
-        return result
-
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
         query = db.select([self.events])

@@ -26,8 +26,6 @@ class Register(Resource):
         parser.add_argument('password', type=str)
         parser.add_argument('confirm', type=str)
         args = parser.parse_args()
-        
-        print(args) # for debugging
 
         # get email and password
         request_email = args['email']
@@ -63,7 +61,7 @@ class Test(Resource):
         parser.add_argument("type", type=str)
         parser.add_argument("message", type=str)
         args = parser.parse_args()
-        print(args)
+
         # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
         request_type = args['type']
         request_json = args['message']
@@ -99,8 +97,6 @@ class Login(Resource):
         parser.add_argument('username', type=str)
         parser.add_argument('password', type=str)
         args = parser.parse_args()
-        
-        print(args) # for debugging
 
         # get email and password
         request_username = args['username']
@@ -176,15 +172,13 @@ class Event(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str)
         parser.add_argument('detail', type=dict)
-        parser.add_argument('event_id', type=int)
+        parser.add_argument('event_id', type=str)
         args = parser.parse_args()
 
         # assign variables
         token = args['token']
         event_details = args['detail']
         event_id = args['event_id']
-
-        print(token, event_details, event_id)
 
         # create db engine
         temp_db = InitDB()
