@@ -7,6 +7,7 @@ import RegisterPage from './pages/register';
 import UserProfilePage from './pages/user_profile';
 import EditProfile from './pages/edit_profile';
 import EditLoginCredential from './pages/edit_login_credential';
+import EventPage from './pages/event_page';
 
 function App() {
   return (
