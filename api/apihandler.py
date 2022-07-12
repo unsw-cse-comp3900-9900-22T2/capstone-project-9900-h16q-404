@@ -250,7 +250,7 @@ class UserChangePassword(Resource):
         
         return {
             'resultStatus': 'SUCCESS',
-            message': "User Password Successfully Reset!
+            'message': "User Password Successfully Reset!"
         }
 
 class Event(Resource):
