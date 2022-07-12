@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Button } from 'antd';
+import {
+  Layout,
+  Button,
+  Input,
+  Checkbox,
+  DatePicker,
+  TimePicker,
+  Space,
+  message
+} from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
 import moment from 'moment';
-import { Input, Checkbox, DatePicker, TimePicker } from 'antd';
 import './create_event.css';
 import { InputComp } from './create_event';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -40,7 +48,7 @@ export default function EditEvent() {
   const [image, setImage] = useState();
 
   const dateFormat = 'YYYY-MM-DD';
-  const timeFormat = 'HH:mm:ss';
+  const timeFormat = 'HH:mm';
 
   const [adultEvent, setAdult] = useState(false);
   const [vaxReq, setVax] = useState(false);
@@ -54,7 +62,11 @@ export default function EditEvent() {
       setToken('None');
     }
     axios
-      .get(`https://48c72885-2eec-4a6a-aa5c-c752ef2afe8e.mock.pstmn.io/event`)
+      .get(`https://48c72885-2eec-4a6a-aa5c-c752ef2afe8e.mock.pstmn.io/event`, {
+        params: {
+          eventid: eventid,
+        },
+      })
       .then((res) => {
         console.log(res.data);
         let data = res.data.detail;
@@ -75,14 +87,52 @@ export default function EditEvent() {
     setDesc('test');
     setTitle('test');
     setStartDate('2020-01-01');
-    setStartTime('01:01:01');
+    setStartTime('01:01');
     setEndDate('2021-01-01');
-    setEndTime('02:02:02');
+    setEndTime('02:02');
     setAdult(true);
     setVax(true);
   };
 
+  const checkform = () => {
+    if (title === '' || title === undefined) {
+      message.warning('Please input event title');
+      return false;
+    }
+
+    if (type === '' || type === undefined) {
+      message.warning('Please select event type');
+      return false;
+    }
+
+    if (startDate === '' || startDate === undefined) {
+      message.warning('Please select start time of the event');
+      return false;
+    }
+
+    if (endDate === '' || endDate === undefined) {
+      message.warning('Please select end time of the event');
+      return false;
+    }
+
+    if (location === '' || location === undefined) {
+      message.warning('Please input event location');
+      return false;
+    }
+
+    console.log(desc);
+    if (desc === "" || desc === undefined) {
+      message.warning('Please input event description');
+      return false;
+    }
+    return true;
+  };
+
   const confirmEdit = () => {
+    if (!checkform()) {
+      return;
+    }
+    console.log(title);
     let condition = {
       adult: adultEvent,
       vax: vaxReq,
@@ -149,38 +199,34 @@ export default function EditEvent() {
               placeholder={'Show'}
               setter={setType}
             />
-            <div>
+            <Space>
               Start data and time
               <DatePicker
-                placeholder={'2023-01-22'}
-                value={moment(startDate) || null}
+                showTime={{ format: 'HH:mm' }}
+                format='YYYY-MM-DD HH:mm'
+                value={moment(startDate + startTime, 'YYYY-MM-DD HH:mm')}
+                placeholder={'2023-01-22 01:00'}
                 onChange={(date, dateString) => {
+                  let datearr = dateString.split(' ');
                   setStartDate(dateString);
+                  setStartTime(datearr[1]);
                 }}
               />
-              <TimePicker
-                value={moment(startTime, timeFormat) || null}
-                onChange={(time, timeString) => {
-                  setStartTime(timeString);
-                }}
-              />
-            </div>
-            <div>
-              End date and time
+            </Space>
+            <Space>
+              Start data and time
               <DatePicker
-                placeholder={'2023-01-25'}
-                value={moment(endDate) || null}
+                showTime={{ format: 'HH:mm' }}
+                format='YYYY-MM-DD HH:mm'
+                value={moment(endDate + endTime, 'YYYY-MM-DD HH:mm')}
+                placeholder={'2023-01-22 01:00'}
                 onChange={(date, dateString) => {
+                  let datearr = dateString.split(' ');
                   setEndDate(dateString);
+                  setEndTime(datearr[1]);
                 }}
               />
-              <TimePicker
-                value={moment(endTime, timeFormat) || null}
-                onChange={(time, timeString) => {
-                  setEndTime(timeString);
-                }}
-              />
-            </div>
+            </Space>
             <InputComp
               addon={'Location'}
               defValue={''}

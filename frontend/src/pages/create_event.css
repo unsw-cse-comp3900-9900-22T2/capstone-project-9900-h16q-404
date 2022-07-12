@@ -16,3 +16,8 @@
   margin-left: 12px;
   margin-right: 12px;
 }
+
+.time {
+  flex-direction: column;
+  display: flex;
+}

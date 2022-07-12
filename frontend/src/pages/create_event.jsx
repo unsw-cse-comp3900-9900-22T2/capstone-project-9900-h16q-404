@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Button } from 'antd';
+import {
+  Layout,
+  Button,
+  Input,
+  Checkbox,
+  DatePicker,
+  TimePicker,
+  Space,
+  message,
+  Form,
+} from 'antd';
 import PageHeader from '../components/page_header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
-import { Input, Checkbox, DatePicker, TimePicker } from 'antd';
+import {} from 'antd';
 
 import './create_event.css';
 import PropTypes from 'prop-types';
@@ -35,8 +45,11 @@ export default function CreateEvent() {
   const [desc, setDesc] = useState();
   const [image, setImage] = useState();
 
+  const [ticket, setTicket] = useState();
+  const [classnumber, setclassnumber] = useState();
+
   const dateFormat = 'YYYY-MM-DD';
-  const timeFormat = 'HH:mm:ss';
+  const timeFormat = 'HH:mm';
 
   const [adultEvent, setAdult] = useState(false);
   const [vaxReq, setVax] = useState(false);
@@ -49,11 +62,39 @@ export default function CreateEvent() {
     } else {
       setToken('None');
     }
-    test();
-  }, [setToken, setDesc]);
+  }, [setToken]);
 
-  const test = () => {
-    setDesc('test');
+  const checkform = () => {
+    if (title === '' || title === undefined) {
+      message.warning('Please input event title');
+      return false;
+    }
+
+    if (type === '' || type === undefined) {
+      message.warning('Please select event type');
+      return false;
+    }
+
+    if (startDate === '' || startDate === undefined) {
+      message.warning('Please select start time of the event');
+      return false;
+    }
+
+    if (endDate === '' || endDate === undefined) {
+      message.warning('Please select end time of the event');
+      return false;
+    }
+
+    if (location === '' || location === undefined) {
+      message.warning('Please input event location');
+      return false;
+    }
+
+    if (desc === '' || desc === undefined) {
+      message.warning('Please input event description');
+      return false;
+    }
+    return true;
   };
 
   const back = () => {
@@ -65,6 +106,9 @@ export default function CreateEvent() {
   };
 
   const create = () => {
+    if (!checkform()) {
+      return;
+    }
     let condition = {
       adult: adultEvent,
       vax: vaxReq,
@@ -92,7 +136,7 @@ export default function CreateEvent() {
       .then((res) => {
         console.log(res.data);
         let status = res.data.status;
-        let id = res.data.id;
+        let id = res.data.new_event_id[0];
         if (status !== 'Error') {
           console.log(id);
         }
@@ -122,34 +166,34 @@ export default function CreateEvent() {
               placeholder={'Show'}
               setter={setType}
             />
-            <div>
+            <Space>
               Start data and time
               <DatePicker
-                placeholder={'2023-01-22'}
+                className={'InputComp'}
+                showTime={{ format: 'HH:mm' }}
+                format='YYYY-MM-DD HH:mm'
+                placeholder={'2023-01-22 01:00'}
                 onChange={(date, dateString) => {
-                  setStartDate(dateString);
+                  let datearr = dateString.split(' ');
+                  setStartDate(datearr[0]);
+                  setStartTime(datearr[1]);
                 }}
               />
-              <TimePicker
-                onChange={(time, timeString) => {
-                  setStartTime(timeString);
-                }}
-              />
-            </div>
-            <div>
+            </Space>
+            <Space>
               End date and time
               <DatePicker
-                placeholder={'2023-01-25'}
+                className={'InputComp'}
+                showTime={{ format: 'HH:mm' }}
+                format='YYYY-MM-DD HH:mm'
+                placeholder={'2023-01-25 01:00'}
                 onChange={(date, dateString) => {
-                  setEndDate(dateString);
+                  let datearr = dateString.split(' ');
+                  setEndDate(datearr[0]);
+                  setEndTime(datearr[1]);
                 }}
               />
-              <TimePicker
-                onChange={(time, timeString) => {
-                  setEndTime(timeString);
-                }}
-              />
-            </div>
+            </Space>
             <InputComp
               addon={'Location'}
               defValue={''}
@@ -187,13 +231,16 @@ export default function CreateEvent() {
                 setDesc(e.target.value);
               }}
             />
+
             <div className='ButtonSet'>
-              <Button onClick={create} type='primary' className='Sendbutton'>
-                Send
-              </Button>
-              <Button onClick={back} className='Sendbutton'>
-                Back
-              </Button>
+              <Space>
+                <Button onClick={create} type='primary' className='Sendbutton'>
+                  Send
+                </Button>
+                <Button onClick={back} className='Sendbutton'>
+                  Back
+                </Button>
+              </Space>
             </div>
           </div>
         </Content>
