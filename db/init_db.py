@@ -150,6 +150,7 @@ class InitDB:
         # But first the function checks if a row with the same ID aleady exists
         
         # check for row with existing primary key
+
         insert_check = True
         check_query = db.select([self.events]).where(self.events.c.id == data["id"])
         check_result = self.engine.execute(check_query)
@@ -242,7 +243,6 @@ class InitDB:
         # 4. Get the host ID from the user table - DONE
         # 5. Insert Event details into table - DONE
         # 6. Return Success or Error and new event 
-
         event_details = self.flatten_details(event_details)
         new_id = self.get_new_event_id()
 
@@ -391,7 +391,8 @@ class InitDB:
             return self.engine.execute(update_query)
         except:
             return -1
-        def get_new_event_id(self):
+
+    def get_new_event_id(self):
         # returns the highest id in the user table plus 1
         query_max_id = db.select([db.func.max(self.events.columns.id)])
         max_id = self.engine.execute(query_max_id).scalar()

@@ -113,7 +113,7 @@ export default function CreateEvent() {
       adult: adultEvent,
       vax: vaxReq,
     };
-    let requestbody = JSON.stringify({
+    let requestbody = {
       token: token,
       detail: {
         title: title,
@@ -126,21 +126,18 @@ export default function CreateEvent() {
         cond: condition,
         desc: desc,
       },
-    });
+    };
     console.log(requestbody);
-    axios
-      .post(
-        'https://localhost:5000/create',
-        requestbody
-      )
-      .then((res) => {
-        console.log(res.data);
-        let status = res.data.status;
-        let id = res.data.new_event_id[0];
-        if (status !== 'Error') {
-          console.log(id);
-        }
-      });
+    axios.post('http://127.0.0.1:5000/create', requestbody).then((res) => {
+      console.log(res.data);
+      let status = res.data.status;
+      let id = res.data.new_event_id[0];
+      if (status !== 'Error') {
+        console.log(id);
+        message.success(`Successfully create event ${title} with id ${id}`);
+        navigate(`/event?event_id=${id}`);
+      }
+    });
   };
 
   return (

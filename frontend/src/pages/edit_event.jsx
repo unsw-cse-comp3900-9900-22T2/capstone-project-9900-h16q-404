@@ -62,24 +62,24 @@ export default function EditEvent() {
       setToken('None');
     }
     axios
-      .get(`https://localhost:5000/event`, {
+      .get(`http://127.0.0.1:5000/event`, {
         params: {
-          eventid: eventid,
+          event_id: eventid,
         },
       })
       .then((res) => {
         console.log(res.data);
-        let data = res.data.detail;
-        setTitle(data.title);
+        let data = res.data.event_details[0];
+        setTitle(data.event_name);
         setType(data.type);
-        setStartDate(data.startdate);
-        setStartTime(data.starttime);
-        setEndDate(data.enddate);
-        setEndTime(data.enddate);
+        setStartDate(data.start_date);
+        setStartTime(data.start_time);
+        setEndDate(data.end_date);
+        setEndTime(data.end_date);
         setLocation(data.location);
         setAdult(true);
         setVax(true);
-        setDesc(data.desc);
+        setDesc(data.description);
       }, []);
   }, []);
 

@@ -365,6 +365,9 @@ class Create(Resource):
         token = args['token']
         event_details = args['detail']
 
+        print(token)
+        print(event_details)
+
         # create db engine
         temp_db = InitDB()
 

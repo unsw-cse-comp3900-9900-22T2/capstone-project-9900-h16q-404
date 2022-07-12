@@ -37,14 +37,9 @@ api.add_resource(Test, '/test')
 api.add_resource(Register, '/register')
 api.add_resource(Events, '/events')
 api.add_resource(Login, '/login')
-<<<<<<< HEAD
 api.add_resource(User, '/user', endpoint='user')
 api.add_resource(UserDetails, '/user/details')
 api.add_resource(UserSensitiveDetails, '/user/sensitive_details')
 api.add_resource(UserChangePassword, '/user/login_credentials')
 api.add_resource(Event, '/event')
 api.add_resource(Create, '/create')
-=======
-api.add_resource(Event, '/event')
-api.add_resource(Create, '/create')
->>>>>>> VY9900-37_backend_create_event
