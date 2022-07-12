@@ -342,7 +342,6 @@ class InitDB:
         except:
             return -1
 
-<<<<<<< HEAD
     
     def check_userid_exists(self, userid):
         user_exists = False
@@ -395,10 +394,7 @@ class InitDB:
             return self.engine.execute(update_query)
         except:
             return -1
-    
-    
-=======
-    def get_new_event_id(self):
+        def get_new_event_id(self):
         # returns the highest id in the user table plus 1
         query_max_id = db.select([db.func.max(self.events.columns.id)])
         max_id = self.engine.execute(query_max_id).scalar()
@@ -426,7 +422,7 @@ class InitDB:
             return "Error - more than one user with this token"
         else:
             return list_result[0]['username']
->>>>>>> origin/VY9900-37_backend_create_event
+    
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
     db = InitDB()
