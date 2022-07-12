@@ -221,6 +221,7 @@ class Event(Resource):
                 'message': result
             }    
 
+class Create(Resource):
     def post(self):
         # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
