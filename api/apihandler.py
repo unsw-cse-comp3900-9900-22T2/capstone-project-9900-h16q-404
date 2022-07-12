@@ -303,6 +303,36 @@ class Event(Resource):
             'event_details': result
         }
 
+    def put(self):
+        # parse the event_id and/or event_name arguments
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str)
+        parser.add_argument('detail', type=dict)
+        parser.add_argument('event_id', type=int)
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+        event_details = args['detail']
+        event_id = args['event_id']
+
+        print(token, event_details, event_id)
+
+        # create db engine
+        temp_db = InitDB()
+        result = temp_db.update_event(event_id, event_details, token)
+        if result == True:
+            return {
+            'resultStatus': 'SUCCESS',
+            }
+        else:
+            return {
+            'resultStatus': 'ERROR',
+            } 
+
+
+
+
     def delete(self):
         # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
