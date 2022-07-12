@@ -1,7 +1,25 @@
 import React from 'react';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input, message, Layout } from 'antd';
+import PageHeader from '../components/page_header';
+import logo from '../static/picacg.jpeg';
 import axios from 'axios';
+import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom';
+
+const LoginBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  padding-top: 20px;
+  border: 1px solid black;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
+`
+
+const { Content, Footer } = Layout;
 
 const LoginForm = () => {
   let navigate = useNavigate();
@@ -38,60 +56,73 @@ const LoginForm = () => {
   };
 
   return (
-    <Form
-      name='basic'
-      labelCol={{
-        span: 8,
-      }}
-      wrapperCol={{
-        span: 16,
-      }}
-      initialValues={{
-        remember: true,
-      }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete='off'
-    >
-      <Form.Item
-        label='E-mail'
-        name='username'
-        rules={[
-          {
-            required: true,
-            message: 'Please input your username!',
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
+    <>
+      <Layout>
+        <PageHeader />
+        <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64, display: 'flex', alignItems:'center', flexDirection:'column' }}>
+          <LoginBox>
+            <img src={logo} alt="logo" style={{width:'100px', height:'100px', marginBottom:'20px'}}></img>
+            <Form
+              name='basic'
+              labelCol={{
+                span: 8,
+              }}
+              wrapperCol={{
+                span: 16,
+              }}
+              initialValues={{
+                remember: true,
+              }}
+              onFinish={onFinish}
+              onFinishFailed={onFinishFailed}
+              autoComplete='off'
+            >
+              <Form.Item
+                label='E-mail'
+                name='username'
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your username!',
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
 
-      <Form.Item
-        label='Password'
-        name='password'
-        rules={[
-          {
-            required: true,
-            message: 'Please input your password!',
-          },
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
+              <Form.Item
+                label='Password'
+                name='password'
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your password!',
+                  },
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
 
-      <Form.Item
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-        <Button type='primary' htmlType='submit'>
-          Login
-        </Button>
-        <br />
-        Don't have an account? <a href='register'>Click here to Register!</a>
-      </Form.Item>
-    </Form>
+              <Form.Item
+                wrapperCol={{
+                  offset: 8,
+                  span: 16,
+                }}
+              >
+                <Button type='primary' htmlType='submit'>
+                  Login
+                </Button>
+                <br />
+                Don't have an account? <br /> <a href='register'>Click here to Register!</a>
+              </Form.Item>
+            </Form>
+          </LoginBox>
+        </Content>
+        <Footer style={{textAlign:'center'}}>
+          9900-H16Q-404
+        </Footer>
+      </Layout>
+    </>   
   );
 };
 

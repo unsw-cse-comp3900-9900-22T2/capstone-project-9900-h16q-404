@@ -81,14 +81,7 @@ export default function UserProfilePage () {
           <div className="basic-profile-zone">
             <div className="name-zone">
               <h1>
-                {"Welcome, " + fullname}
-                { 
-                  isSelfProfle ? 
-                    <Link to='/edit_profile'>
-                      <Button>Edit Profile</Button>
-                    </Link>
-                  : 
-                    <></>}
+                { fullname }
               </h1>
               <h3>Email: {details.email}</h3>
               <h3>Date of birth: {details.dateOfBirth === null? "Unknown" : details.dateOfBirth}</h3>
