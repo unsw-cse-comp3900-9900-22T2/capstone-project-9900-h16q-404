@@ -297,9 +297,6 @@ class InitDB:
         except:
             return False
 
-        print(result)
-        return result
-
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
         query = db.select([self.events])
@@ -371,7 +368,10 @@ class InitDB:
             return new_id
         except:
             return -1
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
     
     def check_userid_exists(self, userid):
         user_exists = False
@@ -424,7 +424,11 @@ class InitDB:
             return self.engine.execute(update_query)
         except:
             return -1
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> master
     def get_new_event_id(self):
         # returns the highest id in the user table plus 1
         query_max_id = db.select([db.func.max(self.events.columns.id)])

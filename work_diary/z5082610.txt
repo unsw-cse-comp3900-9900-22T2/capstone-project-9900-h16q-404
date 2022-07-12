@@ -39,3 +39,11 @@ Planned Sprint 2 works
 I am assigned the frontend of profile page and update profile page.
 progressive demo 1 completed.
 Started the sprint 2.
+
+Week 6
+Sprint 2 ongoing.
+I designed the front-end part user profile page and edit user profile page.
+On Sunday they work good.
+Sprint 3 starts with most of Sprint 2 works on continue.
+I am also assigned the search bar functions.
+Still need to research on file uploading functions.

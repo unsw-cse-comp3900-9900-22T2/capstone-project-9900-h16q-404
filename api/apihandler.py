@@ -27,8 +27,6 @@ class Register(Resource):
         parser.add_argument('password', type=str)
         parser.add_argument('confirm', type=str)
         args = parser.parse_args()
-        
-        print(args) # for debugging
 
         # get email and password
         request_email = args['email']
@@ -64,7 +62,7 @@ class Test(Resource):
         parser.add_argument("type", type=str)
         parser.add_argument("message", type=str)
         args = parser.parse_args()
-        print(args)
+
         # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
         request_type = args['type']
         request_json = args['message']
@@ -100,8 +98,6 @@ class Login(Resource):
         parser.add_argument('username', type=str)
         parser.add_argument('password', type=str)
         args = parser.parse_args()
-        
-        print(args) # for debugging
 
         # get email and password
         request_username = args['username']
@@ -254,7 +250,7 @@ class UserChangePassword(Resource):
         
         return {
             'resultStatus': 'SUCCESS',
-            'message': "User Password Successfullu Reset!"
+            'message': "User Password Successfully Reset!
         }
 
 class Event(Resource):
@@ -315,8 +311,6 @@ class Event(Resource):
         token = args['token']
         event_details = args['detail']
         event_id = args['event_id']
-
-        print(token, event_details, event_id)
 
         # create db engine
         temp_db = InitDB()
