@@ -1,35 +1,40 @@
 import React from 'react';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   let navigate = useNavigate();
   const onFinish = (values) => {
-    console.log('Input:', values);
+    // console.log('Input:', values);
     axios
       .post('http://127.0.0.1:5000/login', {
         username: values.username,
         password: values.password,
       })
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         let status = res.data.status;
-        let message = res.data.message;
+        // changed var name to use message function
+        let info = res.data.message;
         if (status==='Error') {
-          alert(message);
+          // change alert to antd message
+          message.error(info);
         }
         else{
-          localStorage.setItem('username', values.username);
-          console.log(localStorage.getItem('username'));
-          navigate('/');
+          //console.log(JSON.stringify(res.data))
+          localStorage.setItem('username', info.email);
+          localStorage.setItem('token', info.email);
+          localStorage.setItem('userId', info.userId);
+          message.success("Login Successful!",2)
+            .then(navigate('/'));
         }
       }, []);
     }
 
-
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    //console.log('Failed:', errorInfo);
+    message.error(errorInfo)
   };
 
   return (
@@ -49,7 +54,7 @@ const LoginForm = () => {
       autoComplete='off'
     >
       <Form.Item
-        label='Username'
+        label='E-mail'
         name='username'
         rules={[
           {
