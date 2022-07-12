@@ -289,6 +289,7 @@ class InitDB:
         update_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
         update_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
         update_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
+
         
         try:
             update_query = self.events.update().values(update_data).where(self.events.c.id == event_id)
@@ -368,10 +369,6 @@ class InitDB:
             return new_id
         except:
             return -1
-<<<<<<< HEAD
-
-=======
->>>>>>> master
     
     def check_userid_exists(self, userid):
         user_exists = False
@@ -424,11 +421,7 @@ class InitDB:
             return self.engine.execute(update_query)
         except:
             return -1
-<<<<<<< HEAD
 
-=======
-            
->>>>>>> master
     def get_new_event_id(self):
         # returns the highest id in the user table plus 1
         query_max_id = db.select([db.func.max(self.events.columns.id)])

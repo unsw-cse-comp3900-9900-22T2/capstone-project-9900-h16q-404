@@ -83,17 +83,6 @@ export default function EditEvent() {
       }, []);
   }, []);
 
-  const test = () => {
-    setDesc('test');
-    setTitle('test');
-    setStartDate('2020-01-01');
-    setStartTime('01:01');
-    setEndDate('2021-01-01');
-    setEndTime('02:02');
-    setAdult(true);
-    setVax(true);
-  };
-
   const checkform = () => {
     if (title === '' || title === undefined) {
       message.warning('Please input event title');
@@ -130,14 +119,13 @@ export default function EditEvent() {
     if (!checkform()) {
       return;
     }
-    console.log(title);
     let condition = {
       adult: adultEvent,
       vax: vaxReq,
     };
     let requestbody = {
       token: token,
-      id: eventid,
+      event_id: eventid,
       detail: {
         title: title,
         type: type,
@@ -153,9 +141,9 @@ export default function EditEvent() {
     console.log(requestbody);
     axios.put('http://127.0.0.1:5000/event', requestbody).then((res) => {
       console.log(res.data);
-      let status = res.data.status;
+      let status = res.data.resultStatus;
       if (status !== 'Error') {
-        console.log('success');
+        console.log(status);
       }
     });
   };
