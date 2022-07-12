@@ -129,8 +129,8 @@ class Event(Resource):
     def get(self):
         # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
-        parser.add_argument('event_name', type=str)
-        parser.add_argument('event_id', type=int)
+        parser.add_argument('event_name', type=str, location="args")
+        parser.add_argument('event_id', type=int, location="args")
         args = parser.parse_args()
 
         # assign variables
@@ -168,7 +168,7 @@ class Event(Resource):
         # finally return result
         return {
             'resultStatus': 'SUCCESS',
-            'message': result
+            'event_details': result
         }
 
     def delete(self):
