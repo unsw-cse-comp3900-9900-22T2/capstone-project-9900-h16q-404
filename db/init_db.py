@@ -236,21 +236,11 @@ class InitDB:
             return ("Error finding event " + str(event_id) + " in events table")
             
     def create_event(self, token, event_details):
-<<<<<<< HEAD
-        # TODO:
-        # 1. Flatten event details - DONE
-        # 2. Get new Event ID - DONE
-        # 3. Ensure all variables have the right formatting - DONE
-        # 4. Get the host ID from the user table - DONE
-        # 5. Insert Event details into table - DONE
-        # 6. Return Success or Error and new event 
-=======
         # This function takes a token and a nested dictionary of event details, it flattens 
         # the dict, finds a new ID for the new event, gets the host ID and username from the
         # token, formats all of the data required for the insertion into the event table and 
         # finally returns the event details and event ID
 
->>>>>>> VY9900-37_backend_create_event
         event_details = self.flatten_details(event_details)
         new_id = self.get_new_event_id()
 

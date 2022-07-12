@@ -7,7 +7,7 @@ import {
   DatePicker,
   TimePicker,
   Space,
-  message
+  message,
 } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
@@ -75,7 +75,7 @@ export default function EditEvent() {
         setStartDate(data.start_date);
         setStartTime(data.start_time);
         setEndDate(data.end_date);
-        setEndTime(data.end_date);
+        setEndTime(data.end_time);
         setLocation(data.location);
         setAdult(true);
         setVax(true);
@@ -119,9 +119,7 @@ export default function EditEvent() {
       message.warning('Please input event location');
       return false;
     }
-
-    console.log(desc);
-    if (desc === "" || desc === undefined) {
+    if (desc === '' || desc === undefined) {
       message.warning('Please input event description');
       return false;
     }
@@ -137,7 +135,7 @@ export default function EditEvent() {
       adult: adultEvent,
       vax: vaxReq,
     };
-    let requestbody = JSON.stringify({
+    let requestbody = {
       token: token,
       id: eventid,
       detail: {
@@ -151,21 +149,15 @@ export default function EditEvent() {
         cond: condition,
         desc: desc,
       },
-    });
+    };
     console.log(requestbody);
-    console.log('update');
-    axios
-      .put(
-        'http://127.0.0.1/event',
-        requestbody
-      )
-      .then((res) => {
-        console.log(res.data);
-        let status = res.data.status;
-        if (status !== 'Error') {
-          console.log('success');
-        }
-      });
+    axios.put('http://127.0.0.1:5000/event', requestbody).then((res) => {
+      console.log(res.data);
+      let status = res.data.status;
+      if (status !== 'Error') {
+        console.log('success');
+      }
+    });
   };
 
   const back = () => {
@@ -207,22 +199,23 @@ export default function EditEvent() {
                 value={moment(startDate + startTime, 'YYYY-MM-DD HH:mm')}
                 placeholder={'2023-01-22 01:00'}
                 onChange={(date, dateString) => {
-                  let datearr = dateString.split(' ');
-                  setStartDate(dateString);
+                  let datearr = dateString.split(" ");
+                  setStartDate(datearr[0]);
                   setStartTime(datearr[1]);
                 }}
               />
             </Space>
             <Space>
-              Start data and time
+              End data and time
               <DatePicker
                 showTime={{ format: 'HH:mm' }}
                 format='YYYY-MM-DD HH:mm'
                 value={moment(endDate + endTime, 'YYYY-MM-DD HH:mm')}
                 placeholder={'2023-01-22 01:00'}
                 onChange={(date, dateString) => {
-                  let datearr = dateString.split(' ');
-                  setEndDate(dateString);
+                  let datearr = dateString.split(" ");
+                  console.log(datearr);
+                  setEndDate(datearr[0]);
                   setEndTime(datearr[1]);
                 }}
               />
