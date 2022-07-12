@@ -209,13 +209,10 @@ class InitDB:
             return ("Error finding event " + str(event_id) + " in events table")
             
     def create_event(self, token, event_details):
-        # TODO:
-        # 1. Flatten event details - DONE
-        # 2. Get new Event ID - DONE
-        # 3. Ensure all variables have the right formatting - DONE
-        # 4. Get the host ID from the user table - DONE
-        # 5. Insert Event details into table - DONE
-        # 6. Return Success or Error and new event 
+        # This function takes a token and a nested dictionary of event details, it flattens 
+        # the dict, finds a new ID for the new event, gets the host ID and username from the
+        # token, formats all of the data required for the insertion into the event table and 
+        # finally returns the event details and event ID
 
         event_details = self.flatten_details(event_details)
         new_id = self.get_new_event_id()
@@ -240,6 +237,41 @@ class InitDB:
         insert_data['id'] = new_id
 
         return self.insert_events(insert_data), insert_data
+
+    def update_event(self, event_id, event_details, token):
+        # TODO:
+        # 1. Flatten event_details
+        # 2. Format event_details
+        # 3. Update row
+
+        event_details = self.flatten_details(event_details)
+        host = self.get_host_id_from_token(token)
+        host_username = self.get_host_username_from_token(token)
+
+        update_data = {}
+        update_data['event_name'] = event_details['title']
+        update_data['type'] = event_details['type']
+        update_data['location'] = event_details['location']
+        update_data['host'] = host
+        update_data['host_username'] = host_username
+        update_data['deleted'] = False 
+        update_data['description'] = event_details['desc']
+        update_data['adult_only'] = event_details['cond_adult']
+        update_data['vax_only'] = event_details['cond_vax'] 
+        update_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
+        update_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
+        update_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
+        update_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
+        
+        try:
+            update_query = self.events.update().values(update_data).where(self.events.c.id == event_id)
+            result = self.engine.execute(update_query)
+            return True
+        except:
+            return False
+
+        print(result)
+        return result
 
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
