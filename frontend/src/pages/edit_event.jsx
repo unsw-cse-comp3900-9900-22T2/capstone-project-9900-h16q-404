@@ -156,7 +156,7 @@ export default function EditEvent() {
     console.log('update');
     axios
       .put(
-        'https://48c72885-2eec-4a6a-aa5c-c752ef2afe8e.mock.pstmn.io/updateevent',
+        'http://127.0.0.1/event',
         requestbody
       )
       .then((res) => {
