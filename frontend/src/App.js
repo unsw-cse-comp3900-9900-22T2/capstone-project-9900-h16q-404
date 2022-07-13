@@ -19,6 +19,7 @@ function App() {
         <Route path='/user' element={<UserProfilePage />}></Route>
         <Route path='/edit_profile' element={<EditProfile />}></Route>
         <Route path='/edit_login_credential' element={<EditLoginCredential />}></Route>
+        <Route path='/event' element={<EventPage />}></Route>
       </Routes>
     </div>
   );

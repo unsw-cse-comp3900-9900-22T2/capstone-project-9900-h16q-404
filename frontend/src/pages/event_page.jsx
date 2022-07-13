@@ -87,7 +87,7 @@ export default function EventPage () {
 
 	const requestURL = 'http://127.0.0.1:5000/event?event_id=' + localStorage.getItem("eventId")
 	axios.get(requestURL)
-		.then(res => res.data.message)
+		.then(res => res.data.event_details)
 		.then(data => {
 			console.log(data);
 			setEventInfo(data[0]);
@@ -165,7 +165,7 @@ export default function EventPage () {
 						{eventInfo.description}
 					</p>
 
-					{ eventInfo.host == 2 ? <>
+					{ eventInfo.host == localStorage.getItem("userId") ? <>
 					<Button>Send Message</Button>
 					<Button>Edit Event</Button>
 					<DeleteButton/>
