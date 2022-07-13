@@ -6,10 +6,12 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Descriptions, Rate, Collapse, Modal } from 'antd';
 import PageHeader from '../components/page_header';
-import { Col, Row, Statistic, Button, Divider } from 'antd';
+import { Col, Row, Statistic, Button, Divider, message } from 'antd';
 import axios from 'axios'
-import { useSearchParams, Link } from "react-router-dom";
-import { UserOutlined } from '@ant-design/icons';
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+const { confirm } = Modal;
 
 // Content and Footer 
 const { Content, Footer } = Layout;
@@ -30,17 +32,6 @@ const TicketBar = () => (
     </Col>
   </Row>
 );
-
-// To save eventId into localstorage, print states in console log.
-function saveEventId(){ 
-	console.log("Getting page URL...");
-	let url = new URL(window.location.href);
-	console.log("append eventId to localstorage...");
-	localStorage.setItem("eventId", url.searchParams.get("event_id"));
-	console.log("eventId: " + 
-							localStorage.getItem("eventId") +
-							" has been saved.");
-}
 
 // To call an alert and redirect to landing page if needed 
 function deleteCheck(){
@@ -78,23 +69,46 @@ const DeleteButton = () => {
 export default function EventPage () {
 
 	const [searchParams] = useSearchParams();
-  const [isSelfProfle, setSelfProfile] = useState(false);
-  const [followed, setFollow] = useState(false);
   const [eventInfo, setEventInfo] = useState({});
+	const [eventId, setEventId] = useState({});
 
-	saveEventId();
+	//saveEventId();
 	useEffect(() => {
+		const url = new URL(window.location.href);
+		console.log("event_id=" + url.searchParams.get("event_id"));
+		setEventId(url.searchParams.get("event_id"));
 
-	const requestURL = 'http://127.0.0.1:5000/event?event_id=' + localStorage.getItem("eventId")
-	axios.get(requestURL)
-		.then(res => res.data.event_details)
-		.then(data => {
-			console.log(data);
-			setEventInfo(data[0]);
-			console.log(eventInfo.event_name);
-			console.log(eventInfo);
+		const requestURL = 'http://127.0.0.1:5000/event?event_id=' + eventId
+		axios.get(requestURL)
+			.then(res => res.data.event_details)
+			.then(data => {
+				console.log(data);
+				setEventInfo(data[0]);
+				console.log("get event: " + eventInfo.event_name);
+				console.log(eventInfo);
+			});
+		},[searchParams]);
+
+	let navigate = useNavigate();
+
+	const deleteConfirm = () => {
+		confirm({
+			title: 'Warning',
+			icon: <ExclamationCircleOutlined />,
+			content: 'Are you sure you want to delete this event?',
+
+			onOk() {
+				axios.delete('http://127.0.0.1:5000/event?event_id=' + eventId)
+    			.then(() => {
+						console.log("successfully delete this event.");
+						message.success("Login Successful!",2)
+            navigate('/');
+					});
+				},
+
+			onCancel() {},
 		});
-	},[searchParams]);
+	};
 	
 	let time = eventInfo.start_date + " " + eventInfo.start_time + " to " + 
 						eventInfo.end_date + " " + eventInfo.end_time;
@@ -168,7 +182,9 @@ export default function EventPage () {
 					{ eventInfo.host == localStorage.getItem("userId") ? <>
 					<Button>Send Message</Button>
 					<Button>Edit Event</Button>
-					<DeleteButton/>
+					<Button onClick={deleteConfirm}>
+						Delete
+					</Button>
  					</> : null}
 
 					<Footer style={{textAlign:'center'}}>
