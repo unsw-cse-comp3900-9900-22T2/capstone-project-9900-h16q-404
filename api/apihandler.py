@@ -179,18 +179,32 @@ class User(Resource):
 class UserDetails(Resource):
     def patch(self):
         temp_db = InitDB()
-        user_token = request.json['token']
+        getRequest = request.json
+        if ('token' in getRequest):
+            user_token = request.json['token']
+        else:
+            return {"status": "Error", "message": "User Token was not Sent"}
+        
         user_exists = temp_db.check_usertoken_exists(user_token)
         
         if (user_exists == False):
             return {"status": "Error", "message": "User does not exists"}
         
         user_details_params = {}
-        user_details_params['firstName'] = request.json['firstName']
-        user_details_params['lastName'] = request.json['lastName']
-        user_details_params['phone'] = request.json['phone']
         
-        update_status = temp_db.update_user_details(user_details_params, user_token)
+        if ('firstName' in getRequest):
+            user_details_params['firstName'] = request.json['firstName']
+        
+        if ('lastName' in getRequest):
+            user_details_params['lastName'] = request.json['lastName']
+        
+        if ('phone' in getRequest):
+            user_details_params['phone'] = request.json['phone']
+        
+        if user_details_params:
+            update_status = temp_db.update_user_details(user_details_params, user_token)
+        else:
+            update_status = 0
         
         if (update_status == -1):
             return {"status": "Error", "message": "Update Failed! Try Again!"}
@@ -203,19 +217,33 @@ class UserDetails(Resource):
 class UserSensitiveDetails(Resource):
     def patch(self):
         temp_db = InitDB()
-        user_token = request.json['token']
+        getRequest = request.json
+        if ('token' in getRequest):
+            user_token = request.json['token']
+        else:
+            return {"status": "Error", "message": "User Token was not Sent"}
+            
         user_exists = temp_db.check_usertoken_exists(user_token)
         
         if (user_exists == False):
             return {"status": "Error", "message": "User does not exists"}
         
         user_details_params = {}
-        dob = datetime.strptime(request.json['dateOfBirth'], '%Y-%m-%d')
-        user_details_params['dateOfBirth'] = dob
-        user_details_params['gender'] = request.json['gender']
-        user_details_params['vaccinated'] = request.json['vaccinated']
         
-        update_status = temp_db.update_user_details(user_details_params, user_token)
+        if ('dateOfBirth' in getRequest):
+            dob = datetime.strptime(request.json['dateOfBirth'], '%Y-%m-%d')
+            user_details_params['dateOfBirth'] = dob
+        
+        if ('gender' in getRequest):
+            user_details_params['gender'] = request.json['gender']
+        
+        if ('vaccinated' in getRequest):
+            user_details_params['vaccinated'] = request.json['vaccinated']
+        
+        if user_details_params:
+            update_status = temp_db.update_user_details(user_details_params, user_token)
+        else:
+            update_status = 0
         
         if (update_status == -1):
             return {"status": "Error", "message": "Update Failed! Try Again!"}
@@ -228,29 +256,47 @@ class UserSensitiveDetails(Resource):
 class UserChangePassword(Resource):
     def patch(self):
         temp_db = InitDB()
-        user_token = request.json['token']
+        getRequest = request.json
+        if ('token' in getRequest):
+            user_token = request.json['token']
+        else:
+            return {"status": "Error", "message": "User Token was not Sent"}
+        
         user_exists = temp_db.check_usertoken_exists(user_token)
         
         if (user_exists == False):
             return {"status": "Error", "message": "User does not exists"}
 
         # Yunran: Please include check old password here
-        old_password = request.json['oldpassword']
+        if ('old_password' in getRequest):
+            old_password = request.json['old_password']
+        else:
+            return {"status": "Error", "message": "User Old Password was not Sent"}
+        
         password_match = temp_db.check_passwords_match(user_token, old_password)
         if password_match == False:
             return {"status": "Error", "message": "Old password is not correct"}
         # Yunran: TODO: Please include update email here; can update email only or password only
         
         user_details_params = {}
-        user_details_params['password'] = request.json['newpassword']
-        update_status = temp_db.update_user_details(user_details_params, user_token)
+        
+        if ('new_email' in getRequest):
+            user_details_params['email'] = request.json['new_email']
+        
+        if ('new_password' in getRequest):
+            user_details_params['password'] = request.json['new_password']
+        
+        if user_details_params:
+            update_status = temp_db.update_user_details(user_details_params, user_token)
+        else:
+            update_status = 0
         
         if (update_status == -1):
             return {"status": "Error", "message": "Update Failed! Try Again!"}
         
         return {
             'resultStatus': 'SUCCESS',
-            message': "User Password Successfully Reset!
+            'message': "User Password Successfully Reset!"
         }
 
 class Event(Resource):
@@ -410,3 +456,33 @@ class Create(Resource):
             }
 
 
+class SearchEvent(Resource):
+    def post(self):
+        getRequest = request.json
+        if ('keyWordList' in getRequest):
+            searchTerms = getRequest['keyWordList']
+        else:
+            return {"status": "Error", "message": "Search Key Word List was not Sent"}
+        
+        # create db engine
+        temp_db = InitDB()
+        
+        allEvents = temp_db.select_all_events()
+        result = []
+        
+        if (len(searchTerms) > 0):
+            for event in allEvents:
+                eventsStrToSearch = " ". join((event['event_name'], event['description'], event['type']))
+                eventsStrToSearch = eventsStrToSearch.lower()
+                queryinEvent = False
+                for item in searchTerms:
+                    if item in eventsStrToSearch:
+                        queryinEvent = True
+                        break;
+                if queryinEvent:
+                    result.append(event)
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result
+        } 

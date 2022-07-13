@@ -11,12 +11,12 @@ the database.
 '''
 
 from asyncio import events
-<<<<<<< HEAD
-from psycopg2 import IntegrityError
+#<<<<<<< HEAD
+#from psycopg2 import IntegrityError
 from requests import delete
-=======
+#=======
 from sqlalchemy.exc import IntegrityError
->>>>>>> master
+#>>>>>>> master
 import sqlalchemy as db
 from sqlalchemy import select, and_, func
 import pandas as pd
