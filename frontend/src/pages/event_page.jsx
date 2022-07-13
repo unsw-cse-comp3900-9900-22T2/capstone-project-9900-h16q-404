@@ -70,15 +70,10 @@ export default function EventPage () {
 
 	const [searchParams] = useSearchParams();
   const [eventInfo, setEventInfo] = useState({});
-	const [eventId, setEventId] = useState({});
 
-	//saveEventId();
 	useEffect(() => {
-		const url = new URL(window.location.href);
-		console.log("event_id=" + url.searchParams.get("event_id"));
-		setEventId(url.searchParams.get("event_id"));
-
-		const requestURL = 'http://127.0.0.1:5000/event?event_id=' + eventId
+		const requestURL = 'http://127.0.0.1:5000/event?event_id=' + searchParams.get("event_id");
+		console.log("Sending request with event_id=" + searchParams.get("event_id"));
 		axios.get(requestURL)
 			.then(res => res.data.event_details)
 			.then(data => {
@@ -86,6 +81,11 @@ export default function EventPage () {
 				setEventInfo(data[0]);
 				console.log("get event: " + eventInfo.event_name);
 				console.log(eventInfo);
+			})
+			.catch(error => {
+				console.log(error);
+				message.error("This event does not exist...", 5);
+				//navigate('/');
 			});
 		},[searchParams]);
 
@@ -98,11 +98,14 @@ export default function EventPage () {
 			content: 'Are you sure you want to delete this event?',
 
 			onOk() {
-				axios.delete('http://127.0.0.1:5000/event?event_id=' + eventId)
+				axios.delete('http://127.0.0.1:5000/event?event_id=' + searchParams.get("event_id"))
     			.then(() => {
 						console.log("successfully delete this event.");
-						message.success("Login Successful!",2)
+						message.success("This event has been deleted.",2)
             navigate('/');
+					})
+					.catch(() =>{
+						message.error("Something goes wrong.",5);
 					});
 				},
 
@@ -186,12 +189,10 @@ export default function EventPage () {
 						Delete
 					</Button>
  					</> : null}
-
-					<Footer style={{textAlign:'center'}}>
-        		9900-H16Q-404
-        	</Footer>
-				
 				</Content>
+				<Footer style={{textAlign:'center'}}>
+          9900-H16Q-404
+        </Footer>
 			</Layout>
 		</div>
 	)
