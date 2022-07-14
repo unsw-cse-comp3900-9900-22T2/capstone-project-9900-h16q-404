@@ -8,8 +8,11 @@ import UserProfilePage from './pages/user_profile';
 import EditProfile from './pages/edit_profile';
 import EditLoginCredential from './pages/edit_login_credential';
 import SearchResult from './pages/search_result';
+import EventPage from './pages/event_page';
+import CreateEvent from './pages/create_event';
+import EditEvent from './pages/edit_event';
 
-function App() {
+function App () {
   return (
     <div>
       <Routes>
@@ -20,8 +23,11 @@ function App() {
         <Route path='/edit_profile' element={<EditProfile />}></Route>
         <Route path='/edit_login_credential' element={<EditLoginCredential />}></Route>
         <Route path='/search' element={<SearchResult />}></Route>
-      </Routes>
-    </div>
+        <Route path='/event' element={<EventPage />}></Route>
+        <Route path='/create' element={<CreateEvent />}></Route>
+        <Route path='/editevent/:eventid' element={<EditEvent />}></Route>
+      </Routes >
+    </div >
   );
 }
 

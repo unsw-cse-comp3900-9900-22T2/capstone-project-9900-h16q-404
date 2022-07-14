@@ -13,6 +13,7 @@ export default function LogoutButton() {
   const func = () => {
     // since we are storing more items in localStorage, using clear to remove all when logout.
     localStorage.clear();
+    window.location.reload();
     // improve: give some UI feedback when user logout
     message.success("Logout Successful!", 3)
       // and use navigate function to switch to main page instead
