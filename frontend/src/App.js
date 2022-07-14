@@ -7,6 +7,7 @@ import RegisterPage from './pages/register';
 import UserProfilePage from './pages/user_profile';
 import EditProfile from './pages/edit_profile';
 import EditLoginCredential from './pages/edit_login_credential';
+import SearchResult from './pages/search_result';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path='/user' element={<UserProfilePage />}></Route>
         <Route path='/edit_profile' element={<EditProfile />}></Route>
         <Route path='/edit_login_credential' element={<EditLoginCredential />}></Route>
+        <Route path='/search' element={<SearchResult />}></Route>
       </Routes>
     </div>
   );
