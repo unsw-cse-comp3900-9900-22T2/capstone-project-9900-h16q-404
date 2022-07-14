@@ -60,7 +60,8 @@ export default function CreateEvent() {
     if (localStorage.getItem('username')) {
       setToken(localStorage.getItem('username'));
     } else {
-      setToken('None');
+      message.error("You must log in to do this!")
+      back();
     }
   }, [setToken]);
 
