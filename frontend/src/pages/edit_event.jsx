@@ -77,8 +77,8 @@ export default function EditEvent() {
         setEndDate(data.end_date);
         setEndTime(data.end_time);
         setLocation(data.location);
-        setAdult(true);
-        setVax(true);
+        setAdult(data.adult_only);
+        setVax(data.vax_only);
         setDesc(data.description);
       }, []);
   }, []);
