@@ -250,7 +250,7 @@ class UserChangePassword(Resource):
         
         return {
             'resultStatus': 'SUCCESS',
-            message': "User Password Successfully Reset!
+            'message': "User Password Successfully Reset!"
         }
 
 class Event(Resource):
@@ -311,6 +311,8 @@ class Event(Resource):
         token = args['token']
         event_details = args['detail']
         event_id = args['event_id']
+
+
 
         # create db engine
         temp_db = InitDB()
@@ -388,6 +390,9 @@ class Create(Resource):
         # assign variables
         token = args['token']
         event_details = args['detail']
+
+        print(token)
+        print(event_details)
 
         # create db engine
         temp_db = InitDB()

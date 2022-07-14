@@ -7,8 +7,10 @@ import RegisterPage from './pages/register';
 import UserProfilePage from './pages/user_profile';
 import EditProfile from './pages/edit_profile';
 import EditLoginCredential from './pages/edit_login_credential';
+import CreateEvent from './pages/create_event';
+import EditEvent from './pages/edit_event';
 
-function App() {
+function App () {
   return (
     <div>
       <Routes>
@@ -18,8 +20,10 @@ function App() {
         <Route path='/user' element={<UserProfilePage />}></Route>
         <Route path='/edit_profile' element={<EditProfile />}></Route>
         <Route path='/edit_login_credential' element={<EditLoginCredential />}></Route>
-      </Routes>
-    </div>
+        <Route path='/create' element={<CreateEvent />}></Route>
+        <Route path='/editevent/:eventid' element={<EditEvent />}></Route>
+      </Routes >
+    </div >
   );
 }
 

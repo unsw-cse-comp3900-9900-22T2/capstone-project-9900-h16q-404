@@ -11,12 +11,9 @@ the database.
 '''
 
 from asyncio import events
-<<<<<<< HEAD
+from sqlalchemy.exc import IntegrityError
 from psycopg2 import IntegrityError
 from requests import delete
-=======
-from sqlalchemy.exc import IntegrityError
->>>>>>> master
 import sqlalchemy as db
 from sqlalchemy import select, and_, func
 import pandas as pd
@@ -153,6 +150,7 @@ class InitDB:
         # But first the function checks if a row with the same ID aleady exists
         
         # check for row with existing primary key
+
         insert_check = True
         check_query = db.select([self.events]).where(self.events.c.id == data["id"])
         check_result = self.engine.execute(check_query)
@@ -291,6 +289,7 @@ class InitDB:
         update_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
         update_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
         update_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
+
         
         try:
             update_query = self.events.update().values(update_data).where(self.events.c.id == event_id)
@@ -422,7 +421,7 @@ class InitDB:
             return self.engine.execute(update_query)
         except:
             return -1
-            
+
     def get_new_event_id(self):
         # returns the highest id in the user table plus 1
         query_max_id = db.select([db.func.max(self.events.columns.id)])
