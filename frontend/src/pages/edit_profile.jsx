@@ -100,7 +100,7 @@ export default function EditProfile () {
           </Form>
         <br />
         <h1>Edit Sensitive Profile</h1>
-        <h4>Warning: you can only change the following profile once a month</h4>
+        <h4>These details relates to attendance conditions. Please edit respectfully.</h4>
           <Form
             name="edit-sensitive"
             onFinish={onFinishSensitive}
