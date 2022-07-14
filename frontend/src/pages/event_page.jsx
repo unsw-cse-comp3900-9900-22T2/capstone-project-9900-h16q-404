@@ -33,38 +33,6 @@ const TicketBar = () => (
   </Row>
 );
 
-// To call an alert and redirect to landing page if needed 
-function deleteCheck(){
-	alert("Are you sure you want to delete the event?")
-}
-
-const DeleteButton = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  return (
-    <>
-      <Button type="primary" onClick={showModal}>
-        DELETE EVENT
-      </Button>
-      <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-        <p>Are you sure you want to delete the event?</p>
-      </Modal>
-    </>
-  );
-};
-
 // To return event page
 export default function EventPage () {
 
