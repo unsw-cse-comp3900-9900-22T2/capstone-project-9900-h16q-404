@@ -144,6 +144,10 @@ export default function EditEvent() {
       let status = res.data.resultStatus;
       if (status !== 'Error') {
         console.log(status);
+        message.success(`Successfully edit event ${title} with id ${id}`);
+      }
+      else {
+        message.error(`Cannot edit the event.`);
       }
     });
   };
