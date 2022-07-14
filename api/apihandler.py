@@ -312,6 +312,8 @@ class Event(Resource):
         event_details = args['detail']
         event_id = args['event_id']
 
+
+
         # create db engine
         temp_db = InitDB()
         result = temp_db.update_event(event_id, event_details, token)
