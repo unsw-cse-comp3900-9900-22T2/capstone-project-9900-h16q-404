@@ -145,6 +145,7 @@ export default function EditEvent() {
       if (status !== 'Error') {
         console.log(status);
         message.success(`Successfully edit event ${title} with id ${eventid}`);
+        navigate(`/event?event_id=${eventid}`);
       }
       else {
         message.error(`Cannot edit the event.`);
