@@ -10,6 +10,7 @@ import {
   message,
   Col,
   Row,
+  InputNumber,
 } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
@@ -169,12 +170,12 @@ export default function EditEvent() {
     axios.put('http://127.0.0.1:5000/event', requestbody).then((res) => {
       console.log(res.data);
       let status = res.data.resultStatus;
-      if (status !== 'Error') {
+      if (status !== 'ERROR') {
         console.log(status);
         message.success(`Successfully edit event ${title} with id ${eventid}`);
         navigate(`/event?event_id=${eventid}`);
       } else {
-        message.error(`Cannot edit the event.`);
+        message.error(`Cannot edit the event.\nMessage: ${res.data.message}`);
       }
     });
   };

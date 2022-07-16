@@ -141,6 +141,10 @@ export default function CreateEvent() {
       message.warning('Please input event description');
       return false;
     }
+    if (goldnum + silvernum + bronzenum === 0) {
+      message.warning('Please define at least one valid type of tickets!');
+      return false;
+    }
     return true;
   };
 
@@ -171,11 +175,11 @@ export default function CreateEvent() {
         endtime: endTime,
         location: location,
         cond: condition,
-        gold_num: ticket.gold.num,
+        gold_num: ticket.gold.number,
         gold_price: ticket.gold.price,
-        silver_num: ticket.silver.num,
+        silver_num: ticket.silver.number,
         silver_price: ticket.silver.price,
-        bronze_num: ticket.bronze.num,
+        bronze_num: ticket.bronze.number,
         bronze_price: ticket.bronze.price,
         desc: desc,
       },
@@ -185,10 +189,14 @@ export default function CreateEvent() {
       console.log(res.data);
       let status = res.data.status;
       let id = res.data.new_event_id[0];
-      if (status !== 'Error') {
+      if (status !== 'ERROR') {
         console.log(id);
         message.success(`Successfully create event ${title} with id ${id}`);
         navigate(`/event?event_id=${id}`);
+      } else {
+        message.error(
+          `There is something wrong when creating the event.\nMessage: ${res.data.message}`
+        );
       }
     });
   };
@@ -273,7 +281,10 @@ export default function CreateEvent() {
             <div className='ticket-sect'>
               <h3>Ticket Infomation</h3>
               <h4>You can write details of ticket tiers in description</h4>
-              <h4>Caution: After creating the event you will not be able to edit the infomation of tickets!</h4>
+              <h4>
+                Caution: After creating the event you will not be able to edit
+                the infomation of tickets!
+              </h4>
               <Row className='ticket-row' gutter={16}>
                 <Col span={4}>Gold tier</Col>
                 <Col span={6}>
