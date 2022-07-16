@@ -8,7 +8,9 @@ import {
   TimePicker,
   Space,
   message,
-  Form,
+  Col,
+  Row,
+  InputNumber,
 } from 'antd';
 import PageHeader from '../components/page_header';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +23,36 @@ import PropTypes from 'prop-types';
 
 const { Content } = Layout;
 const { TextArea } = Input;
+
+function fileToDataURL(setImage, file) {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = function () {
+    setImage(reader.result);
+    console.log(reader.result);
+  };
+  reader.onerror = function (error) {
+    alert(`Invalid image type. Please try again. Error: ${error}`);
+  };
+}
+
+export const uploadImg = (setImage) => {
+  return (
+    <>
+      (Optional) Upload an image for your event:
+      <div id='upload-question-img' className='input-group'>
+        <Input
+          type='file'
+          onChange={(e) => {
+            const [file] = e.target.files;
+            fileToDataURL(setImage, file);
+          }}
+        />
+      </div>
+    </>
+  );
+};
+
 /*
 Event name
 Event type
@@ -45,8 +77,11 @@ export default function CreateEvent() {
   const [desc, setDesc] = useState();
   const [image, setImage] = useState();
 
-  const [ticket, setTicket] = useState();
-  const [classnumber, setclassnumber] = useState();
+  const [ticket, setTicket] = useState({
+    gold: { number: 0, price: 0 },
+    silver: { number: 0, price: 0 },
+    bronze: { number: 0, price: 0 },
+  });
 
   const dateFormat = 'YYYY-MM-DD';
   const timeFormat = 'HH:mm';
@@ -55,14 +90,25 @@ export default function CreateEvent() {
   const [vaxReq, setVax] = useState(false);
 
   const navigate = useNavigate();
-
+  const test = () => {
+    setTitle('testtitle');
+    setType('Concert');
+    setStartDate('2020-01-01');
+    setStartTime('01:01');
+    setEndDate('2020-01-02');
+    setEndTime('02:02');
+    setLocation('here');
+    setAdult(true);
+    setDesc('testdesc');
+  };
   useEffect(() => {
     if (localStorage.getItem('username')) {
       setToken(localStorage.getItem('username'));
     } else {
-      message.error("You must log in to do this!")
+      message.error('You must log in to do this!');
       back();
     }
+    test();
   }, [setToken]);
 
   const checkform = () => {
@@ -125,6 +171,12 @@ export default function CreateEvent() {
         endtime: endTime,
         location: location,
         cond: condition,
+        gold_num: ticket.gold.num,
+        gold_price: ticket.gold.price,
+        silver_num: ticket.silver.num,
+        silver_price: ticket.silver.price,
+        bronze_num: ticket.bronze.num,
+        bronze_price: ticket.bronze.price,
         desc: desc,
       },
     };
@@ -218,6 +270,83 @@ export default function CreateEvent() {
                 </Checkbox>
               </p>
             </div>
+            <div className='ticket-sect'>
+              <h3>Ticket Infomation</h3>
+              <h4>You can write details of ticket tiers in description</h4>
+              <h4>Caution: After creating the event you will not be able to edit the infomation of tickets!</h4>
+              <Row className='ticket-row' gutter={16}>
+                <Col span={4}>Gold tier</Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Amount'}
+                    defaultValue={0}
+                    onChange={(value) => {
+                      ticket.gold.number = value;
+                    }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Price'}
+                    addonAfter={'$'}
+                    defaultValue={0}
+                    onChange={(value) => {
+                      ticket.gold.price = value;
+                    }}
+                  />
+                </Col>
+              </Row>
+              <Row className='ticket-row' gutter={16}>
+                <Col span={4}>Silver tier</Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Amount'}
+                    defaultValue={0}
+                    onChange={(value) => {
+                      ticket.silver.number = value;
+                    }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Price'}
+                    addonAfter={'$'}
+                    defaultValue={0}
+                    onChange={(value) => {
+                      ticket.silver.price = value;
+                    }}
+                  />
+                </Col>
+              </Row>
+              <Row className='ticket-row' gutter={16}>
+                <Col span={4}>Bronze tier</Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Amount'}
+                    defaultValue={0}
+                    onChange={(value) => {
+                      ticket.bronze.number = value;
+                    }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Price'}
+                    addonAfter={'$'}
+                    defaultValue={0}
+                    onChange={(value) => {
+                      ticket.bronze.price = value;
+                    }}
+                  />
+                </Col>
+              </Row>
+            </div>
 
             <h3>Description</h3>
             <TextArea
@@ -229,6 +358,8 @@ export default function CreateEvent() {
                 setDesc(e.target.value);
               }}
             />
+            <img src={image} />
+            {uploadImg(setImage)}
 
             <div className='ButtonSet'>
               <Space>

@@ -8,6 +8,8 @@ import {
   TimePicker,
   Space,
   message,
+  Col,
+  Row,
 } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
@@ -45,6 +47,14 @@ export default function EditEvent() {
 
   const [location, setLocation] = useState();
   const [desc, setDesc] = useState();
+
+  const [goldnum, setGoldnum] = useState(0);
+  const [goldprice, setGoldprice] = useState();
+  const [silvernum, setSilvernum] = useState(0);
+  const [silverprice, setSilverprice] = useState();
+  const [bronzenum, setBronzenum] = useState(0);
+  const [bronzeprice, setBronzeprice] = useState();
+
   const [image, setImage] = useState();
 
   const dateFormat = 'YYYY-MM-DD';
@@ -81,6 +91,12 @@ export default function EditEvent() {
         setAdult(data.adult_only);
         setVax(data.vax_only);
         setDesc(data.description);
+        setGoldnum(data.gold_num);
+        setGoldprice(data.gold_price);
+        setSilvernum(data.silver_num);
+        setSilverprice(data.silver_price);
+        setBronzenum(data.bronze_num);
+        setBronzeprice(data.bronze_price);
       }, []);
   }, []);
 
@@ -113,6 +129,10 @@ export default function EditEvent() {
       message.warning('Please input event description');
       return false;
     }
+    if (goldnum + silvernum + bronzenum === 0) {
+      message.warning('Please define at least one valid type of tickets!');
+      return false;
+    }
     return true;
   };
 
@@ -136,6 +156,12 @@ export default function EditEvent() {
         endtime: endTime,
         location: location,
         cond: condition,
+        gold_num: goldnum,
+        gold_price: goldprice,
+        silver_num: silvernum,
+        silver_price: silverprice,
+        bronze_num: bronzenum,
+        bronze_price: bronzeprice,
         desc: desc,
       },
     };
@@ -238,6 +264,93 @@ export default function EditEvent() {
                   Customers must be fully vaccinated.
                 </Checkbox>
               </p>
+            </div>
+            <div className='ticket-sect'>
+              <h3>Ticket Infomation</h3>
+              <h4>You can write details of ticket tiers in description</h4>
+              <h4>
+                You cannot edit ticket amounts and prices after you create the
+                event
+              </h4>
+
+              <Row className='ticket-row' gutter={16}>
+                <Col span={4}>Gold tier</Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Amount'}
+                    defaultValue={0}
+                    value={0 || goldnum}
+                    onChange={(value) => {
+                      setGoldnum(value);
+                    }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Price'}
+                    addonAfter={'$'}
+                    defaultValue={0}
+                    value={0 || goldprice}
+                    onChange={(value) => {
+                      setGoldprice(value);
+                    }}
+                  />
+                </Col>
+              </Row>
+              <Row className='ticket-row' gutter={16}>
+                <Col span={4}>Silver tier</Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Amount'}
+                    defaultValue={0}
+                    value={0 || silvernum}
+                    onChange={(value) => {
+                      setSilvernum(value);
+                    }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Price'}
+                    addonAfter={'$'}
+                    defaultValue={0}
+                    value={0 || silverprice}
+                    onChange={(value) => {
+                      setSilverprice(value);
+                    }}
+                  />
+                </Col>
+              </Row>
+              <Row className='ticket-row' gutter={16}>
+                <Col span={4}>Bronze tier</Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Amount'}
+                    defaultValue={0}
+                    value={0 || bronzenum}
+                    onChange={(value) => {
+                      setBronzenum(value);
+                    }}
+                  />
+                </Col>
+                <Col span={6}>
+                  <InputNumber
+                    min={0}
+                    addonBefore={'Price'}
+                    addonAfter={'$'}
+                    defaultValue={0}
+                    value={0 || bronzeprice}
+                    onChange={(value) => {
+                      setBronzeprice(value);
+                    }}
+                  />
+                </Col>
+              </Row>
             </div>
             <h3>Description</h3>
             <TextArea
