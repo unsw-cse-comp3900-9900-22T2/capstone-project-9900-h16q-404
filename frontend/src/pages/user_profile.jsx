@@ -3,7 +3,7 @@ import { Layout, Avatar, Rate, Button, message, List } from 'antd';
 import PageHeader from '../components/page_header';
 import './user_profile.css';
 import { UserOutlined } from '@ant-design/icons';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -30,20 +30,10 @@ export default function UserProfilePage() {
     // compare the userId in params with userId in localStorage
     if (searchParams.get('userId') === localStorage.getItem('userId')) {
       setSelfProfile(true);
-    } else if (searchParams.get('userId') !== localStorage.getItem('userId')) {
+    } else if ( searchParams.get('userId') || searchParams.get('userId') !== localStorage.getItem('userId')) {
+      // not logged in or not self profile
       setSelfProfile(false);
       setFollow(false);
-      // get rid of followed or not in this stage
-      /*
-      if(searchParams.get("followed") === "true"){
-        //console.log("followed");
-        setFollow(true);
-      }
-      else {
-        //console.log("unfollowed");
-        setFollow(false);
-      }
-      */
     } else {
       message.error('Oops... Something went wrong');
     }
@@ -142,14 +132,18 @@ export default function UserProfilePage() {
           </div>
 
           <div className='event-zone'>
-            <Button
-              type='primary'
-              onClick={() => {
-                navigate('/create');
-              }}
-            >
-              Create event
-            </Button>
+            { isSelfProfle 
+              ? (<>
+                  <Button
+                    type='primary'
+                    onClick={() => {
+                      navigate('/create');
+                    }}
+                  >
+                    Create event
+                  </Button>
+                </>) 
+              : (<></>) }
             <List
               size='small'
               header={<div>Past Events</div>}

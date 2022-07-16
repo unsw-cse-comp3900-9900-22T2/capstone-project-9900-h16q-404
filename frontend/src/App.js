@@ -11,6 +11,7 @@ import SearchResult from './pages/search_result';
 import EventPage from './pages/event_page';
 import CreateEvent from './pages/create_event';
 import EditEvent from './pages/edit_event';
+import EditSensitiveProfile from './pages/edit_sensitive_profile';
 
 function App () {
   return (
@@ -26,6 +27,7 @@ function App () {
         <Route path='/event' element={<EventPage />}></Route>
         <Route path='/create' element={<CreateEvent />}></Route>
         <Route path='/editevent/:eventid' element={<EditEvent />}></Route>
+        <Route path='/edit_sensitive_profile' element={<EditSensitiveProfile />}></Route>
       </Routes >
     </div >
   );

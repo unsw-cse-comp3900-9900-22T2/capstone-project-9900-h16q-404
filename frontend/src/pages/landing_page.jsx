@@ -63,11 +63,10 @@ export default function LandingPage () {
             >
               <List.Item.Meta
                 avatar={<Avatar src={'https://joeschmoe.io/api/v1/random'}></Avatar>}
-                title={item.event_name}
-                // WARNING: change this to real user link after event page is done!
-                description={<Link to='/user?userId=2'>Mock User with userId=2</Link>}
+                title={<Link to={"/event?event_id="+item.id}>{item.event_name}</Link>}
+                description={<Link to={"/user?userId="+item.host}>{item.host_username}</Link>}
               />
-              {"Event date: " + item.event_date}
+              {"Event date: " + item.start_date}
             </List.Item>
             )}
           >

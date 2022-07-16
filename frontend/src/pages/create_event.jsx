@@ -60,9 +60,11 @@ export default function CreateEvent() {
     if (localStorage.getItem('username')) {
       setToken(localStorage.getItem('username'));
     } else {
-      setToken('None');
+      // Yunran: no username means not logged in, should redirect to landing page
+      message.error("You have not logged in!",2);
+      navigate('/');
     }
-  }, [setToken]);
+  }, [setToken, navigate]);
 
   const checkform = () => {
     if (title === '' || title === undefined) {
