@@ -19,6 +19,7 @@ from sqlalchemy import ForeignKey, select, and_, func
 import pandas as pd
 import datetime
 from flask import jsonify
+import json
 
 # InitDB class
 class InitDB:
@@ -512,6 +513,17 @@ class InitDB:
             )
             self.engine.execute(query).inserted_primary_key
 
+    def reserve_tickets(self, data, user_id):
+        data = json.loads(data.replace("'", '"'))
+        update_query = self.tickets.update().values(purchased=True, user_id=user_id).where(
+            and_(
+                self.tickets.c.event_id == data['event_id'],
+                self.tickets.c.seat_num == data['seat_num'],
+                self.tickets.c.tix_class == data['tix_class']
+                )
+            )
+        result = self.engine.execute(update_query)
+        return result
 
     def get_max_ticket_id(self):
         # returns the highest id in the tickets table plus 1

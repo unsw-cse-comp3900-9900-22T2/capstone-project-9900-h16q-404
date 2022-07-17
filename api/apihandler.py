@@ -438,3 +438,36 @@ class BuyTickets(Resource):
             'resultStatus': 'SUCCESS',
             'message': result
         }
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str)
+        parser.add_argument('tickets', action='append')
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+        tickets = args['tickets']
+
+        # create db engine
+        temp_db = InitDB()
+
+        # need to convert token to user_id
+        user_id = 1
+        failed = []
+        for i in tickets:
+            try:
+                temp_db.reserve_tickets(i, user_id)
+            except:
+                failed.append(i)
+
+        if len(failed) > 0:
+            return{
+                'resultStatus': 'ERROR',
+                'message': failed
+            }
+        else:
+            return {
+                'resultStatus': 'SUCCESS',
+                'message': 'Tickets successfully booked'
+            }
