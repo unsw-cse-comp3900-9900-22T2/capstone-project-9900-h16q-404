@@ -69,11 +69,11 @@ class InitDB:
         )
 
         self.tickets = db.Table('tickets', self.metadata,
-            db.Column('ticket_id', db.Integer(), primary_key=True),
+            db.Column('id', db.Integer(), primary_key=True),
             db.Column('event_id', db.Integer(), ForeignKey('events.id'), nullable=False),
-            db.Column('user_id', db.Integer(), ForeignKey('users.id'), nullable=False),
+            db.Column('user_id', db.Integer(), ForeignKey('users.id'), nullable=True),
             db.Column('seat_num', db.Integer(), nullable=False),
-            db.Column('class', db.String(10), nullable=False),
+            db.Column('tix_class', db.String(10), nullable=False),
             db.Column('purchased', db.Boolean(), nullable=False)
         )
         
@@ -129,16 +129,13 @@ class InitDB:
                 "phone" : '',
                 "vaccinated" : ''
             }
-            #print(data)
             new_id = self.insert_users(data)
-            print(new_id)
 
     def insert_users(self, data):
         insert_check = True
         check_query = db.select([self.users]).where(self.users.c.id == data["id"])
         check_result = self.engine.execute(check_query)
         check_result = ({'result': [dict(row) for row in check_result]})
-        print(check_result)
         for i in range(len(check_result['result'])):
              if data["id"] == (check_result["result"][i]['id']):
                 insert_check = False
@@ -205,7 +202,9 @@ class InitDB:
                 bronze_price = data["bronze_price"]
             )
             try:
-                return self.engine.execute(query).inserted_primary_key 
+                result = self.engine.execute(query).inserted_primary_key 
+                self.pre_fill_tickets(data)
+                return result
             except:
                 return -1
         else:
@@ -296,7 +295,8 @@ class InitDB:
         insert_data['bronze_num'] = event_details['bronze_num']
         insert_data['bronze_price'] = event_details['bronze_price']
 
-        return self.insert_events(insert_data), insert_data
+        result = self.insert_events(insert_data), insert_data
+        return result
 
     def update_event(self, event_id, event_details, token):
         # TODO:
@@ -412,7 +412,6 @@ class InitDB:
         user_exists = False
         check_query = db.select([self.users]).where(self.users.c.id == userid)
         check_result = self.engine.execute(check_query).fetchall()
-        print(check_result)
         if len(check_result) > 0:
             user_exists = True
         return user_exists
@@ -420,7 +419,6 @@ class InitDB:
     def get_user_record(self, userid):
         user_query = db.select([self.users]).where(self.users.c.id == userid)
         user_result = self.engine.execute(user_query).fetchall()
-        #print(user_result)
         if len(user_result) > 0:
             return user_result
         else:
@@ -429,7 +427,6 @@ class InitDB:
     def get_user_record_byname(self, username):
         user_query = db.select([self.users]).where(self.users.c.username == username)
         user_result = self.engine.execute(user_query).fetchall()
-        #print(user_result)
         if len(user_result) > 0:
             return user_result
         else:
@@ -439,8 +436,6 @@ class InitDB:
         user_exists = False
         check_query = db.select([self.users]).where(self.users.c.token == usertoken)
         check_result = self.engine.execute(check_query).fetchall()
-        print(usertoken)
-        print(check_result)
         if len(check_result) > 0:
             user_exists = True
         return user_exists
@@ -489,6 +484,43 @@ class InitDB:
         else:
             return list_result[0]['username']
     
+    def select_tickets_event_id(self, event_id):
+        tickets_query = db.select([self.tickets]).where(
+            and_(
+                self.tickets.c.event_id == event_id,
+                self.tickets.c.purchased == False
+                )
+            )
+        result = self.engine.execute(tickets_query)
+        result = ({'result': [dict(row) for row in result]})
+        return result
+
+    def pre_fill_tickets(self, data):
+        self.insert_tix(data['gold_num'], 'gold', data['id'])
+        self.insert_tix(data['silver_num'], 'silver', data['id'])
+        self.insert_tix(data['bronze_num'], 'bronze', data['id'])
+        pass
+
+    def insert_tix(self, num_tix, tix_class, event_ID):
+        for i in range(num_tix):
+            query = db.insert(self.tickets).values(
+                id = self.get_max_ticket_id(),
+                event_id = event_ID,
+                tix_class = tix_class,
+                seat_num = i,
+                purchased = False
+            )
+            self.engine.execute(query).inserted_primary_key
+
+
+    def get_max_ticket_id(self):
+        # returns the highest id in the tickets table plus 1
+        query_max_id = db.select([db.func.max(self.tickets.columns.id)])
+        max_id = self.engine.execute(query_max_id).scalar()
+        if max_id == None:
+            max_id = 0
+        return max_id + 1
+
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
     db = InitDB()

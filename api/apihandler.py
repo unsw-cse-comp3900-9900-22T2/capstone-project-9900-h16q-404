@@ -415,8 +415,6 @@ class Create(Resource):
 class BuyTickets(Resource):
     def get(self):
 
-        print('test 1')
-
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str, location='args')
         parser.add_argument('event_id', type=int, location='args')
@@ -428,10 +426,15 @@ class BuyTickets(Resource):
 
         # create db engine
         temp_db = InitDB()
+        result = temp_db.select_tickets_event_id(event_id)
 
-        print(token, event_id)
+        if len(result['result']) == 0:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'no tickets for this event exist'                
+            }
 
         return {
             'resultStatus': 'SUCCESS',
-            'message': str(event_id) + ' ' + token
+            'message': result
         }
