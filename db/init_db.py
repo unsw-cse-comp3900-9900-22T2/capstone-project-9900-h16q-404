@@ -74,7 +74,7 @@ class InitDB:
             db.Column('user_id', db.Integer(), ForeignKey('users.id'), nullable=False),
             db.Column('seat_num', db.Integer(), nullable=False),
             db.Column('class', db.String(10), nullable=False),
-            db.Column('purchased', db.Boolean(), deafult=False, nullable=False)
+            db.Column('purchased', db.Boolean(), nullable=False)
         )
         
         # create all objects in the metadata object

@@ -412,3 +412,26 @@ class Create(Resource):
             }
 
 
+class BuyTickets(Resource):
+    def get(self):
+
+        print('test 1')
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='args')
+        parser.add_argument('event_id', type=int, location='args')
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+        event_id = args['event_id']
+
+        # create db engine
+        temp_db = InitDB()
+
+        print(token, event_id)
+
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': str(event_id) + ' ' + token
+        }
