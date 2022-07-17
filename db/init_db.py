@@ -525,6 +525,22 @@ class InitDB:
         result = self.engine.execute(update_query)
         return result
 
+    def refund_tickets(self, data, user_id):
+        data = json.loads(data.replace("'", '"'))
+        print(data)
+        print(user_id, type(user_id))
+        update_query = self.tickets.update().values(purchased=False, user_id="").where(
+            and_(
+                self.tickets.c.user_id == user_id,
+                self.tickets.c.event_id == data['event_id'],
+                self.tickets.c.seat_num == data['seat_num'],
+                self.tickets.c.tix_class == data['tix_class']
+                )
+            )
+        result = self.engine.execute(update_query)
+        print(result)
+        return result
+
     def get_max_ticket_id(self):
         # returns the highest id in the tickets table plus 1
         query_max_id = db.select([db.func.max(self.tickets.columns.id)])
