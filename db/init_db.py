@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from psycopg2 import IntegrityError
 from requests import delete
 import sqlalchemy as db
-from sqlalchemy import select, and_, func
+from sqlalchemy import ForeignKey, select, and_, func
 import pandas as pd
 import datetime
 from flask import jsonify
@@ -66,6 +66,15 @@ class InitDB:
             db.Column('gender', db.String(255), nullable=True),
             db.Column('phone', db.String(255), nullable=True),
             db.Column('vaccinated', db.Boolean(), nullable=True)
+        )
+
+        self.tickets = db.Table('tickets', self.metadata,
+            db.Column('ticket_id', db.Integer(), primary_key=True),
+            db.Column('event_id', db.Integer(), ForeignKey('events.id'), nullable=False),
+            db.Column('user_id', db.Integer(), ForeignKey('users.id'), nullable=False),
+            db.Column('seat_num', db.Integer(), nullable=False),
+            db.Column('class', db.String(10), nullable=False),
+            db.Column('purchased', db.Boolean(), deafult=False, nullable=False)
         )
         
         # create all objects in the metadata object
