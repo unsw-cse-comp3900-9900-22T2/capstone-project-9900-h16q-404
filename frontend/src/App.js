@@ -25,7 +25,7 @@ function App () {
         <Route path='/event' element={<EventPage />}></Route>
         <Route path='/create' element={<CreateEvent />}></Route>
         <Route path='/editevent/:eventid' element={<EditEvent />}></Route>
-        <Route path='/buy' element={<BuyTicket />}></Route>
+        <Route path='/buyticket/:eventid' element={<BuyTicket />}></Route>
       </Routes >
     </div >
   );

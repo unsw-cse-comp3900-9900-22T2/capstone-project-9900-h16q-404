@@ -16,7 +16,6 @@ import PageHeader from '../components/page_header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
-import {} from 'antd';
 
 import './create_event.css';
 import PropTypes from 'prop-types';
@@ -141,7 +140,7 @@ export default function CreateEvent() {
       message.warning('Please input event description');
       return false;
     }
-    if (goldnum + silvernum + bronzenum === 0) {
+    if (ticket.gold.number + ticket.silver.number + ticket.bronze.number === 0) {
       message.warning('Please define at least one valid type of tickets!');
       return false;
     }
