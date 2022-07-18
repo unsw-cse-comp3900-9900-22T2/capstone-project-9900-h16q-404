@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Avatar, Rate, Button, message, List } from 'antd';
+import { Layout, Avatar, Rate, Button, message, List, Divider } from 'antd';
 import PageHeader from '../components/page_header';
 import './user_profile.css';
 import { UserOutlined } from '@ant-design/icons';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,8 @@ export default function UserProfilePage() {
   const [isSelfProfle, setSelfProfile] = useState(false);
   const [followed, setFollow] = useState(false);
   const [details, setDetails] = useState({});
+  const [pastEvent, setPastEvent] = useState([]);
+  const [ucEvent, setUCEvent] = useState([]);
   const navigate = useNavigate();
 
   const followButtonOnClick = () => {
@@ -48,8 +50,23 @@ export default function UserProfilePage() {
       })
       .then((res) => res.data.message)
       .then((data) => {
-        //console.log(data);
+        //console.log(data.events);
         setDetails(data);
+        let dataPastEvent = [];
+        let dataUCEvent = [];
+        for (const event of data.events){
+          //console.log(event);
+          const today = new Date();
+          const eventDay = Date.parse(event.startDate);
+          if (today <= eventDay) {
+            dataUCEvent.push(event);
+          }
+          else {
+            dataPastEvent.push(event);
+          }
+        }
+        setPastEvent(dataPastEvent);
+        setUCEvent(dataUCEvent);
       });
   }, [searchParams]);
 
@@ -144,20 +161,30 @@ export default function UserProfilePage() {
                   </Button>
                 </>) 
               : (<></>) }
+            <Divider orientation="left">Past Events</Divider>
             <List
-              size='small'
-              header={<div>Past Events</div>}
               bordered
-              dataSource={['mock past event 1', 'mock past event 2']}
-              renderItem={(item) => <List.Item>{item}</List.Item>}
+              dataSource={pastEvent}
+              renderItem={(item) => 
+                <List.Item>
+                  <List.Item.Meta 
+                    title={<Link to={"/event?event_id="+item.id}>{item.name}</Link>}
+                    description={"Held on " + item.startDate}
+                  />
+                </List.Item>}
             ></List>
             <br />
+            <Divider orientation="left">Upcoming Events</Divider>
             <List
-              size='small'
-              header={<div>Upcoming Events</div>}
               bordered
-              dataSource={['mock upcoming event 1', 'mock upcoming event 2']}
-              renderItem={(item) => <List.Item>{item}</List.Item>}
+              dataSource={ucEvent}
+              renderItem={(item) => 
+                <List.Item>
+                  <List.Item.Meta
+                    title={<Link to={"/event?event_id="+item.id}>{item.name}</Link>}
+                    description={"Coming on " + item.startDate}
+                  />
+                </List.Item>}
             ></List>
           </div>
         </Content>
