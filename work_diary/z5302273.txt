@@ -43,3 +43,10 @@ Think about the APIs of create and edit events.
 week 6
 I worked out the frontends of create events page and edit events page (without add ticketing).
 We don't have lab/tut this week dut to flex week so we meet online. I introduced what I have worked to others. I tested the frontend with Postman.
+
+week 7
+We had a meeting (co-coding) on Tuesday and nearly finished the past tasks. I talked about the token authentication stuff and finished the create/edit pages and fixed some bugs.
+On Thursday we finished the sprint and discussed about the remaing part. We thought the most important part is the ticket system so we planned it thoroughly and we also discussed about other features and assigned them.
+I add the ticket creation section to the create event page and start working on buy tickets.
+
+week 8
