@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from psycopg2 import IntegrityError
 from requests import delete
 import sqlalchemy as db
-from sqlalchemy import ForeignKey, select, and_, func
+from sqlalchemy import ForeignKey, null, select, and_, func
 import pandas as pd
 import datetime
 from flask import jsonify
@@ -75,7 +75,9 @@ class InitDB:
             db.Column('user_id', db.Integer(), ForeignKey('users.id'), nullable=True),
             db.Column('seat_num', db.Integer(), nullable=False),
             db.Column('tix_class', db.String(10), nullable=False),
-            db.Column('purchased', db.Boolean(), nullable=False)
+            db.Column('purchased', db.Boolean(), nullable=False),
+            db.Column('card_number', db.Integer(), nullable=True),
+            db.Column('ticket_price', db.String(16), nullable=False)
         )
         
         # create all objects in the metadata object
@@ -497,25 +499,27 @@ class InitDB:
         return result
 
     def pre_fill_tickets(self, data):
-        self.insert_tix(data['gold_num'], 'gold', data['id'])
-        self.insert_tix(data['silver_num'], 'silver', data['id'])
-        self.insert_tix(data['bronze_num'], 'bronze', data['id'])
+        self.insert_tix(data['gold_num'], 'gold', data['id'], data['gold_price'])
+        self.insert_tix(data['silver_num'], 'silver', data['id'], data['silver_price'])
+        self.insert_tix(data['bronze_num'], 'bronze', data['id'], data['bronze_price'])
         pass
 
-    def insert_tix(self, num_tix, tix_class, event_ID):
+    def insert_tix(self, num_tix, tix_class, event_ID, price):
         for i in range(num_tix):
             query = db.insert(self.tickets).values(
                 id = self.get_max_ticket_id(),
                 event_id = event_ID,
                 tix_class = tix_class,
                 seat_num = i,
-                purchased = False
+                purchased = False,
+                ticket_price = price
             )
-            self.engine.execute(query).inserted_primary_key
+            result = self.engine.execute(query).inserted_primary_key
 
     def reserve_tickets(self, data, user_id):
         data = json.loads(data.replace("'", '"'))
-        update_query = self.tickets.update().values(purchased=True, user_id=user_id).where(
+        card_number = data['card_number']
+        update_query = self.tickets.update().values(purchased=True, user_id=user_id, card_number=card_number).where(
             and_(
                 self.tickets.c.event_id == data['event_id'],
                 self.tickets.c.seat_num == data['seat_num'],
@@ -527,9 +531,7 @@ class InitDB:
 
     def refund_tickets(self, data, user_id):
         data = json.loads(data.replace("'", '"'))
-        print(data)
-        print(user_id, type(user_id))
-        update_query = self.tickets.update().values(purchased=False, user_id="").where(
+        update_query = self.tickets.update().values(purchased=False, user_id="", card_number="").where(
             and_(
                 self.tickets.c.user_id == user_id,
                 self.tickets.c.event_id == data['event_id'],
@@ -538,7 +540,6 @@ class InitDB:
                 )
             )
         result = self.engine.execute(update_query)
-        print(result)
         return result
 
     def get_max_ticket_id(self):
@@ -548,6 +549,25 @@ class InitDB:
         if max_id == None:
             max_id = 0
         return max_id + 1
+
+    def select_all_tickets(self, user_id):
+        user_tickets_query = db.select([self.tickets]).where(
+            and_(
+                self.tickets.c.user_id == user_id,
+                self.tickets.c.purchased == True
+                )
+            )
+        result = self.engine.execute(user_tickets_query)
+        result = ({'result': [dict(row) for row in result]})
+        return result
+
+    def get_event_time_date(self, event_id):
+        event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
+        result = self.engine.execute(event_start_query)
+        result = ({'result': [dict(row) for row in result]})
+        start_date = str(result['result'][0]['start_date'])
+        start_time = str(result['result'][0]['start_time'])
+        return start_date, start_time
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
