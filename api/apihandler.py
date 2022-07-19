@@ -509,7 +509,7 @@ class MyTickets(Resource):
     def get(self):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str, location='args')
+        parser.add_argument('token', type=str, location='headers')
         args = parser.parse_args()
 
         # assign variables
