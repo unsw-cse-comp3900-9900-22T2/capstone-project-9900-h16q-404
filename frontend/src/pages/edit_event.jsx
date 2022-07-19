@@ -59,7 +59,8 @@ export default function EditEvent() {
     if (localStorage.getItem('username')) {
       setToken(localStorage.getItem('username'));
     } else {
-      setToken('None');
+      message.error('You must log in to do this!');
+      back();
     }
     axios
       .get(`http://127.0.0.1:5000/event`, {
@@ -77,8 +78,8 @@ export default function EditEvent() {
         setEndDate(data.end_date);
         setEndTime(data.end_time);
         setLocation(data.location);
-        setAdult(true);
-        setVax(true);
+        setAdult(data.adult_only);
+        setVax(data.vax_only);
         setDesc(data.description);
       }, []);
   }, []);
@@ -144,6 +145,10 @@ export default function EditEvent() {
       let status = res.data.resultStatus;
       if (status !== 'Error') {
         console.log(status);
+        message.success(`Successfully edit event ${title} with id ${eventid}`);
+        navigate(`/event?event_id=${eventid}`);
+      } else {
+        message.error(`Cannot edit the event.`);
       }
     });
   };
@@ -187,7 +192,7 @@ export default function EditEvent() {
                 value={moment(startDate + startTime, 'YYYY-MM-DD HH:mm')}
                 placeholder={'2023-01-22 01:00'}
                 onChange={(date, dateString) => {
-                  let datearr = dateString.split(" ");
+                  let datearr = dateString.split(' ');
                   setStartDate(datearr[0]);
                   setStartTime(datearr[1]);
                 }}
@@ -201,7 +206,7 @@ export default function EditEvent() {
                 value={moment(endDate + endTime, 'YYYY-MM-DD HH:mm')}
                 placeholder={'2023-01-22 01:00'}
                 onChange={(date, dateString) => {
-                  let datearr = dateString.split(" ");
+                  let datearr = dateString.split(' ');
                   console.log(datearr);
                   setEndDate(datearr[0]);
                   setEndTime(datearr[1]);

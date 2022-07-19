@@ -44,7 +44,13 @@ class InitDB:
             db.Column('location', db.String(255), nullable=True),
             db.Column('adult_only', db.Boolean, nullable=True),
             db.Column('vax_only', db.Boolean, nullable=True),
-            db.Column('description', db.String(255), nullable=True)
+            db.Column('description', db.String(255), nullable=True),
+            db.Column('gold_num', db.Integer(), nullable=True),
+            db.Column('gold_price', db.Float(), nullable=True),
+            db.Column('silver_num', db.Integer(), nullable=True),
+            db.Column('silver_price', db.Float(), nullable=True),
+            db.Column('bronze_num', db.Integer(), nullable=True),
+            db.Column('bronze_price', db.Float(), nullable=True),
         )
 
         # define the users tables
@@ -86,7 +92,13 @@ class InitDB:
                 "location": row.location,
                 "adult_only": row.adult_only,
                 "vax_only": row.vax_only,
-                "description": row.description
+                "description": row.description,
+                "gold_num": row.gold_num,
+                "gold_price": row.gold_price,
+                "silver_num": row.silver_num,
+                "silver_price": row.silver_price,
+                "bronze_num": row.bronze_num,
+                "bronze_price": row.bronze_price,
             }
             result = self.insert_events(data)
             if result == None or result == -1:
@@ -175,7 +187,13 @@ class InitDB:
                 location = data["location"],
                 adult_only = data["adult_only"],
                 vax_only = data["vax_only"],
-                description = data["description"]
+                description = data["description"],
+                gold_num = data["gold_num"],
+                gold_price = data["gold_price"],
+                silver_num = data["silver_num"],
+                silver_price = data["silver_price"],
+                bronze_num = data["bronze_num"],
+                bronze_price = data["bronze_price"]
             )
             try:
                 return self.engine.execute(query).inserted_primary_key 
@@ -248,6 +266,7 @@ class InitDB:
         host_username = self.get_host_username_from_token(token)
 
         insert_data = {}
+        insert_data['id'] = new_id
         insert_data['event_name'] = event_details['title']
         insert_data['type'] = event_details['type']
         insert_data['location'] = event_details['location']
@@ -261,7 +280,12 @@ class InitDB:
         insert_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
         insert_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
         insert_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
-        insert_data['id'] = new_id
+        insert_data['gold_num'] = event_details['gold_num']
+        insert_data['gold_price'] = event_details['gold_price']
+        insert_data['silver_num'] = event_details['silver_num']
+        insert_data['silver_price'] = event_details['silver_price']
+        insert_data['bronze_num'] = event_details['bronze_num']
+        insert_data['bronze_price'] = event_details['bronze_price']
 
         return self.insert_events(insert_data), insert_data
 
@@ -289,8 +313,13 @@ class InitDB:
         update_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
         update_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
         update_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
+        update_data['gold_num'] = event_details['gold_num']
+        update_data['gold_price'] = event_details['gold_price']
+        update_data['silver_num'] = event_details['silver_num']
+        update_data['silver_price'] = event_details['silver_price']
+        update_data['bronze_num'] = event_details['bronze_num']
+        update_data['bronze_price'] = event_details['bronze_price']
 
-        
         try:
             update_query = self.events.update().values(update_data).where(self.events.c.id == event_id)
             result = self.engine.execute(update_query)
