@@ -520,6 +520,19 @@ class MyTickets(Resource):
         user_id = temp_db.get_host_id_from_token(token)
 
         result = temp_db.select_all_tickets(user_id)
-        print(result)
+        if len(result['result']) > 0:
+            for i in result['result']:
+                start_date, start_time = temp_db.get_event_time_date(i['event_id'])
+                i['start_date'] = start_date
+                i['start_time'] = start_time
+            return {
+                'resultStatus': 'SUCCESS',
+                'result': result
+            }
 
-        return result
+        else:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'No tickets found for this user'
+            }
+        

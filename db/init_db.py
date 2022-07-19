@@ -561,6 +561,14 @@ class InitDB:
         result = ({'result': [dict(row) for row in result]})
         return result
 
+    def get_event_time_date(self, event_id):
+        event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
+        result = self.engine.execute(event_start_query)
+        result = ({'result': [dict(row) for row in result]})
+        start_date = str(result['result'][0]['start_date'])
+        start_time = str(result['result'][0]['start_time'])
+        return start_date, start_time
+
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
     db = InitDB()
