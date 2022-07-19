@@ -171,6 +171,16 @@ class User(Resource):
         result_dict['phone'] = user_record[0][9]
         result_dict['vac'] = user_record[0][10]
         
+        # Get events hosted by this user
+        result_dict['events'] = []
+        user_events = temp_db.select_events_hostid(request_userId)
+        if (len(user_events) > 0):
+            event_list = []
+            for event in user_events:
+                event_list.append({"id":event['id'], "name":event['event_name'], "startDate":event['start_date']})
+                #event_list.append([event['id']])
+            result_dict['events'] = event_list
+        
         return {
             'resultStatus': 'SUCCESS',
             'message': result_dict
@@ -411,4 +421,30 @@ class Create(Resource):
                 'message': 'failed to insert new event into events table'
             }
 
+class Filter(Resource):
+    def get(self):
+        # parse the event filter type arguments
+        parser = reqparse.RequestParser()
+        parser.add_argument('filterType', type=str, location="args")
+        args = parser.parse_args()
 
+        # assign variables
+        filter_type = args['filterType']
+        
+        # create db engine
+        temp_db = InitDB()
+        
+        # Get events hosted by this user
+        result = temp_db.select_events_bytype(filter_type)
+        
+        if not result:
+            return {
+            'resultStatus': 'ERROR',
+            'message': 'No Events Match Filter Type'
+        }
+
+        # finally return result
+        return {
+            'resultStatus': 'SUCCESS',
+            'event_details': result
+        }
