@@ -80,21 +80,26 @@ export default function BuyTicket() {
       })
       .then((res) => {
         if (res.data.resultStatus === 'SUCCESS') {
-          const newdata = {
-            gold: [],
-            silver: [],
-            bronze: [],
-          };
+          // console.log(res.data.message);
+          const newdata = {};
           for (const value of res.data.message.result) {
-            newdata[value.tix_class].push(value.seat_num);
+            const combine = [
+              value.tix_class,
+              value.ticket_price.toString(),
+            ].join();
+            if (newdata[combine] === undefined) {
+              newdata[combine] = [];
+            }
+            newdata[combine].push(value.seat_num);
           }
           const newoptions = [];
           for (const [key, value] of Object.entries(newdata)) {
             if (value.length > 0) {
-              console.log(value);
+              const labels = key.toString().split(',');
+              const label = 'Price: AUD' + labels[1] + ', ' + labels[0];
               const option = {
                 value: key,
-                label: key.toString(),
+                label: label,
                 children: value.map((item) => {
                   return {
                     value: item,
@@ -123,13 +128,14 @@ export default function BuyTicket() {
           tickets.push({
             event_id: eventid,
             seat_num: value[1],
-            tix_class: value[0],
+            tix_class: value[0].split(',')[0],
             card_number: formValues.card_number,
+            ticket_price: parseInt(value[0].split(',')[1]),
           });
         }
       }
     }
-    console.log(tickets);
+    // console.log(tickets);
     return tickets;
   }
 
@@ -138,7 +144,11 @@ export default function BuyTicket() {
     if (tickets.length === 0) {
       setTotal(0);
     } else {
-      setTotal(tickets.length);
+      let num = 0;
+      for (const tix of tickets) {
+        num += tix.ticket_price;
+      }
+      setTotal(num);
     }
   };
 
@@ -177,7 +187,11 @@ export default function BuyTicket() {
             {...formItemLayoutWithOutLabel}
             onFinish={onFinish}
             onValuesChange={onvalueChange}
+            style={{ margin: 20 }}
           >
+            <Form.Item>
+              <h1>Buy tickets</h1>
+            </Form.Item>
             <Form.List
               name='tickets'
               rules={[
@@ -247,6 +261,10 @@ export default function BuyTicket() {
               label={'Card Number:'}
               rules={[
                 { required: true, message: 'Please input your card number!' },
+                {
+                  pattern: '[0-9]{16}',
+                  message: 'Invalid card number!',
+                },
               ]}
               {...formItemLayout}
             >
