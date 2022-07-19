@@ -10,6 +10,7 @@ import EditLoginCredential from './pages/edit_login_credential';
 import EventPage from './pages/event_page';
 import CreateEvent from './pages/create_event';
 import EditEvent from './pages/edit_event';
+import MyTicket from './pages/my_ticket';
 
 function App () {
   return (
@@ -24,6 +25,7 @@ function App () {
         <Route path='/event' element={<EventPage />}></Route>
         <Route path='/create' element={<CreateEvent />}></Route>
         <Route path='/editevent/:eventid' element={<EditEvent />}></Route>
+        <Route path='/my_ticket' element={<MyTicket />}></Route>
       </Routes >
     </div >
   );
