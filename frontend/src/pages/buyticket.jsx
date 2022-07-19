@@ -141,6 +141,7 @@ export default function BuyTicket() {
       .then((res) => {
         if (res.data.resultStatus === 'SUCCESS') {
           message.success(res.data.message);
+          navigate(`/event?event_id=${eventid}`);
         } else {
           message.error(res.data.message);
         }
