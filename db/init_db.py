@@ -567,7 +567,8 @@ class InitDB:
         result = ({'result': [dict(row) for row in result]})
         start_date = str(result['result'][0]['start_date'])
         start_time = str(result['result'][0]['start_time'])
-        return start_date, start_time
+        event_name = result['result'][0]['event_name']
+        return start_date, start_time, event_name
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():

@@ -522,9 +522,10 @@ class MyTickets(Resource):
         result = temp_db.select_all_tickets(user_id)
         if len(result['result']) > 0:
             for i in result['result']:
-                start_date, start_time = temp_db.get_event_time_date(i['event_id'])
+                start_date, start_time, event_name = temp_db.get_event_time_date(i['event_id'])
                 i['start_date'] = start_date
                 i['start_time'] = start_time
+                i['event_name'] = event_name
             return {
                 'resultStatus': 'SUCCESS',
                 'result': result
