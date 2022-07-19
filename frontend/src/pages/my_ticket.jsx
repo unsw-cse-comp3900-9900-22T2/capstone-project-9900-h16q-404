@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
-import { Layout, List, Avatar, Space} from 'antd';
-import { Link } from 'react-router-dom'
+import { Layout, List, Descriptions, Card} from 'antd';
+import { Link, useNavigate} from 'react-router-dom'
 import PageHeader from '../components/page_header';
 import axios from 'axios'
+import { ExclamationCircleOutlined, StarOutlined, } from '@ant-design/icons';
+import { Button, Modal, Space } from 'antd';
+import DescriptionsItem from 'antd/lib/descriptions/Item';
 
 const { Content, Footer } = Layout;
+const { confirm } = Modal;
 
 export default function MyTicket () {
+	let navigate = useNavigate()
 	
   // hook
   const [ticketsList, setTicketsList] = useState();
 
   useEffect(()=>{
-    axios.get('localhost:5000/mytickets', {
+    axios.get('http://127.0.0.1:5000/mytickets', {
       headers: {
-        'Content-Type': 'application/json'
-      },
-			params: {
-				token: localStorage.getItem("token")
+        'Content-Type': 'application/json',
+				'token': localStorage.getItem("token")
 			}
     })
       .then(response => response.data)
@@ -26,8 +28,8 @@ export default function MyTicket () {
         console.log(JSON.stringify(data));
         if(data.resultStatus === 'SUCCESS'){
           console.log("succeed");
-          console.log(data.message);
-          setTicketsList(data.message);
+          console.log(data.result.result);
+          setTicketsList(data.result.result);
         }
       })
   }, []);
@@ -38,40 +40,74 @@ export default function MyTicket () {
       {text}
     </Space>
   );
+
+	const refundConfirm = (item) => {
+		confirm({
+			title: 'Warning',
+			icon: <ExclamationCircleOutlined />,
+			content: 'Are you sure you want to refund?',
+
+			onOk() {
+				// axios
+				axios.put('http://127.0.0.1:5000/buytickets', {
+					token: localStorage.getItem('token'),
+					tickets:[{
+						'event_id': item.event_id,
+						'seat_num': item.id,
+						'tix_class': item.tix_class
+					}]
+					})
+					.then(response => response.data)
+					.then(data => {
+						console.log(JSON.stringify(data));
+						if(data.resultStatus === 'SUCCESS'){
+							console.log("succeed");
+							console.log(data.result.result);
+							setTicketsList(data.result.result);
+						}
+					})
+					console.log("Yes, refund.")
+			},
+
+			onCancel() {},
+		});
+	};
 	
 	return (
-		<dive>
+		<div>
 			<Layout>
 				<PageHeader />
         <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
+					<h1>
+						Your tickets are shown below:
+					</h1>
           <List
-          itemLayout="vertical"
-          size="large"
+          grid={{
+						gutter: 16,
+						column: 4,
+					}}
           dataSource={ticketsList}
-          renderItem={(item) => (
-            <List.Item
-              key={item.id}
-              actions={[
-                <IconText icon={StarOutlined} text="114" key="list-vertical-star-o" />,
-                <IconText icon={LikeOutlined} text="514" key="list-vertical-like-o" />,
-                <IconText icon={MessageOutlined} text="1919" key="list-vertical-message" />,
-              ]}
-              extra={
-                <img
-                  width={272}
-                  alt="logo"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-                />
-              }
-            >
-              <List.Item.Meta
-                avatar={<Avatar src={'https://joeschmoe.io/api/v1/random'}></Avatar>}
-                title={item.event_name}
-                description={<Link to='/user?userId=2'>Mock User with userId = 2 {item.id}</Link>}
-              />
-              {"Event date: " + item.event_date}
-            </List.Item>
-            )}
+					    renderItem={(item) => (
+							<List.Item>
+								<Card 
+								title={item.event_name}
+								style={{width:230,}}
+								hoverable
+								actions={[
+									<ExclamationCircleOutlined title='refund' onClick={refundConfirm(item)}></ExclamationCircleOutlined>,
+									<StarOutlined title='Rate this event'></StarOutlined>
+								]}
+								>
+									<Descriptions column={1}>
+										<DescriptionsItem label="Ticket ID"> {item.id}</DescriptionsItem>
+										<DescriptionsItem label="Seat Class"> {item.tix_class}</DescriptionsItem>
+										<DescriptionsItem label="Seat Num"> {item.seat_num}</DescriptionsItem>
+										<DescriptionsItem label="Start From"> {item.start_date +'\n'+ item.start_time}</DescriptionsItem>
+										<DescriptionsItem label="Price"> {'$' + item.ticket_price}</DescriptionsItem>
+									</Descriptions>
+								</Card>
+						</List.Item>
+						)}
           >
           </List>
         </Content>
@@ -79,6 +115,6 @@ export default function MyTicket () {
           9900-H16Q-404
         </Footer>
 			</Layout>
-		</dive>
+		</div>
 	)
 }
