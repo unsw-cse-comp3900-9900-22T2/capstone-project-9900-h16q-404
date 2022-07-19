@@ -550,6 +550,17 @@ class InitDB:
             max_id = 0
         return max_id + 1
 
+    def select_all_tickets(self, user_id):
+        user_tickets_query = db.select([self.tickets]).where(
+            and_(
+                self.tickets.c.user_id == user_id,
+                self.tickets.c.purchased == True
+                )
+            )
+        result = self.engine.execute(user_tickets_query)
+        result = ({'result': [dict(row) for row in result]})
+        return result
+
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
     db = InitDB()
