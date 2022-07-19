@@ -14,7 +14,6 @@ import PageHeader from '../components/page_header';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-
 const { Content, Footer } = Layout;
 
 const formItemLayout = {
@@ -53,6 +52,7 @@ export default function BuyTicket() {
   const eventid = params.eventid;
   const navigate = useNavigate();
   const [token, setToken] = useState();
+  const [total, setTotal] = useState(0);
   // const dict = { gold: [1, 2, 3, 5, 6, 10], silver: [1, 3, 5, 7], bronze: [0] };
 
   const [options, setOptions] = useState();
@@ -112,11 +112,11 @@ export default function BuyTicket() {
       });
   }, [setOptions]);
 
-  const onFinish = (values) => {
-    console.log(values);
+  function convertForm(formValues) {
     const stringlist = [];
     const tickets = [];
-    for (const value of values.tickets) {
+    if (formValues.tickets === undefined) return [];
+    for (const value of formValues.tickets) {
       if (value !== undefined) {
         if (!stringlist.includes(value.join())) {
           stringlist.push(value.join());
@@ -124,10 +124,26 @@ export default function BuyTicket() {
             event_id: eventid,
             seat_num: value[1],
             tix_class: value[0],
+            card_number: formValues.card_number,
           });
         }
       }
     }
+    console.log(tickets);
+    return tickets;
+  }
+
+  const onvalueChange = (changedFields, allFields) => {
+    const tickets = convertForm(allFields);
+    if (tickets.length === 0) {
+      setTotal(0);
+    } else {
+      setTotal(tickets.length);
+    }
+  };
+
+  const onFinish = (values) => {
+    const tickets = convertForm(values);
     if (tickets.length === 0) {
       message.warning('At least 1 ticket');
       return;
@@ -160,6 +176,7 @@ export default function BuyTicket() {
             name='buyticket'
             {...formItemLayoutWithOutLabel}
             onFinish={onFinish}
+            onValuesChange={onvalueChange}
           >
             <Form.List
               name='tickets'
@@ -189,8 +206,9 @@ export default function BuyTicket() {
                           <Cascader
                             style={{
                               maxWidth: '600px',
-                              minWidth: '200px'
+                              minWidth: '200px',
                             }}
+                            expandTrigger='hover'
                             options={options}
                             showSearch={{
                               filter,
@@ -223,9 +241,26 @@ export default function BuyTicket() {
                 </>
               )}
             </Form.List>
+            <Form.Item>Total price:{total}</Form.Item>
+            <Form.Item
+              name={'card_number'}
+              label={'Card Number:'}
+              rules={[
+                { required: true, message: 'Please input your card number!' },
+              ]}
+              {...formItemLayout}
+            >
+              <Input
+                style={{
+                  maxWidth: '200px',
+                  minWidth: '50px',
+                }}
+                maxLength={16}
+              />
+            </Form.Item>
             <Form.Item>
               <Button type='primary' htmlType='submit'>
-                Submit
+                Confirm
               </Button>
             </Form.Item>
           </Form>
