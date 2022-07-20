@@ -1,5 +1,6 @@
 
-__pycache__/
-api/__pycache__/
-db/__pycache__/
+/__pycache__
+/api/__pycache__
+/db/__pycache__
 db/group_404
+.DS_Store
