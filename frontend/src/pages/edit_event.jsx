@@ -5,7 +5,7 @@ import {
   Input,
   Checkbox,
   DatePicker,
-  TimePicker,
+  Select,
   Space,
   message,
   Col,
@@ -21,6 +21,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
 const { TextArea } = Input;
+const { Option } = Select;
 /*
 Event name
 Event type
@@ -204,13 +205,30 @@ export default function EditEvent() {
               placeholder={'UNSW Show'}
               setter={setTitle}
             />
-            <InputComp
-              addon={'Type'}
-              defValue={''}
-              value={type || ''}
-              placeholder={'Show'}
-              setter={setType}
-            />
+
+            <Space className={'InputComp'}>
+              Type:
+              <Select
+                value={'' || type}
+                defaultValue={'Other'}
+                onChange={(value) => {
+                  setType(value);
+                }}
+              >
+                <Option value={'Business'}>Business</Option>
+                <Option value={'Party'}>Party</Option>
+                <Option value={'Music'}>Music</Option>
+                <Option value={'Sport'}>Sport</Option>
+                <Option value={'Food & Drink'}>Food & Drink</Option>
+                <Option value={'Film'}>Film</Option>
+                <Option value={'Festival'}>Festival</Option>
+                <Option value={'Holiday'}>Holiday</Option>
+                <Option value={'Concert'}>Concert</Option>
+                <Option value={'Funeral'}>Funeral</Option>
+                <Option value={'Other'}>Other</Option>
+              </Select>
+            </Space>
+
             <Space>
               Start data and time
               <DatePicker

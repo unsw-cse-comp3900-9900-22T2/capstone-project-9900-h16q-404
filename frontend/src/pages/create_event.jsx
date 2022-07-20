@@ -11,6 +11,7 @@ import {
   Col,
   Row,
   InputNumber,
+  Select,
 } from 'antd';
 import PageHeader from '../components/page_header';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +23,7 @@ import PropTypes from 'prop-types';
 
 const { Content } = Layout;
 const { TextArea } = Input;
+const { Option } = Select;
 
 function fileToDataURL(setImage, file) {
   const reader = new FileReader();
@@ -55,13 +57,22 @@ export const uploadImg = (setImage) => {
 /*
 Event name
 Event type
+  “Other”
+  “Festival”
+  “Party”
+  “Music”
+  “Sport”
+  “Film”
+  “Food & Drink”
+  “Business”
+  “Funeral”
 Attendance Conditions
 Start Time
 End time
 Location
+Tickets
 Description
 Pictures (optional - if we have time and its easy)
-No tickets yet
 */
 export default function CreateEvent() {
   const [token, setToken] = useState();
@@ -140,7 +151,10 @@ export default function CreateEvent() {
       message.warning('Please input event description');
       return false;
     }
-    if (ticket.gold.number + ticket.silver.number + ticket.bronze.number === 0) {
+    if (
+      ticket.gold.number + ticket.silver.number + ticket.bronze.number ===
+      0
+    ) {
       message.warning('Please define at least one valid type of tickets!');
       return false;
     }
@@ -216,6 +230,30 @@ export default function CreateEvent() {
               placeholder={'UNSW Show'}
               setter={setTitle}
             />
+
+            <Space className={'InputComp'}>
+              Type:
+              <Select
+                value={'' || type}
+                defaultValue={'Other'}
+                onChange={(value) => {
+                  setType(value);
+                }}
+              >
+                <Option value={'Business'}>Business</Option>
+                <Option value={'Party'}>Party</Option>
+                <Option value={'Music'}>Music</Option>
+                <Option value={'Sport'}>Sport</Option>
+                <Option value={'Food & Drink'}>Food & Drink</Option>
+                <Option value={'Film'}>Film</Option>
+                <Option value={'Festival'}>Festival</Option>
+                <Option value={'Holiday'}>Holiday</Option>
+                <Option value={'Concert'}>Concert</Option>
+                <Option value={'Funeral'}>Funeral</Option>
+                <Option value={'Other'}>Other</Option>
+              </Select>
+            </Space>
+
             <InputComp
               addon={'Type'}
               defValue={''}
