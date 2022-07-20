@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, List, Descriptions, Card} from 'antd';
+import { Layout, List, Descriptions, Card, message} from 'antd';
 import { Link, useNavigate} from 'react-router-dom'
 import PageHeader from '../components/page_header';
 import axios from 'axios'
@@ -42,12 +42,17 @@ export default function MyTicket () {
   );
 
 	const refundConfirm = (item) => {
+		let today = new Date();
+		let date = new Date();
+		date.setDate(today.getDate() - 7);
+		console.log(date);
 		confirm({
 			title: 'Warning',
 			icon: <ExclamationCircleOutlined />,
 			content: 'Are you sure you want to refund?',
 
 			onOk() {
+				if (today.getTime() < date.getTime()) {
 				// axios
 				axios.put('http://127.0.0.1:5000/buytickets', {
 					token: localStorage.getItem('token'),
@@ -66,7 +71,10 @@ export default function MyTicket () {
 							setTicketsList(data.result.result);
 						}
 					})
-					console.log("Yes, refund.")
+					console.log("Yes, refund.")}
+				else{
+					message("cannot cancle in 7 days");
+				}
 			},
 
 			onCancel() {},
@@ -94,7 +102,7 @@ export default function MyTicket () {
 								style={{width:230,}}
 								hoverable
 								actions={[
-									<ExclamationCircleOutlined title='refund' onClick={refundConfirm(item)}></ExclamationCircleOutlined>,
+									<ExclamationCircleOutlined title='refund' onClick={refundConfirm.bind(this, item)}></ExclamationCircleOutlined>,
 									<StarOutlined title='Rate this event'></StarOutlined>
 								]}
 								>
