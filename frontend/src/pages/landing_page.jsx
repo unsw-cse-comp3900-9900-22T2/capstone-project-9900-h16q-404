@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
-import { Layout, List, Space, Avatar, Radio } from 'antd';
+import { Layout, List, Space, Avatar, Radio, message } from 'antd';
 import { Link } from 'react-router-dom'
 import PageHeader from '../components/page_header';
 import axios from 'axios'
@@ -11,64 +11,80 @@ export default function LandingPage () {
 
   // hook
   const [eventList, setEventList] = useState();
+  const [filter, setFilter] = useState("All");
 
   const onFilterButtonChange = (e) => {
-    console.log(e.target.value);
+    setFilter(e.target.value);
+    return;
   }
 
   const FilterButtonGroup = () => {
     // check login status
     if (localStorage.getItem("token")){
       return (
-        <Radio.Group size="large" defaultValue="" buttonStyle='solid' onChange={onFilterButtonChange}>
-          <Radio.Button value="">All</Radio.Button>
-          <Radio.Button value="festival">Festival</Radio.Button>
-          <Radio.Button value="party">Party</Radio.Button>
-          <Radio.Button value="music">Music</Radio.Button>
-          <Radio.Button value="sport">Sport</Radio.Button>
-          <Radio.Button value="film">Film</Radio.Button>
-          <Radio.Button value="foodndrink">Food & Drink</Radio.Button>
-          <Radio.Button value="business">Business</Radio.Button>
-          <Radio.Button value="funeral">Funeral</Radio.Button>
-          <Radio.Button value="others">Others</Radio.Button>
-          <Radio.Button value="follower">Only from my follower</Radio.Button>
+        <Radio.Group size="large" defaultValue={filter} buttonStyle='solid' onChange={onFilterButtonChange}>
+          <Radio.Button value="All">All</Radio.Button>
+          <Radio.Button value="Festival">Festival</Radio.Button>
+          <Radio.Button value="Party">Party</Radio.Button>
+          <Radio.Button value="Music">Music</Radio.Button>
+          <Radio.Button value="Sport">Sport</Radio.Button>
+          <Radio.Button value="Film">Film</Radio.Button>
+          <Radio.Button value="Food and Drink">Food & Drink</Radio.Button>
+          <Radio.Button value="Business">Business</Radio.Button>
+          <Radio.Button value="Funeral">Funeral</Radio.Button>
+          <Radio.Button value="Others">Others</Radio.Button>
+          <Radio.Button value="Follower">Only from my follower</Radio.Button>
         </Radio.Group>
       )
     }
     else {
       return (
-        <Radio.Group size="large" defaultValue="" buttonStyle='solid' onChange={onFilterButtonChange}>
-          <Radio.Button value="">All</Radio.Button>
-          <Radio.Button value="festival">Festival</Radio.Button>
-          <Radio.Button value="party">Party</Radio.Button>
-          <Radio.Button value="music">Music</Radio.Button>
-          <Radio.Button value="sport">Sport</Radio.Button>
-          <Radio.Button value="film">Film</Radio.Button>
-          <Radio.Button value="foodndrink">Food & Drink</Radio.Button>
-          <Radio.Button value="business">Business</Radio.Button>
-          <Radio.Button value="funeral">Funeral</Radio.Button>
-          <Radio.Button value="others">Others</Radio.Button>
+        <Radio.Group size="large" defaultValue={filter} buttonStyle='solid' onChange={onFilterButtonChange}>
+          <Radio.Button value="All">All</Radio.Button>
+          <Radio.Button value="Festival">Festival</Radio.Button>
+          <Radio.Button value="Party">Party</Radio.Button>
+          <Radio.Button value="Music">Music</Radio.Button>
+          <Radio.Button value="Sport">Sport</Radio.Button>
+          <Radio.Button value="Film">Film</Radio.Button>
+          <Radio.Button value="Food and Drink">Food & Drink</Radio.Button>
+          <Radio.Button value="Business">Business</Radio.Button>
+          <Radio.Button value="Funeral">Funeral</Radio.Button>
+          <Radio.Button value="Others">Others</Radio.Button>
         </Radio.Group>
       )
     }
   }
 
   useEffect(()=>{
-    axios.get('http://127.0.0.1:5000/events', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-      .then(response => response.data)
-      .then(data => {
-        //console.log(JSON.stringify(data));
-        if(data.resultStatus === 'SUCCESS'){
-          //console.log("succeed");
-          //console.log(data.message);
-          setEventList(data.message);
-        }
+    if (filter === "All") {
+      axios.get('http://127.0.0.1:5000/events', {
+        headers: {
+          'Content-Type': 'application/json'
+        },
       })
-  }, []);
+        .then(response => response.data)
+        .then(data => {
+          if(data.resultStatus === 'SUCCESS'){
+            setEventList(data.message);
+          }
+        })
+    } else if (filter !== "Others" && filter !== "All" && filter !== "Follower") {
+      const filterURL = "http://127.0.0.1:5000/filter?filterType="+encodeURIComponent(filter);
+      axios.get(filterURL)
+        .then(response => response.data)
+        .then(data => {
+          if(data.resultStatus === 'SUCCESS'){
+            setEventList(data.event_details);
+          }
+          else{
+            message.warning(data.message);
+            setEventList([]);
+          }
+        })
+    } else {
+      message.warning("Filter type not available yet!");
+    }
+  }, [filter]);
 
   const IconText = ({ icon, text }) => (
     <Space>
