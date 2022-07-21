@@ -1,28 +1,46 @@
-import React, { useEffect } from "react";
-import { UploadOutlined } from '@ant-design/icons';
-import { Form, Input, Button, Layout, DatePicker, Radio, message } from 'antd';
+import React, { useEffect, useState } from "react";
+import { Button, Layout, message } from 'antd';
 import PageHeader from "../components/page_header";
 import { useNavigate  } from "react-router-dom";
 import axios from "axios";
+
+// borrow some input fields from create event
+import './create_event.css';
+import { InputComp } from './create_event';
 
 const { Content, Footer } = Layout;
 
 export default function EditProfile () {
 
   const navigate = useNavigate();
+  // use hooks to set all attributes
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [phone, setPhone] = useState("");
+
   // check login status, if not login redirect to landing page
   useEffect(()=>{
     if (localStorage.getItem('token') === null) {
       message.error("Please login first!", 2);
       navigate("/");
     }
+    // add a GET request to fetch user profile old details
+    const requestURL =
+    'http://127.0.0.1:5000/user?userId=' + localStorage.getItem("userId");
+    axios.get(requestURL)
+      .then((res) => res.data.message)
+      .then((data) => {
+        setFirstname(data.firstname);
+        setLastname(data.lastname);
+        setPhone(data.phone);
+      });
   }, [navigate])
 
-  const onFinish = (values) => {
+  const onFinish = () => {
     const body = {
-      "firstName": values.firstname,
-      "lastName": values.lastname,
-      "phone": values.phone,
+      "firstName": firstname,
+      "lastName": lastname,
+      "phone": phone,
       "token": localStorage.getItem('token')
     }
     axios.patch("http://127.0.0.1:5000/user/details", body)
@@ -41,27 +59,8 @@ export default function EditProfile () {
       })
   };
 
-  const onFinishSensitive = (values) => {
-    values.dateOfBirth = values.dateOfBirth.format("YYYY-MM-DD");
-    values = {
-      ...values,
-      'vaccinated': false,
-      'token': localStorage.getItem('token')
-    }
-    axios.patch('http://127.0.0.1:5000/user/sensitive_details', values)
-      .then(res => res.data)
-      .then(data => {
-        const resultStatus= data.resultStatus;
-        const info = data.message;
-        if (resultStatus === "SUCCESS") {
-          message.success(info);
-          const detailsLocation = '/user?userId='+localStorage.getItem('userId');
-          navigate(detailsLocation);
-        }
-        else{
-          message.error(info);
-        }
-      })
+  const onBack = () => {
+    navigate(-1);
   }
 
   return (
@@ -69,71 +68,49 @@ export default function EditProfile () {
       <Layout>
         <PageHeader />
         <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
-        <h1>Edit Basic Profile</h1>
-          <Form
-            name="edit-basic"
-            onFinish={onFinish}
-          >
-            <Form.Item
-              label="First Name"
-              name="firstname"
-            >
-              <Input/>
-            </Form.Item>
-            <Form.Item
-              label="Last Name"
-              name="lastname"
-            >
-              <Input/>
-            </Form.Item>
-            <Form.Item
-              label="Phone"
-              name="phone"
-            >
-              <Input/>
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
+        <div className="new_event">
+          <h1 style={{marginTop: '5px', marginBottom: '5px'}}>Edit Profile</h1>
+          <br></br>
+          <InputComp
+            addon='First name'
+            defValue={''}
+            value={firstname || ''}
+            placeholder={''}
+            setter={setFirstname}
+          />
+          <InputComp 
+            addon={'Last name'}
+            defValue={''}
+            value={lastname || ''}
+            placeholder={''}
+            setter={setLastname}
+          />
+          <InputComp 
+            addon={'Phone'}
+            defValue={''}
+            value={phone || ''}
+            placeholder={''}
+            setter={setPhone}
+          />
+        </div>
+        <div>
+          Want to change email or password? <a href='/edit_login_credential'>Click here to edit login credentials.</a>
+          <br />
+          Want to change admittance related details? <a href="/edit_sensitive_profile">Click here to edit sensitive details.</a> 
+        </div>
         <br />
-        <h1>Edit Sensitive Profile</h1>
-        <h4>Warning: you can only change the following profile once a month</h4>
-          <Form
-            name="edit-sensitive"
-            onFinish={onFinishSensitive}
-          >
-            <Form.Item
-              name="dateOfBirth"
-              label="Date Of Birth"
-            >
-              <DatePicker />
-            </Form.Item>
-
-            <Form.Item
-              name="gender"
-              label="Gender"
-            >
-              <Radio.Group buttonStyle="solid">
-                <Radio.Button value="Male">Male</Radio.Button>
-                <Radio.Button value="Female">Female</Radio.Button>
-                <Radio.Button value="LGBTQI+">LGBTQI+</Radio.Button>
-                <Radio.Button value="Not Specified">Not Specified</Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
+        <div className="ButtonSet">
+          <Button
+            onClick={onFinish}
+            className='Sendbutton'
+            type="primary"
+          >Send</Button>
+          <Button
+            onClick={onBack}
+            className='Sendbutton'
+          >Back</Button>
+        </div>
         <br />
-        <h1>Please upload your COVID-19 vaccination proof here</h1>
-        <Button disabled icon={<UploadOutlined />}>Upload</Button>
-        <br />
-        
         </Content>
         <Footer style={{textAlign:'center'}}>
           9900-H16Q-404

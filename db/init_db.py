@@ -11,9 +11,8 @@ the database.
 '''
 
 from asyncio import events
-from sqlalchemy.exc import IntegrityError
-from psycopg2 import IntegrityError
 from requests import delete
+from sqlalchemy.exc import IntegrityError
 import sqlalchemy as db
 from sqlalchemy import ForeignKey, null, select, and_, func
 import pandas as pd
@@ -127,10 +126,10 @@ class InitDB:
                 "email" : row.username,
                 "firstName" : '',
                 "lastName" : '',
-                "dateOfBirth" : '',
+                "dateOfBirth" : datetime.datetime.strptime(row.dob, '%Y-%m-%d').date(),
                 "gender" : '',
                 "phone" : '',
-                "vaccinated" : ''
+                "vaccinated" : row.vac
             }
             new_id = self.insert_users(data)
 
@@ -150,13 +149,13 @@ class InitDB:
                 username = data["username"],
                 password = data["password"],
                 token = data["token"],
-                email = data['username']
+                email = data['username'],
                 #firstName = '',
                 #lastName = '',
-                #dateOfBirth = '',
+                dateOfBirth = data['dateOfBirth'],
                 #gender = '',
                 #phone = '',
-                #vaccinated = ''
+                vaccinated = data['vaccinated']
             )
             try:
                 return self.engine.execute(query).inserted_primary_key 
@@ -353,6 +352,47 @@ class InitDB:
             return result["result"]
         except IntegrityError as e:
             return (400, "Could not select from table")
+    
+    def select_events_hostid(self, host_id):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.host == host_id,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def select_events_bytype(self, type):
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.type == type,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
 
     def check_event_exists(self, event_detail, event_col):
         event_exists = False

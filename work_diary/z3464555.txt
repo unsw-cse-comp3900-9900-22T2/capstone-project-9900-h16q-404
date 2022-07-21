@@ -45,3 +45,37 @@ Week 5 (Sunday 26th June - Thursday 30th June):
 - The whole team then met early on Thursday and we finished the register page feature, tested it together and then merged to main.
 - We then had a discussion about how to perform the demo.
 - I then fixed up the requirements and README for the backend and prepared the sprint review, sprint retro and sprint planning agendas.
+
+Week 5 (Thursday 30th June - Sunday 3rd July):
+- Facilitied the sprint retro and sprint planning session, also typed up the sprint retro document ready or submission
+- Began work on the events backend
+- Added the delete, get and post functionality for event page
+- Facilitiated the Sunday morning standup
+
+Week 6 (Sunday 3rd July - Thursday 7th July):
+- I was quite sick this week and hence development work was limited
+- I still facilitiated the Thursday meeting/sprint planning but not much work was progressed
+- I obviously forgot to click the "start sprint" button in JIRA which messed up our sprint structure
+
+Week 6 (Thursday 7th July - Sunday 10th July):
+- Updated the events table with new event info that was required
+- I updated the Event/POST request and response functionality 
+- Performed some bug fixing 
+- Facilitiated and prepared for the Sunday standup
+- Major co-dev session on Thursday which we unified the frontend and backend
+
+Week 7 (Sunday 10th July - Thursday 14th July):
+- Create event finalised
+- Update event finalised
+- A bunch of pull requests needed to unify the front and backend
+
+Week 7 (Thursday 14th July - Sunday 17th July):
+- Facilitiated the sprint planning meeting
+- Started work on the Tickets table and data model
+- 
+
+Week 8 (Sunday 17th July - Thursday 21st July):
+- Completed the Buy Tickets and My Tickets resources, api calls and relevant db functions
+- Facilitiated and organised the Tuesday co-dev session where frontend and backend work was linked 
+- Planned the code refactor 
+- Facilitated the co-dev frontend and backend unification
