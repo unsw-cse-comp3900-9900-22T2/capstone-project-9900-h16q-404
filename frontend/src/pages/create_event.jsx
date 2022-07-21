@@ -77,7 +77,7 @@ Pictures (optional - if we have time and its easy)
 export default function CreateEvent() {
   const [token, setToken] = useState();
   const [title, setTitle] = useState();
-  const [type, setType] = useState();
+  const [type, setType] = useState('Other');
 
   const [startDate, setStartDate] = useState();
   const [startTime, setStartTime] = useState();
@@ -102,7 +102,7 @@ export default function CreateEvent() {
   const navigate = useNavigate();
   const test = () => {
     setTitle('testtitle');
-    setType('Concert');
+    setType('Other');
     setStartDate('2020-01-01');
     setStartTime('01:01');
     setEndDate('2020-01-02');
@@ -139,6 +139,19 @@ export default function CreateEvent() {
 
     if (endDate === '' || endDate === undefined) {
       message.warning('Please select end time of the event');
+      return false;
+    }
+
+    if (moment((startDate+startTime), 'YYYY-MM-DDHH:mm') <= moment()){
+      message.warning('Please select a start time later than now!');
+      return false;
+    }
+
+    if (
+      moment(startDate + startTime, 'YYYY-MM-DDHH:mm') >=
+      moment(endDate + endTime, 'YYYY-MM-DDHH:mm')
+    ) {
+      message.warning('The end time should be later than start time');
       return false;
     }
 
@@ -249,8 +262,6 @@ export default function CreateEvent() {
                 <Option value={'Food & Drink'}>Food & Drink</Option>
                 <Option value={'Film'}>Film</Option>
                 <Option value={'Festival'}>Festival</Option>
-                <Option value={'Holiday'}>Holiday</Option>
-                <Option value={'Concert'}>Concert</Option>
                 <Option value={'Funeral'}>Funeral</Option>
                 <Option value={'Other'}>Other</Option>
               </Select>

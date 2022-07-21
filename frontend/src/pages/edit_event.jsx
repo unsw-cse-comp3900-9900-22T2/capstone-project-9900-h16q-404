@@ -123,6 +123,19 @@ export default function EditEvent() {
       return false;
     }
 
+    if (moment(startDate + startTime, 'YYYY-MM-DDHH:mm') <= moment()) {
+      message.warning('Please select a start time later than now!');
+      return false;
+    }
+
+    if (
+      moment(startDate + startTime, 'YYYY-MM-DDHH:mm') >=
+      moment(endDate + endTime, 'YYYY-MM-DDHH:mm')
+    ) {
+      message.warning('The end time should be later than start time');
+      return false;
+    }
+
     if (location === '' || location === undefined) {
       message.warning('Please input event location');
       return false;
