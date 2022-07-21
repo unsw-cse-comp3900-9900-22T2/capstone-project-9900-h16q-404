@@ -58,7 +58,7 @@ export default function MyTicket () {
 					token: localStorage.getItem('token'),
 					tickets:[{
 						'event_id': item.event_id,
-						'seat_num': item.id,
+						'seat_num': item.seat_num,
 						'tix_class': item.tix_class
 					}]
 					})

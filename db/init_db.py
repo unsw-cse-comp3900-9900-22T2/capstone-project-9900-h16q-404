@@ -579,7 +579,7 @@ class InitDB:
 
     def refund_tickets(self, data, user_id):
         data = json.loads(data.replace("'", '"'))
-        update_query = self.tickets.update().values(purchased=db.false(), user_id="", card_number="").where(
+        update_query = self.tickets.update().values(purchased=db.false(), user_id=db.null(), card_number=db.null()).where(
             and_(
                 self.tickets.c.user_id == user_id,
                 self.tickets.c.event_id == data['event_id'],
