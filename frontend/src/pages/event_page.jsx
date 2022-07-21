@@ -1,8 +1,3 @@
-/*TODO:
-	DONE--Step1: finish a static page containing all elements
-	Step2: make the elements show/hide depend on host id and make query url, send delete msg to backend
-	Step3: add link to event card
-*/
 import React, { useState, useEffect } from 'react';
 import { Layout, Descriptions, Rate, Collapse, Modal } from 'antd';
 import PageHeader from '../components/page_header';
@@ -19,28 +14,16 @@ const { Content, Footer } = Layout;
 // Component of rating stars
 const Rating = () => <Rate allowHalf defaultValue={2.5}/>;
 
-// Component of button buying tickets and remaing statistics
-const TicketBar = () => (
-  <Row gutter={16}>
-    <Col span={12}>
-      <Button style={{ marginTop: 16 }} type="primary">
-        Buy A Ticket
-      </Button>
-    </Col>
-    <Col span={12}>
-      <Statistic title="Unmerged" value={93} suffix="/ 100" />
-    </Col>
-  </Row>
-);
-
 // To return event page
 export default function EventPage () {
 
 	const [searchParams] = useSearchParams();
   const [eventInfo, setEventInfo] = useState({});
+  const [usrInfo, setUsrInfo] = useState({});
 
 	useEffect(() => {
-		const requestURL = 'http://127.0.0.1:5000/event?event_id=' + searchParams.get("event_id");
+		var requestURL = 
+				'http://127.0.0.1:5000/event?event_id=' + searchParams.get("event_id");
 		console.log("Sending request with event_id=" + searchParams.get("event_id"));
 		axios.get(requestURL)
 			.then(res => res.data.event_details)
@@ -55,7 +38,26 @@ export default function EventPage () {
 				message.error("This event does not exist...", 5);
 				//navigate('/');
 			});
-		},[searchParams]);
+			
+		if(localStorage.getItem('userId') != null)
+		{requestURL =
+			'http://127.0.0.1:5000/user?userId=' + localStorage.getItem('userId');
+		axios
+			.get(requestURL, {
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+			.then((res) => res.data.message)
+			.then((data) => {
+				console.log("getting user info...")
+				console.log(data);
+				setUsrInfo(data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});}
+		}, [searchParams]);
 
 	let navigate = useNavigate();
 
@@ -84,14 +86,32 @@ export default function EventPage () {
 	let time = eventInfo.start_date + " " + eventInfo.start_time + " to " + 
 						eventInfo.end_date + " " + eventInfo.end_time;
 
+	function usrIsNotAdult() {
+		let date = new Date(usrInfo.dateOfBirth);
+		var diff_ms = Date.now() - date.getTime();
+		var age_dt = new Date(diff_ms); 
+		var year = Math.abs(age_dt.getUTCFullYear() - 1970);
+		console.log(year);
+		if (year < 18) {
+			return true;
+		}
+		else {
+			// console.log("can not by as you are teen.");
+			return false;
+		}
+	}
+
 	// Component of event Description
 	const EventInfoBlock = () => (
 		<Descriptions title="Event Info">
 			<Descriptions.Item label="Event Name">{eventInfo.event_name}</Descriptions.Item>
 			<Descriptions.Item label="Type">{eventInfo.type}</Descriptions.Item>
 			<Descriptions.Item label="Host">
-				<Button type="link">{eventInfo.host}</Button>
+				<Button 
+				type="link"
+				href={"user?userId=" + eventInfo.host}>{eventInfo.host_username}</Button>
 			</Descriptions.Item>
+			<Descriptions.Item label="location">{eventInfo.location}</Descriptions.Item>
 			<Descriptions.Item label="Rating"><Rating/></Descriptions.Item>
 			<Descriptions.Item label="Time">{time}</Descriptions.Item>
 		</Descriptions>
@@ -127,6 +147,26 @@ export default function EventPage () {
 		);
 	};
 
+	// Component of button buying tickets and remaing statistics
+	const TicketBar = () => (
+		<Row gutter={16}>
+			<Col span={12}>
+				<Button 
+				style={{ marginTop: 16 }} 
+				type="primary"
+				disabled={
+					(usrInfo.vac != true && eventInfo.vax_only) ||
+					(usrIsNotAdult() && eventInfo.adult_only)
+				}>
+					Buy A Ticket
+				</Button>
+			</Col>
+			<Col span={12}>
+				<Statistic title="Unmerged" value={93} suffix="/ 100" />
+			</Col>
+		</Row>
+	);
+
 	return (
 		<div>
 			<Layout>
@@ -152,7 +192,7 @@ export default function EventPage () {
 
 					{ eventInfo.host == localStorage.getItem("userId") ? <>
 					<Button>Send Message</Button>
-					<Button>Edit Event</Button>
+					<Button href={'/editevent/'+ searchParams.get("event_id")}>Edit Event</Button>
 					<Button onClick={deleteConfirm}>
 						Delete
 					</Button>

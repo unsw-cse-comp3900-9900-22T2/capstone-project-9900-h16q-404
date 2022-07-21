@@ -1,9 +1,9 @@
 id,event_name,host,host_username,type,start_date,start_time,end_date,end_time,deleted,location,adult_only,vax_only,description,gold_num,gold_price,silver_num,silver_price,bronze_num,bronze_price
-1,Gang of Youths,1,ben_mccoy@gmail.com,Concert,08-07-2022,18:00,08-07-2022,21:00,false,Hordern Pavillion,true,true,A late night musical event,100,100,50,50,25,25
+1,Gang of Youths,1,ben_mccoy@gmail.com,Music,08-07-2022,18:00,08-07-2022,21:00,false,Hordern Pavillion,true,true,A late night musical event,100,100,50,50,25,25
 2,Diwali,1,ben_mccoy@gmail.com,Festival,18-02-2022,12:00,19-02-2022,20:00,false,India,false,false,A traditional Indian festival,60,150,50,50,25,25
-3,Christmas,1,ben_mccoy@gmail.com,Holiday,25-12-2022,09:00,25-12-2022,23:59,false,The Beach,false,false,A christian holiday,100,200,50,50,25,25
+3,Christmas,1,ben_mccoy@gmail.com,Festival,25-12-2022,09:00,25-12-2022,23:59,false,The Beach,false,false,A christian holiday,100,200,50,50,25,25
 4,Idul Fitri,2,john_wayne@hotmail.com,Festival,08-08-2022,18:00,10-08-2022,21:00,false,Indonesia,true,false,A muslim holiday,100,10,5,4,2,2
-5,Chinese New Year,2,john_wayne@hotmail.com,Holiday,08-03-2022,08:00,08-03-2022,23:59,false,China,false,true,A chinese holiday,90,110,50,50,25,25
+5,Chinese New Year,2,john_wayne@hotmail.com,Festival,08-03-2022,08:00,08-03-2022,23:59,false,China,false,true,A chinese holiday,90,110,50,50,25,25
 6,Operation Pyrite,3,yunran@gmail.com,Music,03-08-2022,08:00,03-08-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,50,100,70,75,120,50
 7,Operation Blade,3,yunran@gmail.com,Music,05-08-2022,08:00,05-08-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,50,100,70,75,120,50
 8,Operation Cinder,3,yunran@gmail.com,Music,08-08-2022,08:00,08-08-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,50,100,70,75,120,50

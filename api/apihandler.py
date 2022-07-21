@@ -467,7 +467,33 @@ class Create(Resource):
                 'message': 'failed to insert new event into events table'
             }
 
+class Filter(Resource):
+    def get(self):
+        # parse the event filter type arguments
+        parser = reqparse.RequestParser()
+        parser.add_argument('filterType', type=str, location="args")
+        args = parser.parse_args()
 
+        # assign variables
+        filter_type = args['filterType']
+        
+        # create db engine
+        temp_db = InitDB()
+        
+        # Get events hosted by this user
+        result = temp_db.select_events_bytype(filter_type)
+        
+        if not result:
+            return {
+            'resultStatus': 'ERROR',
+            'message': 'No Events Match Filter Type'
+        }
+
+        # finally return result
+        return {
+            'resultStatus': 'SUCCESS',
+            'event_details': result
+        }
 class BuyTickets(Resource):
     def get(self):
 
@@ -563,18 +589,15 @@ class BuyTickets(Resource):
 
 class MyTickets(Resource):
     def get(self):
-
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str, location='headers')
         args = parser.parse_args()
-
         # assign variables
         token = args['token']
 
         # create db engine
         temp_db = InitDB()
         user_id = temp_db.get_host_id_from_token(token)
-
         result = temp_db.select_all_tickets(user_id)
         if len(result['result']) > 0:
             for i in result['result']:
