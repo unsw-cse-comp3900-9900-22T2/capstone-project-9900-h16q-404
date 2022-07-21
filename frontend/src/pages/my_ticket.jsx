@@ -41,18 +41,18 @@ export default function MyTicket () {
     </Space>
   );
 
+	let today = new Date();
+	let sevenDaysBefore = new Date();
+	sevenDaysBefore.setDate(today.getDate() - 7);
+	console.log(sevenDaysBefore);
+
 	const refundConfirm = (item) => {
-		let today = new Date();
-		let date = new Date();
-		date.setDate(today.getDate() - 7);
-		console.log(date);
 		confirm({
 			title: 'Warning',
 			icon: <ExclamationCircleOutlined />,
 			content: 'Are you sure you want to refund?',
-
 			onOk() {
-				if (today.getTime() < date.getTime()) {
+				if (today.getTime() < sevenDaysBefore.getTime()) {
 				// axios
 				axios.put('http://127.0.0.1:5000/buytickets', {
 					token: localStorage.getItem('token'),
@@ -71,9 +71,10 @@ export default function MyTicket () {
 							setTicketsList(data.result.result);
 						}
 					})
-					console.log("Yes, refund.")}
+					console.log("Yes, refund.")
+				}
 				else{
-					message("cannot cancle in 7 days");
+					console.log("cannot refund because it is a past event or less than 7 days.")
 				}
 			},
 
