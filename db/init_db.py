@@ -11,9 +11,8 @@ the database.
 '''
 
 from asyncio import events
-from sqlalchemy.exc import IntegrityError
-from psycopg2 import IntegrityError
 from requests import delete
+from sqlalchemy.exc import IntegrityError
 import sqlalchemy as db
 from sqlalchemy import ForeignKey, null, select, and_, func
 import pandas as pd
@@ -359,6 +358,26 @@ class InitDB:
         query = db.select([self.events]).where(
             and_(
                 self.events.c.host == host_id,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def select_events_bytype(self, type):
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.type == type,
                 self.events.c.deleted == False
                 )
             )
