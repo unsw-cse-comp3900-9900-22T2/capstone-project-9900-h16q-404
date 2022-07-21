@@ -10,7 +10,11 @@ const menu = (
         label: (<Link to='/edit_profile'>Edit Profile</Link>)
       },
       {
-        key:'2',
+        ket:'2',
+        label: (<Link to='/edit_sensitive_profile'>Edit Sensitive Profile</Link>)
+      },
+      {
+        key:'3',
         label:(<Link to='/edit_login_credential'>Edit Login Credentials</Link>)
       }
     ]}  

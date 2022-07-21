@@ -1,7 +1,6 @@
 
-__pycache__/app.cpython-37.pyc
-api/__pycache__/apihandler.cpython-37.pyc
-db/__pycache__/init_db.cpython-37.pyc
-
-*.pyc
+/__pycache__
+/api/__pycache__
+/db/__pycache__
 db/group_404
+.DS_Store

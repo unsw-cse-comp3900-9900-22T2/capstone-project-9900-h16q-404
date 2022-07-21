@@ -47,3 +47,11 @@ On Sunday they work good.
 Sprint 3 starts with most of Sprint 2 works on continue.
 I am also assigned the search bar functions.
 Still need to research on file uploading functions.
+
+Week 7
+Sprint 2 works completed.
+Met on Tuesday, Thursday and Sunday.
+The event page and profile page works,
+The new event, edit event and edit edit profile works.
+Found some bugs, aim to fix them all in this sprints.
+I am assigned on filter front-end, and events-on-profile-page front-end.

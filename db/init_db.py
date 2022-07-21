@@ -11,14 +11,14 @@ the database.
 '''
 
 from asyncio import events
-from sqlalchemy.exc import IntegrityError
-from psycopg2 import IntegrityError
 from requests import delete
+from sqlalchemy.exc import IntegrityError
 import sqlalchemy as db
-from sqlalchemy import select, and_, func
+from sqlalchemy import ForeignKey, null, select, and_, func
 import pandas as pd
 import datetime
 from flask import jsonify
+import json
 
 # InitDB class
 class InitDB:
@@ -66,6 +66,17 @@ class InitDB:
             db.Column('gender', db.String(255), nullable=True),
             db.Column('phone', db.String(255), nullable=True),
             db.Column('vaccinated', db.Boolean(), nullable=True)
+        )
+
+        self.tickets = db.Table('tickets', self.metadata,
+            db.Column('id', db.Integer(), primary_key=True),
+            db.Column('event_id', db.Integer(), ForeignKey('events.id'), nullable=False),
+            db.Column('user_id', db.Integer(), ForeignKey('users.id'), nullable=True),
+            db.Column('seat_num', db.Integer(), nullable=False),
+            db.Column('tix_class', db.String(10), nullable=False),
+            db.Column('purchased', db.Boolean(), nullable=False),
+            db.Column('card_number', db.Integer(), nullable=True),
+            db.Column('ticket_price', db.String(16), nullable=False)
         )
         
         # create all objects in the metadata object
@@ -120,16 +131,13 @@ class InitDB:
                 "phone" : '',
                 "vaccinated" : ''
             }
-            #print(data)
             new_id = self.insert_users(data)
-            print(new_id)
 
     def insert_users(self, data):
         insert_check = True
         check_query = db.select([self.users]).where(self.users.c.id == data["id"])
         check_result = self.engine.execute(check_query)
         check_result = ({'result': [dict(row) for row in check_result]})
-        print(check_result)
         for i in range(len(check_result['result'])):
              if data["id"] == (check_result["result"][i]['id']):
                 insert_check = False
@@ -196,7 +204,9 @@ class InitDB:
                 bronze_price = data["bronze_price"]
             )
             try:
-                return self.engine.execute(query).inserted_primary_key 
+                result = self.engine.execute(query).inserted_primary_key 
+                self.pre_fill_tickets(data)
+                return result
             except:
                 return -1
         else:
@@ -287,7 +297,8 @@ class InitDB:
         insert_data['bronze_num'] = event_details['bronze_num']
         insert_data['bronze_price'] = event_details['bronze_price']
 
-        return self.insert_events(insert_data), insert_data
+        result = self.insert_events(insert_data), insert_data
+        return result
 
     def update_event(self, event_id, event_details, token):
         # TODO:
@@ -341,6 +352,47 @@ class InitDB:
             return result["result"]
         except IntegrityError as e:
             return (400, "Could not select from table")
+    
+    def select_events_hostid(self, host_id):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.host == host_id,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def select_events_bytype(self, type):
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.type == type,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
 
     def check_event_exists(self, event_detail, event_col):
         event_exists = False
@@ -403,7 +455,6 @@ class InitDB:
         user_exists = False
         check_query = db.select([self.users]).where(self.users.c.id == userid)
         check_result = self.engine.execute(check_query).fetchall()
-        print(check_result)
         if len(check_result) > 0:
             user_exists = True
         return user_exists
@@ -411,7 +462,6 @@ class InitDB:
     def get_user_record(self, userid):
         user_query = db.select([self.users]).where(self.users.c.id == userid)
         user_result = self.engine.execute(user_query).fetchall()
-        #print(user_result)
         if len(user_result) > 0:
             return user_result
         else:
@@ -420,7 +470,6 @@ class InitDB:
     def get_user_record_byname(self, username):
         user_query = db.select([self.users]).where(self.users.c.username == username)
         user_result = self.engine.execute(user_query).fetchall()
-        #print(user_result)
         if len(user_result) > 0:
             return user_result
         else:
@@ -430,8 +479,6 @@ class InitDB:
         user_exists = False
         check_query = db.select([self.users]).where(self.users.c.token == usertoken)
         check_result = self.engine.execute(check_query).fetchall()
-        print(usertoken)
-        print(check_result)
         if len(check_result) > 0:
             user_exists = True
         return user_exists
@@ -480,6 +527,89 @@ class InitDB:
         else:
             return list_result[0]['username']
     
+    def select_tickets_event_id(self, event_id):
+        tickets_query = db.select([self.tickets]).where(
+            and_(
+                self.tickets.c.event_id == event_id,
+                self.tickets.c.purchased == False
+                )
+            )
+        result = self.engine.execute(tickets_query)
+        result = ({'result': [dict(row) for row in result]})
+        return result
+
+    def pre_fill_tickets(self, data):
+        self.insert_tix(data['gold_num'], 'gold', data['id'], data['gold_price'])
+        self.insert_tix(data['silver_num'], 'silver', data['id'], data['silver_price'])
+        self.insert_tix(data['bronze_num'], 'bronze', data['id'], data['bronze_price'])
+        pass
+
+    def insert_tix(self, num_tix, tix_class, event_ID, price):
+        for i in range(num_tix):
+            query = db.insert(self.tickets).values(
+                id = self.get_max_ticket_id(),
+                event_id = event_ID,
+                tix_class = tix_class,
+                seat_num = i,
+                purchased = False,
+                ticket_price = price
+            )
+            result = self.engine.execute(query).inserted_primary_key
+
+    def reserve_tickets(self, data, user_id):
+        data = json.loads(data.replace("'", '"'))
+        card_number = data['card_number']
+        update_query = self.tickets.update().values(purchased=True, user_id=user_id, card_number=card_number).where(
+            and_(
+                self.tickets.c.event_id == data['event_id'],
+                self.tickets.c.seat_num == data['seat_num'],
+                self.tickets.c.tix_class == data['tix_class']
+                )
+            )
+        result = self.engine.execute(update_query)
+        return result
+
+    def refund_tickets(self, data, user_id):
+        data = json.loads(data.replace("'", '"'))
+        update_query = self.tickets.update().values(purchased=False, user_id="", card_number="").where(
+            and_(
+                self.tickets.c.user_id == user_id,
+                self.tickets.c.event_id == data['event_id'],
+                self.tickets.c.seat_num == data['seat_num'],
+                self.tickets.c.tix_class == data['tix_class']
+                )
+            )
+        result = self.engine.execute(update_query)
+        return result
+
+    def get_max_ticket_id(self):
+        # returns the highest id in the tickets table plus 1
+        query_max_id = db.select([db.func.max(self.tickets.columns.id)])
+        max_id = self.engine.execute(query_max_id).scalar()
+        if max_id == None:
+            max_id = 0
+        return max_id + 1
+
+    def select_all_tickets(self, user_id):
+        user_tickets_query = db.select([self.tickets]).where(
+            and_(
+                self.tickets.c.user_id == user_id,
+                self.tickets.c.purchased == True
+                )
+            )
+        result = self.engine.execute(user_tickets_query)
+        result = ({'result': [dict(row) for row in result]})
+        return result
+
+    def get_event_time_date(self, event_id):
+        event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
+        result = self.engine.execute(event_start_query)
+        result = ({'result': [dict(row) for row in result]})
+        start_date = str(result['result'][0]['start_date'])
+        start_time = str(result['result'][0]['start_time'])
+        event_name = result['result'][0]['event_name']
+        return start_date, start_time, event_name
+
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
     db = InitDB()

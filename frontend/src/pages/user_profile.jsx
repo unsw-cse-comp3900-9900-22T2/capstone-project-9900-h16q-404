@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Avatar, Rate, Button, message, List } from 'antd';
+import { Layout, Avatar, Rate, Button, message, List, Divider } from 'antd';
 import PageHeader from '../components/page_header';
 import './user_profile.css';
 import { UserOutlined } from '@ant-design/icons';
-import { useSearchParams, Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,8 @@ export default function UserProfilePage() {
   const [isSelfProfle, setSelfProfile] = useState(false);
   const [followed, setFollow] = useState(false);
   const [details, setDetails] = useState({});
+  const [pastEvent, setPastEvent] = useState([]);
+  const [ucEvent, setUCEvent] = useState([]);
   const navigate = useNavigate();
 
   const followButtonOnClick = () => {
@@ -30,20 +32,10 @@ export default function UserProfilePage() {
     // compare the userId in params with userId in localStorage
     if (searchParams.get('userId') === localStorage.getItem('userId')) {
       setSelfProfile(true);
-    } else if (searchParams.get('userId') !== localStorage.getItem('userId')) {
+    } else if ( searchParams.get('userId') || searchParams.get('userId') !== localStorage.getItem('userId')) {
+      // not logged in or not self profile
       setSelfProfile(false);
       setFollow(false);
-      // get rid of followed or not in this stage
-      /*
-      if(searchParams.get("followed") === "true"){
-        //console.log("followed");
-        setFollow(true);
-      }
-      else {
-        //console.log("unfollowed");
-        setFollow(false);
-      }
-      */
     } else {
       message.error('Oops... Something went wrong');
     }
@@ -58,8 +50,23 @@ export default function UserProfilePage() {
       })
       .then((res) => res.data.message)
       .then((data) => {
-        //console.log(data);
+        //console.log(data.events);
         setDetails(data);
+        let dataPastEvent = [];
+        let dataUCEvent = [];
+        for (const event of data.events){
+          //console.log(event);
+          const today = new Date();
+          const eventDay = Date.parse(event.startDate);
+          if (today <= eventDay) {
+            dataUCEvent.push(event);
+          }
+          else {
+            dataPastEvent.push(event);
+          }
+        }
+        setPastEvent(dataPastEvent);
+        setUCEvent(dataUCEvent);
       });
   }, [searchParams]);
 
@@ -81,14 +88,7 @@ export default function UserProfilePage() {
           <div className='basic-profile-zone'>
             <div className='name-zone'>
               <h1>
-                {'Welcome, ' + fullname}
-                {isSelfProfle ? (
-                  <Link to='/edit_profile'>
-                    <Button>Edit Profile</Button>
-                  </Link>
-                ) : (
-                  <></>
-                )}
+                { fullname }
               </h1>
               <h3>Email: {details.email}</h3>
               <h3>
@@ -149,28 +149,42 @@ export default function UserProfilePage() {
           </div>
 
           <div className='event-zone'>
-            <Button
-              type='primary'
-              onClick={() => {
-                navigate('/create');
-              }}
-            >
-              Create event
-            </Button>
+            { isSelfProfle 
+              ? (<>
+                  <Button
+                    type='primary'
+                    onClick={() => {
+                      navigate('/create');
+                    }}
+                  >
+                    Create event
+                  </Button>
+                </>) 
+              : (<></>) }
+            <Divider orientation="left">Past Events</Divider>
             <List
-              size='small'
-              header={<div>Past Events</div>}
               bordered
-              dataSource={['mock past event 1', 'mock past event 2']}
-              renderItem={(item) => <List.Item>{item}</List.Item>}
+              dataSource={pastEvent}
+              renderItem={(item) => 
+                <List.Item>
+                  <List.Item.Meta 
+                    title={<Link to={"/event?event_id="+item.id}>{item.name}</Link>}
+                    description={"Held on " + item.startDate}
+                  />
+                </List.Item>}
             ></List>
             <br />
+            <Divider orientation="left">Upcoming Events</Divider>
             <List
-              size='small'
-              header={<div>Upcoming Events</div>}
               bordered
-              dataSource={['mock upcoming event 1', 'mock upcoming event 2']}
-              renderItem={(item) => <List.Item>{item}</List.Item>}
+              dataSource={ucEvent}
+              renderItem={(item) => 
+                <List.Item>
+                  <List.Item.Meta
+                    title={<Link to={"/event?event_id="+item.id}>{item.name}</Link>}
+                    description={"Coming on " + item.startDate}
+                  />
+                </List.Item>}
             ></List>
           </div>
         </Content>

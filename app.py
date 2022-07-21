@@ -20,7 +20,7 @@ This file performs the below in order:
 from flask import Flask, send_from_directory
 from flask_restful import Api, Resource, reqparse
 from flask_cors import CORS
-from api.apihandler import Test, Register, Events, Login, User, UserDetails, UserSensitiveDetails, UserChangePassword, Event, Create
+from api.apihandler import Test, Register, Events, Login, User, UserDetails, UserSensitiveDetails, UserChangePassword, Event, Create, Filter, BuyTickets, MyTickets
 from db.init_db import db_main
 
 # Run db_main() in the init_db.py file to create the DB and fill it with data
@@ -43,3 +43,6 @@ api.add_resource(UserSensitiveDetails, '/user/sensitive_details')
 api.add_resource(UserChangePassword, '/user/login_credentials')
 api.add_resource(Event, '/event')
 api.add_resource(Create, '/create')
+api.add_resource(Filter, '/filter')
+api.add_resource(BuyTickets, '/buytickets')
+api.add_resource(MyTickets, '/mytickets')
