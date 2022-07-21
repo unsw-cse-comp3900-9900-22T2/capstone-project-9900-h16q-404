@@ -294,84 +294,23 @@ export default function EditEvent() {
                 event
               </h4>
 
-              <Row className='ticket-row' gutter={16}>
-                <Col span={4}>Gold tier</Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Amount'}
-                    defaultValue={0}
-                    value={0 || goldnum}
-                    onChange={(value) => {
-                      setGoldnum(value);
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Price'}
-                    addonAfter={'$'}
-                    defaultValue={0}
-                    value={0 || goldprice}
-                    onChange={(value) => {
-                      setGoldprice(value);
-                    }}
-                  />
-                </Col>
-              </Row>
-              <Row className='ticket-row' gutter={16}>
-                <Col span={4}>Silver tier</Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Amount'}
-                    defaultValue={0}
-                    value={0 || silvernum}
-                    onChange={(value) => {
-                      setSilvernum(value);
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Price'}
-                    addonAfter={'$'}
-                    defaultValue={0}
-                    value={0 || silverprice}
-                    onChange={(value) => {
-                      setSilverprice(value);
-                    }}
-                  />
-                </Col>
-              </Row>
-              <Row className='ticket-row' gutter={16}>
-                <Col span={4}>Bronze tier</Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Amount'}
-                    defaultValue={0}
-                    value={0 || bronzenum}
-                    onChange={(value) => {
-                      setBronzenum(value);
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Price'}
-                    addonAfter={'$'}
-                    defaultValue={0}
-                    value={0 || bronzeprice}
-                    onChange={(value) => {
-                      setBronzeprice(value);
-                    }}
-                  />
-                </Col>
-              </Row>
+              <div style={{ fontSize: 16 }}>
+                <Row className='ticket-row' gutter={16}>
+                  <Col span={4}>Gold tier</Col>
+                  <Col span={8}>Gold tier ticket number: {goldnum}</Col>
+                  <Col span={8}>Gold tier ticket price: {goldprice}</Col>
+                </Row>
+                <Row className='ticket-row' gutter={16}>
+                  <Col span={4}>Silver tier</Col>
+                  <Col span={8}>Silver tier ticket number: {silvernum}</Col>
+                  <Col span={8}>Silver tier ticket price: {silverprice}</Col>
+                </Row>
+                <Row className='ticket-row' gutter={16}>
+                  <Col span={4}>Bronze tier</Col>
+                  <Col span={8}>Bronze tier ticket number: {bronzenum}</Col>
+                  <Col span={8}>Bronze tier ticket price: {bronzeprice}</Col>
+                </Row>
+              </div>
             </div>
             <h3>Description</h3>
             <TextArea
