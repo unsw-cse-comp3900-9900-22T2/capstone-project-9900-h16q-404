@@ -214,6 +214,7 @@ export default function EditEvent() {
                 onChange={(value) => {
                   setType(value);
                 }}
+                style={{ minWidth: 140, maxWidth: 200 }}
               >
                 <Option value={'Business'}>Business</Option>
                 <Option value={'Party'}>Party</Option>

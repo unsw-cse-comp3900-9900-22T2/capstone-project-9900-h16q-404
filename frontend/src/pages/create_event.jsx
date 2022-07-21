@@ -116,7 +116,7 @@ export default function CreateEvent() {
       setToken(localStorage.getItem('username'));
     } else {
       // Yunran: no username means not logged in, should redirect to landing page
-      message.error("You have not logged in!",2);
+      message.error('You have not logged in!', 2);
       navigate('/');
     }
   }, [setToken, navigate]);
@@ -231,7 +231,7 @@ export default function CreateEvent() {
               setter={setTitle}
             />
 
-            <Space className={'InputComp'}>
+            <Space className={'InputComp'} style={{ minWidth: 90 }}>
               Type:
               <Select
                 value={'' || type}
@@ -239,6 +239,7 @@ export default function CreateEvent() {
                 onChange={(value) => {
                   setType(value);
                 }}
+                style={{ minWidth: 140, maxWidth: 200 }}
               >
                 <Option value={'Business'}>Business</Option>
                 <Option value={'Party'}>Party</Option>
@@ -253,7 +254,7 @@ export default function CreateEvent() {
                 <Option value={'Other'}>Other</Option>
               </Select>
             </Space>
-            
+
             <Space>
               Start data and time
               <DatePicker
