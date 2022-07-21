@@ -27,8 +27,8 @@ const EditLoginCredentialForm = () => {
 
   const onFinishLoginCredential = (values) => {
     const body = {
-      "oldpassword": values.oldPassword,
-      "newpassword": values.newPassword,
+      "old_password": values.oldPassword,
+      "new_password": values.newPassword,
       "token": localStorage.getItem("token")
     }
     axios.patch("http://127.0.0.1:5000/user/login_credentials", body)
