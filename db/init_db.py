@@ -126,10 +126,10 @@ class InitDB:
                 "email" : row.username,
                 "firstName" : '',
                 "lastName" : '',
-                "dateOfBirth" : '',
+                "dateOfBirth" : datetime.datetime.strptime(row.dob, '%Y-%m-%d').date(),
                 "gender" : '',
                 "phone" : '',
-                "vaccinated" : ''
+                "vaccinated" : row.vac
             }
             new_id = self.insert_users(data)
 
@@ -149,13 +149,13 @@ class InitDB:
                 username = data["username"],
                 password = data["password"],
                 token = data["token"],
-                email = data['username']
+                email = data['username'],
                 #firstName = '',
                 #lastName = '',
-                #dateOfBirth = '',
+                dateOfBirth = data['dateOfBirth'],
                 #gender = '',
                 #phone = '',
-                #vaccinated = ''
+                vaccinated = data['vaccinated']
             )
             try:
                 return self.engine.execute(query).inserted_primary_key 
