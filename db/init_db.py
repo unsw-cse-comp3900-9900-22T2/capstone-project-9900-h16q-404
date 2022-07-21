@@ -353,6 +353,27 @@ class InitDB:
             return result["result"]
         except IntegrityError as e:
             return (400, "Could not select from table")
+    
+    def select_events_hostid(self, host_id):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.host == host_id,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
 
     def check_event_exists(self, event_detail, event_col):
         event_exists = False
@@ -567,7 +588,8 @@ class InitDB:
         result = ({'result': [dict(row) for row in result]})
         start_date = str(result['result'][0]['start_date'])
         start_time = str(result['result'][0]['start_time'])
-        return start_date, start_time
+        event_name = result['result'][0]['event_name']
+        return start_date, start_time, event_name
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():

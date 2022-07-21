@@ -171,6 +171,16 @@ class User(Resource):
         result_dict['phone'] = user_record[0][9]
         result_dict['vac'] = user_record[0][10]
         
+        # Get events hosted by this user
+        result_dict['events'] = []
+        user_events = temp_db.select_events_hostid(request_userId)
+        if (len(user_events) > 0):
+            event_list = []
+            for event in user_events:
+                event_list.append({"id":event['id'], "name":event['event_name'], "startDate":event['start_date']})
+                #event_list.append([event['id']])
+            result_dict['events'] = event_list
+        
         return {
             'resultStatus': 'SUCCESS',
             'message': result_dict
@@ -509,7 +519,7 @@ class MyTickets(Resource):
     def get(self):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str, location='args')
+        parser.add_argument('token', type=str, location='headers')
         args = parser.parse_args()
 
         # assign variables
@@ -522,9 +532,10 @@ class MyTickets(Resource):
         result = temp_db.select_all_tickets(user_id)
         if len(result['result']) > 0:
             for i in result['result']:
-                start_date, start_time = temp_db.get_event_time_date(i['event_id'])
+                start_date, start_time, event_name = temp_db.get_event_time_date(i['event_id'])
                 i['start_date'] = start_date
                 i['start_time'] = start_time
+                i['event_name'] = event_name
             return {
                 'resultStatus': 'SUCCESS',
                 'result': result

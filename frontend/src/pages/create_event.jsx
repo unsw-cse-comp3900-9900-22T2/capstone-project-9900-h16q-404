@@ -115,11 +115,11 @@ export default function CreateEvent() {
     if (localStorage.getItem('username')) {
       setToken(localStorage.getItem('username'));
     } else {
-      message.error('You must log in to do this!');
-      back();
+      // Yunran: no username means not logged in, should redirect to landing page
+      message.error("You have not logged in!",2);
+      navigate('/');
     }
-    test();
-  }, [setToken]);
+  }, [setToken, navigate]);
 
   const checkform = () => {
     if (title === '' || title === undefined) {
@@ -253,14 +253,7 @@ export default function CreateEvent() {
                 <Option value={'Other'}>Other</Option>
               </Select>
             </Space>
-
-            <InputComp
-              addon={'Type'}
-              defValue={''}
-              value={type || ''}
-              placeholder={'Show'}
-              setter={setType}
-            />
+            
             <Space>
               Start data and time
               <DatePicker

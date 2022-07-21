@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
 
 /**
  * Make the Logout Button a separate component
@@ -9,15 +8,10 @@ import { useNavigate } from 'react-router-dom';
  */
 
 export default function LogoutButton() {
-  const navigate = useNavigate();
   const func = () => {
     // since we are storing more items in localStorage, using clear to remove all when logout.
     localStorage.clear();
     window.location.reload();
-    // improve: give some UI feedback when user logout
-    message.success("Logout Successful!", 3)
-      // and use navigate function to switch to main page instead
-      .then(navigate("/"));
   };
   return (
     <>
