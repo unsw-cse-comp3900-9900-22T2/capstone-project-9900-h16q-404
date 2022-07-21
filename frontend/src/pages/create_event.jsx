@@ -257,7 +257,7 @@ export default function CreateEvent() {
             </Space>
 
             <Space>
-              Start data and time
+              Start date and time
               <DatePicker
                 className={'InputComp'}
                 showTime={{ format: 'HH:mm' }}

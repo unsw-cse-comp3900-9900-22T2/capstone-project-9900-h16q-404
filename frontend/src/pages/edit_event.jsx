@@ -232,7 +232,7 @@ export default function EditEvent() {
             </Space>
 
             <Space>
-              Start data and time
+              Start date and time
               <DatePicker
                 showTime={{ format: 'HH:mm' }}
                 format='YYYY-MM-DD HH:mm'
@@ -246,7 +246,7 @@ export default function EditEvent() {
               />
             </Space>
             <Space>
-              End data and time
+              End date and time
               <DatePicker
                 showTime={{ format: 'HH:mm' }}
                 format='YYYY-MM-DD HH:mm'
