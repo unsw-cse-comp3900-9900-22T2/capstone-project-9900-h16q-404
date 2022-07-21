@@ -223,6 +223,7 @@ export default function CreateEvent() {
           style={{ padding: '0 50px', marginTop: 64 }}
         >
           <div className='new_event'>
+            <h1>Create event</h1>
             <InputComp
               addon={'Title'}
               defValue={''}

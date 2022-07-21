@@ -198,6 +198,7 @@ export default function EditEvent() {
           style={{ padding: '0 50px', marginTop: 64 }}
         >
           <div className='new_event'>
+            <h1>Edit event</h1>
             <InputComp
               addon={'Title'}
               defValue={''}
