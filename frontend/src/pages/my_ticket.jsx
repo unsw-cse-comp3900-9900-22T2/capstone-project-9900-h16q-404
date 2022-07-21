@@ -25,9 +25,9 @@ export default function MyTicket () {
     })
       .then(response => response.data)
       .then(data => {
-        console.log(JSON.stringify(data));
+        //console.log(JSON.stringify(data));
         if(data.resultStatus === 'SUCCESS'){
-          console.log("succeed");
+          console.log("Getting data succeed");
           console.log(data.result.result);
           setTicketsList(data.result.result);
         }
@@ -44,7 +44,7 @@ export default function MyTicket () {
 	let today = new Date();
 	let sevenDaysBefore = new Date();
 	sevenDaysBefore.setDate(today.getDate() - 7);
-	console.log(sevenDaysBefore);
+	//console.log(sevenDaysBefore);
 
 	const refundConfirm = (item) => {
 		confirm({
@@ -52,7 +52,7 @@ export default function MyTicket () {
 			icon: <ExclamationCircleOutlined />,
 			content: 'Are you sure you want to refund?',
 			onOk() {
-				if (today.getTime() < sevenDaysBefore.getTime()) {
+				if (today.getTime() > sevenDaysBefore.getTime()) {
 				// axios
 				axios.put('http://127.0.0.1:5000/buytickets', {
 					token: localStorage.getItem('token'),
@@ -66,12 +66,9 @@ export default function MyTicket () {
 					.then(data => {
 						console.log(JSON.stringify(data));
 						if(data.resultStatus === 'SUCCESS'){
-							console.log("succeed");
-							console.log(data.result.result);
-							setTicketsList(data.result.result);
+							console.log("Refund succeed");
 						}
 					})
-					console.log("Yes, refund.")
 				}
 				else{
 					console.log("cannot refund because it is a past event or less than 7 days.")
@@ -97,7 +94,7 @@ export default function MyTicket () {
 					}}
           dataSource={ticketsList}
 					    renderItem={(item) => (
-							<List.Item>
+							item.purchased ? <List.Item>
 								<Card 
 								title={item.event_name}
 								style={{width:230,}}
@@ -115,7 +112,7 @@ export default function MyTicket () {
 										<DescriptionsItem label="Price"> {'$' + item.ticket_price}</DescriptionsItem>
 									</Descriptions>
 								</Card>
-						</List.Item>
+						</List.Item> : null 
 						)}
           >
           </List>
