@@ -543,18 +543,15 @@ class BuyTickets(Resource):
 
 class MyTickets(Resource):
     def get(self):
-
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str, location='headers')
         args = parser.parse_args()
-
         # assign variables
         token = args['token']
 
         # create db engine
         temp_db = InitDB()
         user_id = temp_db.get_host_id_from_token(token)
-
         result = temp_db.select_all_tickets(user_id)
         if len(result['result']) > 0:
             for i in result['result']:

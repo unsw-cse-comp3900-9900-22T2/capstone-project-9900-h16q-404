@@ -1,8 +1,3 @@
-/*TODO:
-	DONE--Step1: finish a static page containing all elements
-	Step2: make the elements show/hide depend on host id and make query url, send delete msg to backend
-	Step3: add link to event card
-*/
 import React, { useState, useEffect } from 'react';
 import { Layout, Descriptions, Rate, Collapse, Modal } from 'antd';
 import PageHeader from '../components/page_header';
