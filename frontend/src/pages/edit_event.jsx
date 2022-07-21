@@ -144,10 +144,6 @@ export default function EditEvent() {
       message.warning('Please input event description');
       return false;
     }
-    if (goldnum + silvernum + bronzenum === 0) {
-      message.warning('Please define at least one valid type of tickets!');
-      return false;
-    }
     return true;
   };
 
@@ -237,8 +233,6 @@ export default function EditEvent() {
                 <Option value={'Food & Drink'}>Food & Drink</Option>
                 <Option value={'Film'}>Film</Option>
                 <Option value={'Festival'}>Festival</Option>
-                <Option value={'Holiday'}>Holiday</Option>
-                <Option value={'Concert'}>Concert</Option>
                 <Option value={'Funeral'}>Funeral</Option>
                 <Option value={'Other'}>Other</Option>
               </Select>

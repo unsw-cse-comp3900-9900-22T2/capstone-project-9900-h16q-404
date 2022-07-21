@@ -412,6 +412,7 @@ export default function CreateEvent() {
                 setDesc(e.target.value);
               }}
             />
+            <h3>Image section currently WIP</h3>
             <img src={image} />
             {uploadImg(setImage)}
 
