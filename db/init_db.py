@@ -131,9 +131,9 @@ class InitDB:
                 "phone" : '',
                 "vaccinated" : row.vac
             }
-            new_id = self.insert_users(data)
+            new_id = self.insert_users(data, True)
 
-    def insert_users(self, data):
+    def insert_users(self, data, dummy):
         insert_check = True
         check_query = db.select([self.users]).where(self.users.c.id == data["id"])
         check_result = self.engine.execute(check_query)
@@ -144,21 +144,27 @@ class InitDB:
         
         # if no row exists with current primary key add new row
         if insert_check == True:
-            query = db.insert(self.users).values(
-                id = data["id"],
-                username = data["username"],
-                password = data["password"],
-                token = data["token"],
-                email = data['username'],
-                #firstName = '',
-                #lastName = '',
-                dateOfBirth = data['dateOfBirth'],
-                #gender = '',
-                #phone = '',
-                vaccinated = data['vaccinated']
-            )
+            if dummy == True:
+                query = db.insert(self.users).values(
+                    id = data["id"],
+                    username = data["username"],
+                    password = data["password"],
+                    token = data["token"],
+                    email = data['username'],
+                    dateOfBirth = data['dateOfBirth'],
+                    vaccinated = data['vaccinated']
+                )
+            else:
+                query = db.insert(self.users).values(
+                    id = data["id"],
+                    username = data["username"],
+                    password = data["password"],
+                    token = data["token"],
+                    email = data['username'],
+                )
             try:
-                return self.engine.execute(query).inserted_primary_key 
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
             except:
                 return -1
         else:
@@ -442,11 +448,13 @@ class InitDB:
             "id":self.get_new_user_id(), 
             "username": username,
             "password": password,
-            "token": username
+            "token": username,
+            "dateOfBirth": "",
+            "vaccinated": ""
         }
 
         try:
-            new_id = self.insert_users(data)        
+            new_id = self.insert_users(data, False)    
             return new_id
         except:
             return -1
@@ -571,7 +579,7 @@ class InitDB:
 
     def refund_tickets(self, data, user_id):
         data = json.loads(data.replace("'", '"'))
-        update_query = self.tickets.update().values(purchased=False, user_id="", card_number="").where(
+        update_query = self.tickets.update().values(purchased=db.false(), user_id="", card_number="").where(
             and_(
                 self.tickets.c.user_id == user_id,
                 self.tickets.c.event_id == data['event_id'],

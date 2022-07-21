@@ -35,6 +35,7 @@ class Register(Resource):
         temp_db = InitDB()
         # check user exists
         user_exists = temp_db.check_user_exists(request_email)
+
         # if user does not exists return error
         if user_exists == True:
             return {"status": "Error", "message": "User already exists"}
@@ -555,6 +556,7 @@ class BuyTickets(Resource):
             }
 
     def put(self):
+
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str)
         parser.add_argument('tickets', action='append')
