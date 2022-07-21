@@ -412,3 +412,128 @@ class Create(Resource):
             }
 
 
+class BuyTickets(Resource):
+    def get(self):
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='args')
+        parser.add_argument('event_id', type=int, location='args')
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+        event_id = args['event_id']
+
+        # create db engine
+        temp_db = InitDB()
+        result = temp_db.select_tickets_event_id(event_id)
+
+        if len(result['result']) == 0:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'no tickets for this event exist'                
+            }
+
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result
+        }
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str)
+        parser.add_argument('tickets', action='append')
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+        tickets = args['tickets']
+
+        # create db engine
+        temp_db = InitDB()
+
+        # need to convert token to user_id
+        user_id = temp_db.get_host_id_from_token(token)
+        failed = []
+        for i in tickets:
+            try:
+                temp_db.reserve_tickets(i, user_id)
+            except:
+                failed.append(i)
+
+        if len(failed) > 0:
+            return{
+                'resultStatus': 'ERROR',
+                'message': failed
+            }
+        else:
+            return {
+                'resultStatus': 'SUCCESS',
+                'message': 'Tickets successfully booked'
+            }
+
+    def put(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str)
+        parser.add_argument('tickets', action='append')
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+        tickets = args['tickets']
+
+        # create db engine
+        temp_db = InitDB()
+
+        # need to convert token to user_id
+        user_id = temp_db.get_host_id_from_token(token)
+        failed = []
+        for i in tickets:
+            try:
+                temp_db.refund_tickets(i, user_id)
+            except:
+                failed.append(i)
+
+        if len(failed) > 0:
+            return{
+                'resultStatus': 'ERROR',
+                'message': failed
+            }
+        else:
+            return {
+                'resultStatus': 'SUCCESS',
+                'message': 'Tickets successfully unreserved'
+            }
+
+class MyTickets(Resource):
+    def get(self):
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+
+        # create db engine
+        temp_db = InitDB()
+        user_id = temp_db.get_host_id_from_token(token)
+
+        result = temp_db.select_all_tickets(user_id)
+        if len(result['result']) > 0:
+            for i in result['result']:
+                start_date, start_time, event_name = temp_db.get_event_time_date(i['event_id'])
+                i['start_date'] = start_date
+                i['start_time'] = start_time
+                i['event_name'] = event_name
+            return {
+                'resultStatus': 'SUCCESS',
+                'result': result
+            }
+
+        else:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'No tickets found for this user'
+            }
+        
