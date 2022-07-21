@@ -16,6 +16,10 @@ const menu = (
       {
         key:'3',
         label:(<Link to='/edit_login_credential'>Edit Login Credentials</Link>)
+      },
+      {
+        key:'4',
+        label:(<Link to='/my_ticket'>Veiw Tickets</Link>)
       }
     ]}  
   >

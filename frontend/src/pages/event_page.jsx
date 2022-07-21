@@ -157,7 +157,8 @@ export default function EventPage () {
 				disabled={
 					(usrInfo.vac != true && eventInfo.vax_only) ||
 					(usrIsNotAdult() && eventInfo.adult_only)
-				}>
+				}
+				href={'/buyticket/' + eventInfo.id}>
 					Buy A Ticket
 				</Button>
 			</Col>
