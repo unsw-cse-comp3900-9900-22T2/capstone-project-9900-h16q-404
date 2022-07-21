@@ -97,10 +97,11 @@ export default function EventPage () {
 		var age_dt = new Date(diff_ms); 
 		var year = Math.abs(age_dt.getUTCFullYear() - 1970);
 		console.log(year);
-		if (year >= 18) {
+		if (year < 18) {
 			return true;
 		}
 		else {
+			// console.log("can not by as you are teen.");
 			return false;
 		}
 	}
@@ -159,8 +160,8 @@ export default function EventPage () {
 				style={{ marginTop: 16 }} 
 				type="primary"
 				disabled={
-					(usrInfo.vac == null && eventInfo.vax_only) ||
-					(usrIsNotAdult() && eventInfo.AdultReq)
+					(usrInfo.vac != true && eventInfo.vax_only) ||
+					(usrIsNotAdult() && eventInfo.adult_only)
 				}>
 					Buy A Ticket
 				</Button>
