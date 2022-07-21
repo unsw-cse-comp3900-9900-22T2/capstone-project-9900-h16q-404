@@ -91,6 +91,21 @@ export default function EventPage () {
 	let time = eventInfo.start_date + " " + eventInfo.start_time + " to " + 
 						eventInfo.end_date + " " + eventInfo.end_time;
 
+	function usrIsNotAdult() {
+		let date = new Date(usrInfo.dateOfBirth);
+		var diff_ms = Date.now() - date.getTime();
+		var age_dt = new Date(diff_ms); 
+		var year = Math.abs(age_dt.getUTCFullYear() - 1970);
+		console.log(year);
+		if (year < 18) {
+			return true;
+		}
+		else {
+			// console.log("can not by as you are teen.");
+			return false;
+		}
+	}
+
 	// Component of event Description
 	const EventInfoBlock = () => (
 		<Descriptions title="Event Info">
@@ -145,7 +160,8 @@ export default function EventPage () {
 				style={{ marginTop: 16 }} 
 				type="primary"
 				disabled={
-					usrInfo.vac == null 
+					(usrInfo.vac != true && eventInfo.vax_only) ||
+					(usrIsNotAdult() && eventInfo.adult_only)
 				}>
 					Buy A Ticket
 				</Button>
