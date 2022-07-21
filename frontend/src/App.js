@@ -12,6 +12,7 @@ import EventPage from './pages/event_page';
 import CreateEvent from './pages/create_event';
 import EditEvent from './pages/edit_event';
 import EditSensitiveProfile from './pages/edit_sensitive_profile';
+import BuyTicket from './pages/buyticket';
 
 function App () {
   return (
@@ -28,6 +29,7 @@ function App () {
         <Route path='/create' element={<CreateEvent />}></Route>
         <Route path='/editevent/:eventid' element={<EditEvent />}></Route>
         <Route path='/edit_sensitive_profile' element={<EditSensitiveProfile />}></Route>
+        <Route path='/buyticket/:eventid' element={<BuyTicket />}></Route>
       </Routes >
     </div >
   );

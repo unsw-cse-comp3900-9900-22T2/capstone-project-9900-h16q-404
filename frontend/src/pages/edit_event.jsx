@@ -5,9 +5,12 @@ import {
   Input,
   Checkbox,
   DatePicker,
-  TimePicker,
+  Select,
   Space,
   message,
+  Col,
+  Row,
+  InputNumber,
 } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
@@ -18,6 +21,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
 const { TextArea } = Input;
+const { Option } = Select;
 /*
 Event name
 Event type
@@ -45,6 +49,14 @@ export default function EditEvent() {
 
   const [location, setLocation] = useState();
   const [desc, setDesc] = useState();
+
+  const [goldnum, setGoldnum] = useState(0);
+  const [goldprice, setGoldprice] = useState();
+  const [silvernum, setSilvernum] = useState(0);
+  const [silverprice, setSilverprice] = useState();
+  const [bronzenum, setBronzenum] = useState(0);
+  const [bronzeprice, setBronzeprice] = useState();
+
   const [image, setImage] = useState();
 
   const dateFormat = 'YYYY-MM-DD';
@@ -81,6 +93,12 @@ export default function EditEvent() {
         setAdult(data.adult_only);
         setVax(data.vax_only);
         setDesc(data.description);
+        setGoldnum(data.gold_num);
+        setGoldprice(data.gold_price);
+        setSilvernum(data.silver_num);
+        setSilverprice(data.silver_price);
+        setBronzenum(data.bronze_num);
+        setBronzeprice(data.bronze_price);
       }, []);
   }, []);
 
@@ -102,6 +120,19 @@ export default function EditEvent() {
 
     if (endDate === '' || endDate === undefined) {
       message.warning('Please select end time of the event');
+      return false;
+    }
+
+    if (moment(startDate + startTime, 'YYYY-MM-DDHH:mm') <= moment()) {
+      message.warning('Please select a start time later than now!');
+      return false;
+    }
+
+    if (
+      moment(startDate + startTime, 'YYYY-MM-DDHH:mm') >=
+      moment(endDate + endTime, 'YYYY-MM-DDHH:mm')
+    ) {
+      message.warning('The end time should be later than start time');
       return false;
     }
 
@@ -136,6 +167,12 @@ export default function EditEvent() {
         endtime: endTime,
         location: location,
         cond: condition,
+        gold_num: goldnum,
+        gold_price: goldprice,
+        silver_num: silvernum,
+        silver_price: silverprice,
+        bronze_num: bronzenum,
+        bronze_price: bronzeprice,
         desc: desc,
       },
     };
@@ -143,12 +180,12 @@ export default function EditEvent() {
     axios.put('http://127.0.0.1:5000/event', requestbody).then((res) => {
       console.log(res.data);
       let status = res.data.resultStatus;
-      if (status !== 'Error') {
+      if (status !== 'ERROR') {
         console.log(status);
         message.success(`Successfully edit event ${title} with id ${eventid}`);
         navigate(`/event?event_id=${eventid}`);
       } else {
-        message.error(`Cannot edit the event.`);
+        message.error(`Cannot edit the event.\nMessage: ${res.data.message}`);
       }
     });
   };
@@ -170,6 +207,7 @@ export default function EditEvent() {
           style={{ padding: '0 50px', marginTop: 64 }}
         >
           <div className='new_event'>
+            <h1>Edit event</h1>
             <InputComp
               addon={'Title'}
               defValue={''}
@@ -177,15 +215,31 @@ export default function EditEvent() {
               placeholder={'UNSW Show'}
               setter={setTitle}
             />
-            <InputComp
-              addon={'Type'}
-              defValue={''}
-              value={type || ''}
-              placeholder={'Show'}
-              setter={setType}
-            />
+
+            <Space className={'InputComp'}>
+              Type:
+              <Select
+                value={'' || type}
+                defaultValue={'Other'}
+                onChange={(value) => {
+                  setType(value);
+                }}
+                style={{ minWidth: 140, maxWidth: 200 }}
+              >
+                <Option value={'Business'}>Business</Option>
+                <Option value={'Party'}>Party</Option>
+                <Option value={'Music'}>Music</Option>
+                <Option value={'Sport'}>Sport</Option>
+                <Option value={'Food & Drink'}>Food & Drink</Option>
+                <Option value={'Film'}>Film</Option>
+                <Option value={'Festival'}>Festival</Option>
+                <Option value={'Funeral'}>Funeral</Option>
+                <Option value={'Other'}>Other</Option>
+              </Select>
+            </Space>
+
             <Space>
-              Start data and time
+              Start date and time
               <DatePicker
                 showTime={{ format: 'HH:mm' }}
                 format='YYYY-MM-DD HH:mm'
@@ -199,7 +253,7 @@ export default function EditEvent() {
               />
             </Space>
             <Space>
-              End data and time
+              End date and time
               <DatePicker
                 showTime={{ format: 'HH:mm' }}
                 format='YYYY-MM-DD HH:mm'
@@ -238,6 +292,32 @@ export default function EditEvent() {
                   Customers must be fully vaccinated.
                 </Checkbox>
               </p>
+            </div>
+            <div className='ticket-sect'>
+              <h3>Ticket Infomation</h3>
+              <h4>You can write details of ticket tiers in description</h4>
+              <h4>
+                You cannot edit ticket amounts and prices after you create the
+                event
+              </h4>
+
+              <div style={{ fontSize: 16 }}>
+                <Row className='ticket-row' gutter={16}>
+                  <Col span={4}>Gold tier</Col>
+                  <Col span={8}>Gold tier ticket number: {goldnum}</Col>
+                  <Col span={8}>Gold tier ticket price: {goldprice}</Col>
+                </Row>
+                <Row className='ticket-row' gutter={16}>
+                  <Col span={4}>Silver tier</Col>
+                  <Col span={8}>Silver tier ticket number: {silvernum}</Col>
+                  <Col span={8}>Silver tier ticket price: {silverprice}</Col>
+                </Row>
+                <Row className='ticket-row' gutter={16}>
+                  <Col span={4}>Bronze tier</Col>
+                  <Col span={8}>Bronze tier ticket number: {bronzenum}</Col>
+                  <Col span={8}>Bronze tier ticket price: {bronzeprice}</Col>
+                </Row>
+              </div>
             </div>
             <h3>Description</h3>
             <TextArea
