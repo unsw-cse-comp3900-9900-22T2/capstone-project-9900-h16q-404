@@ -79,6 +79,17 @@ class InitDB:
             db.Column('ticket_price', db.String(16), nullable=False)
         )
         
+        self.reviews = db.Table('reviews', self.metadata,
+            db.Column('id', db.Integer(), primary_key=True),
+            db.Column('eventId', db.Integer(), ForeignKey('events.id'), nullable=False),
+            db.Column('userId', db.Integer(), ForeignKey('users.id'), nullable=False),
+            db.Column('reviewTimeStamp', db.DateTime(), nullable=False),
+            db.Column('review', db.Text(), nullable=False),
+            db.Column('rating', db.Integer(), nullable=True),
+            db.Column('replyTimeStamp', db.DateTime(), nullable=True),
+            db.Column('reply', db.Text(), nullable=True)
+        )
+        
         # create all objects in the metadata object
         self.metadata.create_all(self.engine, checkfirst=True)
 
@@ -86,6 +97,8 @@ class InitDB:
         # This function will read one or more CSVs and then insert the data from those CSVs into the relevant tables
         dummy_events_df = pd.read_csv("db/dummy_events.csv")
         dummy_users_df = pd.read_csv("db/dummy_users.csv")
+        dummy_tickets_df = pd.read_csv("db/dummy_tickets.csv")
+        dummy_reviews_df = pd.read_csv("db/dummy_reviews.csv")
 
         # Iterate through events pandas DF and insert each row into table using insert function
         for index, row in dummy_events_df.iterrows():
@@ -111,7 +124,7 @@ class InitDB:
                 "bronze_num": row.bronze_num,
                 "bronze_price": row.bronze_price,
             }
-            result = self.insert_events(data)
+            result = self.insert_events(data, True)
             if result == None or result == -1:
                 print(data["event_name"] + " Not Added")
             else:
@@ -132,6 +145,41 @@ class InitDB:
                 "vaccinated" : row.vac
             }
             new_id = self.insert_users(data, True)
+        
+        for index, row in dummy_tickets_df.iterrows():
+            data = {
+                "id":row.id, 
+                "event_id": row.event_id,
+                "user_id": row.user_id,
+                "seat_num": row.seat_num,
+                "tix_class" : row.tix_class,
+                "purchased" : row.purchased,
+                "card_number" : row.card_number,
+                "ticket_price" : row.ticket_price
+            }
+            result = self.insert_tickets(data)
+            if result == None or result == -1:
+                print(str(data["id"]) + " Not Added")
+            else:
+                print("Added new ticket with ID = " + str(result))
+        
+        for index, row in dummy_reviews_df.iterrows():
+            data = {
+                "id":row.id, 
+                "eventId": row.eventId,
+                "userId": row.userId,
+                "reviewTimeStamp": datetime.datetime.strptime(row.reviewTimeStamp, "%d-%m-%Y %H:%M"),
+                "review" : row.review,
+                "rating" : row.rating,
+                "replyTimeStamp" : datetime.datetime.strptime(row.replyTimeStamp, "%d-%m-%Y %H:%M"),
+                "reply" : row.reply
+            }
+            result = self.insert_reviews(data, True)
+            if result == None or result == -1:
+                print(str(data["id"]) + " Not Added")
+            else:
+                print("Added new review with ID = " + str(result))
+        
 
     def insert_users(self, data, dummy):
         insert_check = True
@@ -171,7 +219,7 @@ class InitDB:
             print("Item " + str(data["username"]) + " not added to user table as it failed the insert check")
 
 
-    def insert_events(self, data):
+    def insert_events(self, data, dummy):
         # This function takes a JSON object "data" and inserts the object into the DB as a new row
         # But first the function checks if a row with the same ID aleady exists
         
@@ -211,12 +259,74 @@ class InitDB:
             )
             try:
                 result = self.engine.execute(query).inserted_primary_key 
-                self.pre_fill_tickets(data)
+                if dummy == False:
+                    self.pre_fill_tickets(data)
                 return result
             except:
                 return -1
         else:
             print("Item " + str(data["event_name"]) + " not added to events table as it failed the insert check")
+
+    
+    def insert_tickets(self, data):
+        insert_check = True
+        check_query = db.select([self.tickets]).where(self.tickets.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        
+        # if no row exists with current primary key add new row
+        if insert_check == True:
+            query = db.insert(self.tickets).values(
+                id = data["id"],
+                event_id = data["event_id"],
+                user_id = data["user_id"],
+                seat_num = data["seat_num"],
+                tix_class = data['tix_class'],
+                purchased = data['purchased'],
+                card_number = data['card_number'],
+                ticket_price = data['ticket_price']
+            )
+            try:
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
+            except:
+                return -1
+        else:
+            print("Ticket " + str(data["id"]) + " not added to tickets table as it failed the insert check")
+    
+    def insert_reviews(self, data, dummy):
+        insert_check = True
+        check_query = db.select([self.reviews]).where(self.reviews.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        
+        # if no row exists with current primary key add new row
+        if insert_check == True:
+            if dummy == True:
+                query = db.insert(self.reviews).values(
+                    id = data["id"],
+                    eventId = data["eventId"],
+                    userId = data["userId"],
+                    reviewTimeStamp = data["reviewTimeStamp"],
+                    review = data['review'],
+                    rating = data['rating'],
+                    replyTimeStamp = data['replyTimeStamp'],
+                    reply = data['reply']
+                )
+            
+            try:
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
+            except:
+                return -1
+        else:
+            print("Review " + str(data["id"]) + " not added to reviews table as it failed the insert check")
 
     def select_event_name(self, event_name):
         # This functions searches for events with event_name as event_name and returns a list of all events
@@ -303,7 +413,7 @@ class InitDB:
         insert_data['bronze_num'] = event_details['bronze_num']
         insert_data['bronze_price'] = event_details['bronze_price']
 
-        result = self.insert_events(insert_data), insert_data
+        result = self.insert_events(insert_data, False), insert_data
         return result
 
     def update_event(self, event_id, event_details, token):
@@ -617,6 +727,78 @@ class InitDB:
         start_time = str(result['result'][0]['start_time'])
         event_name = result['result'][0]['event_name']
         return start_date, start_time, event_name
+    
+    def get_reviews_by_eventId(self, eventId):
+        event_review_query = db.select([self.reviews]).where(self.reviews.c.eventId == eventId)
+        try:
+            result = self.engine.execute(event_review_query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['reviewTimeStamp'] = str(result["result"][i]['reviewTimeStamp'])
+                result["result"][i]['replyTimeStamp'] = str(result["result"][i]['replyTimeStamp'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find review for event")
+    
+    def check_user_isHost(self, userId, eventId):
+        event_host_query = db.select([self.events]).where(self.events.c.id == eventId)
+        try:
+            result = self.engine.execute(event_host_query)
+            result = ({'result': [dict(row) for row in result]})
+            event_host = result["result"][0]['host']
+            
+            return event_host == userId
+        except IntegrityError as e:
+            return (400, "could not find review for event")
+    
+    def check_user_hasTicket(self, userId, eventId):
+        user_ticket_query = db.select([self.tickets]).where(
+            and_(
+                self.tickets.c.user_id == userId,
+                self.tickets.c.event_id == eventId
+                )
+            )
+        result = self.engine.execute(user_ticket_query)
+        result = ({'result': [dict(row) for row in result]})
+        if (len(result['result']) > 0):
+            return True
+        else:
+            return False
+    
+    def check_user_hasComment(self, userId, eventId):
+        user_comment_query = db.select([self.reviews]).where(
+            and_(
+                self.reviews.c.userId == userId,
+                self.reviews.c.eventId == eventId
+                )
+            )
+        result = self.engine.execute(user_comment_query)
+        result = ({'result': [dict(row) for row in result]})
+        if (len(result['result']) > 0):
+            return True
+        else:
+            return False
+    
+    def get_event_hostname(self, event_id):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query_host = db.select([self.events]).where(self.events.c.id == event_id)
+        try:
+            result = self.engine.execute(query_host)
+            result = ({'result': [dict(row) for row in result]})
+            return result["result"][0]['host_username']
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def get_username_from_id(self, id):
+        check_query = db.select([self.users]).where(self.users.c.id == id)
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        list_result = check_result['result']
+        if len(list_result) > 1:
+            return "Error - more than one user with this token"
+        else:
+            return list_result[0]['username']
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
