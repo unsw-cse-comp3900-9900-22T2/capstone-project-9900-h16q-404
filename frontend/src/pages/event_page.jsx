@@ -5,6 +5,8 @@ import { Col, Row, Statistic, Button, Divider, message } from 'antd';
 import axios from 'axios'
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import ReviewList from '../components/review_list';
+import PastEventBuyTicketMask from '../components/past_event_buy_ticket_mask';
 
 const { confirm } = Modal;
 
@@ -12,7 +14,7 @@ const { confirm } = Modal;
 const { Content, Footer } = Layout;
 
 // Component of rating stars
-const Rating = () => <Rate allowHalf defaultValue={2.5}/>;
+const Rating = () => (<Rate disabled allowHalf defaultValue={2.5}/>);
 
 // To return event page
 export default function EventPage () {
@@ -20,6 +22,8 @@ export default function EventPage () {
 	const [searchParams] = useSearchParams();
   const [eventInfo, setEventInfo] = useState({});
   const [usrInfo, setUsrInfo] = useState({});
+	// a switch to distinguish past event and upcoming event
+	const [eventFinished, setEventFinished] = useState(false);
 
 	useEffect(() => {
 		var requestURL = 
@@ -32,6 +36,18 @@ export default function EventPage () {
 				setEventInfo(data[0]);
 				console.log("get event: " + eventInfo.event_name);
 				console.log(eventInfo);
+				// set eventFinished based on event start date
+				const today = new Date()
+				const endDate = new Date(data[0].end_date); 
+				if ( endDate < today ){
+					setEventFinished(true);
+					console.log("event finished!")
+				}
+				else {
+					setEventFinished(false);
+					console.log("event not finished!")
+				}
+				return;
 			})
 			.catch(error => {
 				console.log(error);
@@ -183,7 +199,7 @@ export default function EventPage () {
 
 					<Divider />
 
-					<TicketBar/>
+					{eventFinished ? <PastEventBuyTicketMask/> :<TicketBar/>}
 
 					<Divider />
 
@@ -191,13 +207,17 @@ export default function EventPage () {
 						{eventInfo.description}
 					</p>
 
-					{ eventInfo.host == localStorage.getItem("userId") ? <>
+					{ eventInfo.host === parseInt(localStorage.getItem("userId")) ? <>
 					<Button>Send Message</Button>
 					<Button href={'/editevent/'+ searchParams.get("event_id")}>Edit Event</Button>
 					<Button onClick={deleteConfirm}>
 						Delete
 					</Button>
  					</> : null}
+
+				{
+					eventFinished ? <ReviewList isEventHost={(eventInfo.host === parseInt(localStorage.getItem("userId")) ? true : false)} /> : null 
+				}
 				</Content>
 				<Footer style={{textAlign:'center'}}>
           9900-H16Q-404
