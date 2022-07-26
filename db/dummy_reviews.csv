@@ -1,0 +1,3 @@
+id,eventId,userId,reviewTimeStamp,review,rating,replyTimeStamp,reply
+1,1,3,10-07-2022 18:00,"The show was Awesome!",4,10-07-2022 19:00,"Glad you enjoyed the show. Thanks for feedback."
+2,1,2,12-07-2022 09:00,"It was too crowded and sound was not nice",2,13-07-2022 10:00,"Sorry for your experience. We will use your feedback to improve in future"

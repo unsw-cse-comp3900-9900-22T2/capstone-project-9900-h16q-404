@@ -648,3 +648,59 @@ class SearchEvent(Resource):
             'resultStatus': 'SUCCESS',
             'message': result
         } 
+
+class Reviews(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='args')
+        parser.add_argument('eventId', type=int, location='args')
+        args = parser.parse_args()
+        # assign variables
+        token = args['token']
+        eventId = args['eventId']
+        
+        print(token)
+        print(eventId)
+
+        # create db engine
+        temp_db = InitDB()
+        user_name = temp_db.get_host_username_from_token(token)
+        user_id = temp_db.get_host_id_from_token(token)
+        
+        #is_host = temp_db.check_user_isHost(user_id, eventId)
+        #has_ticket = temp_db.check_user_hasTicket(user_id, eventId)
+        #has_comment = temp_db.check_user_hasComment(user_id, eventId)
+        
+        result_dict = {}
+        result_dict['is_host'] = temp_db.check_user_isHost(user_id, eventId)
+        result_dict['hostedBy'] = temp_db.get_event_hostname(eventId)
+        result_dict['has_ticket'] = temp_db.check_user_hasTicket(user_id, eventId)
+        result_dict['has_comment'] = temp_db.check_user_hasComment(user_id, eventId)
+        
+        print(result_dict['has_comment'])
+        
+        
+        result_dict['reviews'] = []
+        
+        event_reviews = temp_db.get_reviews_by_eventId(eventId)
+        
+        
+        if (len(event_reviews) > 0):
+            review_list = []
+            for review in event_reviews:
+                review_list.append({"reviewedBy":temp_db.get_username_from_id(review['userId']),
+                                    "review":review['review'],
+                                    "reviewedOn":review['reviewTimeStamp'],
+                                    "rating":review['rating'],
+                                    "reply":review['reply'],
+                                    "repliedOn":review['replyTimeStamp']
+                                    })
+                #event_list.append([event['id']])
+            result_dict['reviews'] = review_list
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result_dict
+        }
+        
+       
