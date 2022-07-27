@@ -732,6 +732,10 @@ class Reviews(Resource):
         else:
             comment = ""
         
+        if ('rating' in getRequest):
+            rating = getRequest['rating']
+        
+        
         temp_db = InitDB()
         
         # check user exists
@@ -745,7 +749,7 @@ class Reviews(Resource):
         
         user_id = temp_db.get_host_id_from_token(token)
         
-        new_id = temp_db.post_review(user_id, eventId, timeStamp, comment)
+        new_id = temp_db.post_review(user_id, eventId, timeStamp, comment, rating)
         
         if new_id == -1:
             return {"status": "Error", "message": "Could not add review"}
@@ -774,6 +778,9 @@ class Reviews(Resource):
         
         if ('comment' in getRequest):
             user_reviews_params['review'] = getRequest['comment']
+        
+        if ('rating' in getRequest):
+            user_reviews_params['rating'] = getRequest['rating']
         
         temp_db = InitDB()
         
