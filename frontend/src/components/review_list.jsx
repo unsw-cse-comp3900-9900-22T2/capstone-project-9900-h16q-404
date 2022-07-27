@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Comment, List, Tooltip, Rate, Input, Form, Button, Modal, Avatar } from 'antd';
+import { Comment, List, Tooltip, Rate, Input, Form, Button, Modal, Avatar, Divider } from 'antd';
 import moment from 'moment';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import WriteReview from "./write_review";
+import axios from 'axios';
+import { useEffect } from "react";
 
 const { TextArea } = Input;
 const { confirm } = Modal;
@@ -97,67 +99,82 @@ const DeleteReplyButton = () => {
 }
 
 export default function ReviewList (props) {
-  // MOCK DATA!
-  // Remember to replace with real data when backend is completed
 
-  const data = [
-    {
-      author: 'Mock Customer 1',
-      avatar: 'https://joeschmoe.io/api/v1/random',
-      content: (
-        <p>
-          Very nice event! Looking forward for next time!
-        </p>
-      ),
-      rating: 4.5,
-      replied: true,
-      reply_content: (
-        <p>
-          Thanks!
-        </p>
+  const [reviewList, setReviewList] = useState({});
+
+  useEffect(()=>{
+    const requestURL = "http://127.0.0.1:5000/reviews?token="
+      +localStorage.getItem("token")
+      +"&eventId="+props.eventId;
+    axios.get(requestURL)
+      .then(response => response.data.message)
+      .then(data => {
+        setReviewList(data)
+      })
+  },[props])
+
+  const WriteReviewSection = () => {
+    if (!reviewList.has_ticket){
+      return(
+        <h2>Sorry you can't post a review on this event, since you have not attended it.</h2>
       )
-    },
-    {
-      author: 'Mock Customer 2',
-      avatar: 'https://joeschmoe.io/api/v1/random',
-      content: (
-        <p>
-          Excellent!
-        </p>
-      ),
-      rating: 5.0
     }
-  ];
+    else {
+      if( !reviewList.has_commeent){
+        return(
+          <h2>You have already left your comment.</h2>
+        )
+      }
+      else {
+        return(
+          <WriteReview />
+        )
+      }
+    }
+  }
+
 
   return (
     <>
-    <WriteReview />
+    <Divider />
+    <WriteReviewSection />
+    <Divider />
+    <h2>Review List</h2>
     <List
       className="comment-list"
-      header={`${data.length} Reviews`}
       itemLayout="horizontal"
-      dataSource={data}
+      dataSource={reviewList.reviews}
       renderItem={(item) => (
         <li>
           <Comment
-            actions={props.isEventHost? (item.replied? null : [<ReplyButton />]) : null}
-            author={item.author}
-            avatar={item.avatar}
+            actions={reviewList.isHost? (item.reply? null : [<ReplyButton />]) : null}
+            author={item.reviewedBy}
+            avatar='https://joeschmoe.io/api/v1/random'
             content={
               <div>
                 <Rate disabled allowHalf defaultValue={item.rating}/>
                 <br />
-                {item.content}
+                {item.review}
               </div>
+            }
+            datetime={
+              <Tooltip title={moment(item.reviewedOn).format('YYYY-MM-DD HH:mm:ss')}>
+                <span>{moment(item.reviewedOn).fromNow()}</span>
+              </Tooltip>
             }
           >
             {
-              item.replied ? 
+              item.reply ? 
               <Comment 
                 actions={props.isEventHost? [<DeleteReplyButton />] : null}
-                author="Mock Host"
-                avatar={item.avatar}
-                content={item.reply_content}
+                author={reviewList.hostedBy}
+                avatar='https://joeschmoe.io/api/v1/random'
+                content={item.reply}
+                datetime={
+                  <Tooltip title={moment(item.repliedOn).format('YYYY-MM-DD HH:mm:ss')}>
+                    <span>{moment(item.repliedOn).fromNow()}</span>
+                  </Tooltip>
+                }
               ></Comment>
               :
               null

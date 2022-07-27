@@ -28,29 +28,29 @@ export default function EventPage () {
 	useEffect(() => {
 		var requestURL = 
 				'http://127.0.0.1:5000/event?event_id=' + searchParams.get("event_id");
-		console.log("Sending request with event_id=" + searchParams.get("event_id"));
+		//console.log("Sending request with event_id=" + searchParams.get("event_id"));
 		axios.get(requestURL)
 			.then(res => res.data.event_details)
 			.then(data => {
-				console.log(data);
+				//console.log(data);
 				setEventInfo(data[0]);
-				console.log("get event: " + eventInfo.event_name);
-				console.log(eventInfo);
+				//console.log("get event: " + eventInfo.event_name);
+				//console.log(eventInfo);
 				// set eventFinished based on event start date
 				const today = new Date()
 				const endDate = new Date(data[0].end_date); 
 				if ( endDate < today ){
 					setEventFinished(true);
-					console.log("event finished!")
+					//console.log("event finished!")
 				}
 				else {
 					setEventFinished(false);
-					console.log("event not finished!")
+					//console.log("event not finished!")
 				}
 				return;
 			})
 			.catch(error => {
-				console.log(error);
+				//console.log(error);
 				message.error("This event does not exist...", 5);
 				//navigate('/');
 			});
@@ -66,12 +66,12 @@ export default function EventPage () {
 			})
 			.then((res) => res.data.message)
 			.then((data) => {
-				console.log("getting user info...")
-				console.log(data);
+				//console.log("getting user info...")
+				//console.log(data);
 				setUsrInfo(data);
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 			});}
 		}, [searchParams]);
 
@@ -107,7 +107,7 @@ export default function EventPage () {
 		var diff_ms = Date.now() - date.getTime();
 		var age_dt = new Date(diff_ms); 
 		var year = Math.abs(age_dt.getUTCFullYear() - 1970);
-		console.log(year);
+		//console.log(year);
 		if (year < 18) {
 			return true;
 		}
@@ -148,7 +148,7 @@ export default function EventPage () {
 
 	const SpecialConsiderationBar = () => {
 		const onChange = (key) => {
-			console.log(key);
+			//console.log(key);
 		};
 
 		return (
@@ -216,7 +216,7 @@ export default function EventPage () {
  					</> : null}
 
 				{
-					eventFinished ? <ReviewList isEventHost={(eventInfo.host === parseInt(localStorage.getItem("userId")) ? true : false)} /> : null 
+					eventFinished ? <ReviewList eventId={eventInfo.id} isEventHost={(eventInfo.host === parseInt(localStorage.getItem("userId")) ? true : false)} /> : null 
 				}
 				</Content>
 				<Footer style={{textAlign:'center'}}>
