@@ -325,7 +325,8 @@ class InitDB:
                     eventId = data["eventId"],
                     userId = data["userId"],
                     reviewTimeStamp = data["reviewTimeStamp"],
-                    review = data['review']
+                    review = data['review'],
+                    rating = data['rating']
                 )
             
             try:
@@ -814,14 +815,15 @@ class InitDB:
         max_id = self.engine.execute(query_max_id).scalar()
         return max_id + 1
     
-    def post_review(self, userId, eventId, timeStamp, comment):
+    def post_review(self, userId, eventId, timeStamp, comment, rating):
         
         data = {
             "id":self.get_new_review_id(), 
             "eventId": eventId,
             "userId": userId,
             "reviewTimeStamp": datetime.datetime.strptime(timeStamp, "%Y-%m-%d %H:%M"),
-            "review": comment
+            "review": comment,
+            "rating": rating
         }
 
         try:
