@@ -648,3 +648,55 @@ class SearchEvent(Resource):
             'resultStatus': 'SUCCESS',
             'message': result
         } 
+
+class Follow(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        parser.add_argument('target_id', type=str, location='args')
+        args = parser.parse_args()
+        
+        # assign variables
+        token = args['token']
+        following_id = args['target_id']
+
+        temp_db = InitDB()
+        follower_id = temp_db.get_host_id_from_token(token)
+        return temp_db.check_follower(follower_id, following_id)
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        parser.add_argument('target_id', type=str)
+        args = parser.parse_args()
+        
+        # assign variables
+        token = args['token']
+        following_id = args['target_id']
+
+        temp_db = InitDB()
+        follower_id = temp_db.get_host_id_from_token(token)
+
+        return temp_db.add_follower(follower_id, following_id)
+
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        parser.add_argument('target_id', type=str)
+        args = parser.parse_args()
+        
+        # assign variables
+        token = args['token']
+        following_id = args['target_id']
+
+        temp_db = InitDB()
+        follower_id = temp_db.get_host_id_from_token(token)
+
+        return temp_db.delete_follower(follower_id, following_id)
+
+
+
+
+class WatchedEvents(Resource):
+    def get(self):
+        return True 
