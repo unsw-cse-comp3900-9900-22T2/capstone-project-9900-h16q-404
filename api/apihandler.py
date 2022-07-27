@@ -718,7 +718,7 @@ class Reviews(Resource):
             return {"status": "Error", "message": "token was not Sent"}
         
         if ('eventId' in getRequest):
-            evenId = getRequest['eventId']
+            eventId = getRequest['eventId']
         else:
             return {"status": "Error", "message": "Event Id was not Sent"}
         
@@ -731,19 +731,6 @@ class Reviews(Resource):
             comment = getRequest['comment']
         else:
             comment = ""
-        
-        parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str)
-        parser.add_argument('eventId', type=str)
-        parser.add_argument('timeStamp', type=str)
-        parser.add_argument('comment', type=str)
-        args = parser.parse_args()
-
-        # get email and password
-        token = args['token']
-        eventId = args['eventId']
-        timeStamp = args['timeStamp']
-        comment = args['comment']
         
         temp_db = InitDB()
         
@@ -764,4 +751,46 @@ class Reviews(Resource):
             return {"status": "Error", "message": "Could not add review"}
         else:
             return {"status": "Success", "message": "Added Review Succesfully"}
-
+        
+    
+    def patch(self):
+        # parse request
+        getRequest = request.json
+        if ('token' in getRequest):
+            token = getRequest['token']
+        else:
+            return {"status": "Error", "message": "token was not Sent"}
+        
+        if ('eventId' in getRequest):
+            eventId = getRequest['eventId']
+        else:
+            return {"status": "Error", "message": "Event Id was not Sent"}
+        
+        user_reviews_params = {}
+        
+        if ('timeStamp' in getRequest):
+            reviewedTime = datetime.strptime(getRequest['timeStamp'], '%Y-%m-%d %H:%M')
+            user_reviews_params['reviewTimeStamp'] = reviewedTime
+        
+        if ('comment' in getRequest):
+            user_reviews_params['review'] = getRequest['comment']
+        
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        if user_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User Token does not match'
+            }
+        
+        user_id = temp_db.get_host_id_from_token(token)
+        
+        new_id = temp_db.update_user_reviews(user_reviews_params, user_id, eventId)
+        
+        if new_id == -1:
+            return {"status": "Error", "message": "Could not add review"}
+        else:
+            return {"status": "Success", "message": "Added Review Succesfully"}

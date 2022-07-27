@@ -829,6 +829,21 @@ class InitDB:
             return new_id
         except:
             return -1
+    
+    def update_user_reviews(self, params, userId, eventId):
+        
+        update_query = self.reviews.update().values(params).where(
+            and_(
+                self.reviews.c.userId == userId,
+                self.reviews.c.eventId == eventId
+                )
+            )
+        a = self.engine.execute(update_query)
+        
+        try:
+            return self.engine.execute(update_query)
+        except:
+            return -1
         
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
