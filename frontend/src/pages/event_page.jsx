@@ -119,18 +119,22 @@ export default function EventPage () {
 
 	// Component of event Description
 	const EventInfoBlock = () => (
-		<Descriptions title="Event Info">
-			<Descriptions.Item label="Event Name">{eventInfo.event_name}</Descriptions.Item>
-			<Descriptions.Item label="Type">{eventInfo.type}</Descriptions.Item>
-			<Descriptions.Item label="Host">
-				<Button 
-				type="link"
-				href={"user?userId=" + eventInfo.host}>{eventInfo.host_username}</Button>
-			</Descriptions.Item>
-			<Descriptions.Item label="location">{eventInfo.location}</Descriptions.Item>
-			<Descriptions.Item label="Rating"><Rating/></Descriptions.Item>
-			<Descriptions.Item label="Time">{time}</Descriptions.Item>
-		</Descriptions>
+		<>
+			<Divider orientation='left'>Event Information</Divider>
+			<Descriptions>
+				<Descriptions.Item label="Event Name">{eventInfo.event_name}</Descriptions.Item>
+				<Descriptions.Item label="Type">{eventInfo.type}</Descriptions.Item>
+				<Descriptions.Item label="Host">
+					<Button 
+					type="link"
+					href={"user?userId=" + eventInfo.host}>{eventInfo.host_username}</Button>
+				</Descriptions.Item>
+				<Descriptions.Item label="location">{eventInfo.location}</Descriptions.Item>
+				<Descriptions.Item label="Rating"><Rating/></Descriptions.Item>
+				<Descriptions.Item label="Time">{time}</Descriptions.Item>
+			</Descriptions>
+		</>
+		
 	);
 
 	// Component of special Consideration Collapse
@@ -193,21 +197,22 @@ export default function EventPage () {
 
 					<EventInfoBlock/>
 
-					<Divider />
+					<Divider orientation='left'>Attendance Condition</Divider>
 
 					<SpecialConsiderationBar/>
 
-					<Divider />
-
-					{eventFinished ? <PastEventBuyTicketMask/> :<TicketBar/>}
-
-					<Divider />
+					<Divider orientation='left' >Event Description</Divider>
 
 					<p>
 						{eventInfo.description}
 					</p>
 
+					<Divider orientation='left'>Buy Ticket</Divider>
+
+					{eventFinished ? <PastEventBuyTicketMask/> :<TicketBar/>}
+					
 					{ eventInfo.host === parseInt(localStorage.getItem("userId")) ? <>
+					<Divider orientation='left'>Actions</Divider>
 					<Button>Send Message</Button>
 					<Button href={'/editevent/'+ searchParams.get("event_id")}>Edit Event</Button>
 					<Button onClick={deleteConfirm}>

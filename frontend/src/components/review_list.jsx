@@ -136,10 +136,9 @@ export default function ReviewList (props) {
 
   return (
     <>
-    <Divider />
+    <Divider orientation="left">Write Review</Divider>
     <WriteReviewSection />
-    <Divider />
-    <h2>Review List</h2>
+    <Divider orientation="left">Review List</Divider>
     <List
       className="comment-list"
       itemLayout="horizontal"
