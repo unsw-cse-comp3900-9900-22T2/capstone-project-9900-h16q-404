@@ -679,7 +679,7 @@ class Follow(Resource):
 
         return temp_db.add_follower(follower_id, following_id)
 
-    def delete(self):
+    def put(self):
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str, location='headers')
         parser.add_argument('target_id', type=str)

@@ -12,73 +12,35 @@ import { LoadingOutlined } from '@ant-design/icons';
 
 const spinIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-export function follow_req(token, targetid) {
-  axios
-    .post('localhost:5000/follow', {
-      headers: {
-        'Content-Type': 'application/json',
-        token: token,
-      },
-      data: { target_id: targetid },
-    })
-    .then((res) => {
-      return res.data.resultStatus;
-    });
-}
-
-export function unfollow_req(token, targetid) {
-  axios
-    .delete('localhost:5000/follow', {
-      headers: {
-        'Content-Type': 'application/json',
-        token: token,
-      },
-      data: { target_id: targetid },
-    })
-    .then((res) => {
-      return res.data.resultStatus;
-    });
-}
-
-function get_follow (token, targetid) {
-  axios
-    .get('localhost:5000/follow', {
-      headers: {
-        'Content-Type': 'application/json',
-        token: token,
-      },
-      params: { target_id: targetid },
-    })
-    .then((res) => {
-      return res.data.resultStatus;
-    });
-}
-
 export default function FollowButton(userId) {
   const [follow, setFollow] = useState();
   const [load, setLoad] = useState(false);
   const selfId = parseInt(localStorage.getItem('userId'));
+  const token = localStorage.getItem('token');
   if (typeof userId === 'string') {
     userId = parseInt(userId);
   }
 
   useEffect(() => {
-    console.log(typeof userId);
-    console.log(userId === selfId);
-    if (localStorage.getItem('userId') === undefined) {
+    if (localStorage.getItem('token') === undefined || null) {
       setFollow(false);
     } else {
-      const num = Math.round(Math.random());
-      console.log(num);
-      if (num === 1) {
-        setFollow(true);
-      } else {
-        setFollow(false);
-      }
+      axios
+        .get('http://127.0.0.1:5000/follow', {
+          headers: {
+            'Content-Type': 'application/json',
+            token: token,
+          },
+          params: { target_id: userId },
+        })
+        .then((res) => {
+          console.log(res.data);
+          setFollow(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-    axios.get('http://127.0.0.1:5000/event?event_id=1').then((res) => {
-      console.log(res.data.resultStatus);
-    });
   }, [userId]);
   if (
     localStorage.getItem('userId') === undefined ||
@@ -118,17 +80,21 @@ export default function FollowButton(userId) {
             style={{ width: 100 }}
             onClick={() => {
               setLoad(true);
-              console.log('unfollow');
-              setFollow(false);
+              let headers = {
+                'Content-Type': 'application/json',
+                token: token,
+              };
+              let data = { target_id: userId };
               axios
-                .get('http://127.0.0.1:5000/event?event_id=1')
+                .put('http://127.0.0.1:5000/follow', data, { headers })
                 .then((res) => {
                   console.log(res);
+                  setFollow(false);
+                  setLoad(false);
+                })
+                .catch((err) => {
+                  console.log(err);
                 });
-              setTimeout(() => {
-                console.log('Delayed for 1 second.');
-                setLoad(false);
-              }, 1000);
             }}
           >
             Unfollow
@@ -139,17 +105,21 @@ export default function FollowButton(userId) {
             type='primary'
             onClick={() => {
               setLoad(true);
-              console.log('follow');
-              setFollow(true);
+              let headers = {
+                'Content-Type': 'application/json',
+                token: token,
+              };
+              let data = { target_id: userId };
               axios
-                .get('http://127.0.0.1:5000/event?event_id=1')
+                .post('http://127.0.0.1:5000/follow', data, { headers })
                 .then((res) => {
                   console.log(res);
+                  setFollow(true);
+                  setLoad(false);
+                })
+                .catch((err) => {
+                  console.log(err);
                 });
-              setTimeout(() => {
-                console.log('Delayed for 1 second.');
-                setLoad(false);
-              }, 1000);
             }}
           >
             Follow

@@ -28,14 +28,14 @@ const data1 = [
 
 function get_list(token) {
   axios
-    .get('localhost:5000/mywatchlist', {
+    .get('http://127.0.0.1:5000/mywatchlist', {
       headers: {
         'Content-Type': 'application/json',
         token: token,
       },
     })
     .then((res) => {
-      return res.data;
+      return res;
     });
 }
 
@@ -68,19 +68,29 @@ export default function Watchlist() {
     const tempfollow = [];
     const tempload = [];
     let count = 0;
-    for (const item of data1) {
-      tempdata.push({
-        key: count,
-        user_name: item.user_name,
-        user_id: item.user_id,
+    axios
+      .get('http://127.0.0.1:5000/mywatchlist', {
+        headers: {
+          'Content-Type': 'application/json',
+          token: usertoken,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        for (const item of res.data) {
+          tempdata.push({
+            key: count,
+            user_name: item.user_name,
+            user_id: item.user_id,
+          });
+          count++;
+          tempfollow.push(true);
+          tempload.push(false);
+        }
+        setData(tempdata);
+        setLoad(tempload);
+        setFollow(tempfollow);
       });
-      count++;
-      tempfollow.push(true);
-      tempload.push(false);
-    }
-    setData(tempdata);
-    setLoad(tempload);
-    setFollow(tempfollow);
   }, []);
 
   return (
@@ -107,8 +117,11 @@ export default function Watchlist() {
                 }}
               >
                 <Space size={'large'}>
-                  <Link to={`/user?userId=${item.user_id}`} className='username'>
-                    username:{item.user_name}
+                  <Link
+                    to={`/user?userId=${item.user_id}`}
+                    className='username'
+                  >
+                    {item.user_name}
                   </Link>
                   {load[item.key] ? (
                     <Button
@@ -122,11 +135,24 @@ export default function Watchlist() {
                       type='primary'
                       onClick={() => {
                         setLoadArray(item.key, true);
-                        setFollowArray(item.key, false);
-                        setTimeout(() => {
-                          console.log(`Unfollow ${item.user_name}`);
-                          setLoadArray(item.key, false);
-                        }, 100);
+                        console.log(`Unfollow ${item.user_name}`);
+                        let headers = {
+                          'Content-Type': 'application/json',
+                          token: usertoken,
+                        };
+                        let data = { target_id: item.user_id };
+                        axios
+                          .put('http://127.0.0.1:5000/follow', data, {
+                            headers,
+                          })
+                          .then((res) => {
+                            console.log(res);
+                            setFollowArray(item.key, false);
+                            setLoadArray(item.key, false);
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                          });
                       }}
                     >
                       Unfollow
@@ -137,10 +163,27 @@ export default function Watchlist() {
                       onClick={() => {
                         setLoadArray(item.key, true);
                         setFollowArray(item.key, true);
-                        setTimeout(() => {
-                          console.log(`Follow ${item.user_name}`);
-                          setLoadArray(item.key, false);
-                        }, 100);
+                        console.log(`Follow ${item.user_name}`);
+                        let headers = {
+                          'Content-Type': 'application/json',
+                          token: usertoken,
+                        };
+                        let data = {
+                          target_id: item.user_id,
+                        };
+                        axios
+                          .post('http://127.0.0.1:5000/follow', data, {
+                            headers,
+                          })
+                          .then((res) => {
+                            console.log(res);
+                            setFollowArray(item.key, true);
+                            setLoadArray(item.key, false);
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                          });
+                        setLoadArray(item.key, false);
                       }}
                     >
                       Follow
