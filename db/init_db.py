@@ -168,10 +168,10 @@ class InitDB:
                 "id":row.id, 
                 "eventId": row.eventId,
                 "userId": row.userId,
-                "reviewTimeStamp": datetime.datetime.strptime(row.reviewTimeStamp, "%d-%m-%Y %H:%M"),
+                "reviewTimeStamp": datetime.datetime.strptime(row.reviewTimeStamp, "%Y-%m-%d %H:%M"),
                 "review" : row.review,
                 "rating" : row.rating,
-                "replyTimeStamp" : datetime.datetime.strptime(row.replyTimeStamp, "%d-%m-%Y %H:%M"),
+                "replyTimeStamp" : datetime.datetime.strptime(row.replyTimeStamp, "%Y-%m-%d %H:%M"),
                 "reply" : row.reply
             }
             result = self.insert_reviews(data, True)
@@ -318,6 +318,14 @@ class InitDB:
                     rating = data['rating'],
                     replyTimeStamp = data['replyTimeStamp'],
                     reply = data['reply']
+                )
+            else:
+                query = db.insert(self.reviews).values(
+                    id = data["id"],
+                    eventId = data["eventId"],
+                    userId = data["userId"],
+                    reviewTimeStamp = data["reviewTimeStamp"],
+                    review = data['review']
                 )
             
             try:
@@ -609,7 +617,7 @@ class InitDB:
         #     'lastname': bindparam('lastname')
         # }).where(self.users.c.token == token)
         update_query = self.users.update().values(params).where(self.users.c.token == token)
-        a = self.engine.execute(update_query)
+
         
         try:
             return self.engine.execute(update_query)
@@ -800,7 +808,54 @@ class InitDB:
         else:
             return list_result[0]['username']
     
-    #def post_review(self, token, eventId)
+    def get_new_review_id(self):
+        # returns the highest id in the user table plus 1
+        query_max_id = db.select([db.func.max(self.reviews.columns.id)])
+        max_id = self.engine.execute(query_max_id).scalar()
+        return max_id + 1
+    
+    def post_review(self, userId, eventId, timeStamp, comment):
+        
+        data = {
+            "id":self.get_new_review_id(), 
+            "eventId": eventId,
+            "userId": userId,
+            "reviewTimeStamp": datetime.datetime.strptime(timeStamp, "%Y-%m-%d %H:%M"),
+            "review": comment
+        }
+
+        try:
+            new_id = self.insert_reviews(data, False)
+            return new_id
+        except:
+            return -1
+    
+    def update_user_reviews(self, params, userId, eventId):
+        
+        update_query = self.reviews.update().values(params).where(
+            and_(
+                self.reviews.c.userId == userId,
+                self.reviews.c.eventId == eventId
+                )
+            )
+        
+        try:
+            return self.engine.execute(update_query)
+        except:
+            return -1
+    
+    def delete_user_reviews(self, userId, eventId):
+        delete_query = self.reviews.delete().where(
+            and_(
+                self.reviews.c.userId == userId,
+                self.reviews.c.eventId == eventId
+                )
+            )
+        
+        try:
+            return self.engine.execute(delete_query)
+        except:
+            return -1
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
