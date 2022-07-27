@@ -658,7 +658,7 @@ class InitDB:
                         following = following_id
                     )
                 result = self.engine.execute(query).inserted_primary_key 
-                return "Success: Removed from watchlist"
+                return "Success: Added to watchlist"
             except:
                 return "ERROR: Could not add to watchlist"
         else:
@@ -681,6 +681,12 @@ class InitDB:
         else:
             return "ERROR: You do not follow this user"
 
+    def get_all_following_user_ids(self, user_id):
+
+        check_follower_query = db.select([self.watchlist]).where(self.watchlist.c.follower == user_id)
+        result = self.engine.execute(check_follower_query)
+        result = ({'result': [dict(row) for row in result]}) 
+        return result['result']
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
