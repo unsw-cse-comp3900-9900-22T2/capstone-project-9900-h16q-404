@@ -617,7 +617,7 @@ class InitDB:
         #     'lastname': bindparam('lastname')
         # }).where(self.users.c.token == token)
         update_query = self.users.update().values(params).where(self.users.c.token == token)
-        a = self.engine.execute(update_query)
+
         
         try:
             return self.engine.execute(update_query)
@@ -838,13 +838,24 @@ class InitDB:
                 self.reviews.c.eventId == eventId
                 )
             )
-        a = self.engine.execute(update_query)
         
         try:
             return self.engine.execute(update_query)
         except:
             return -1
+    
+    def delete_user_reviews(self, userId, eventId):
+        delete_query = self.reviews.delete().where(
+            and_(
+                self.reviews.c.userId == userId,
+                self.reviews.c.eventId == eventId
+                )
+            )
         
+        try:
+            return self.engine.execute(delete_query)
+        except:
+            return -1
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
