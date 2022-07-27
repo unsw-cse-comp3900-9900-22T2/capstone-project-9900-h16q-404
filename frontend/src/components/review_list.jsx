@@ -127,7 +127,7 @@ export default function ReviewList (props) {
       }
       else {
         return(
-          <WriteReview />
+          <WriteReview eventId={props.eventId} />
         )
       }
     }
@@ -170,7 +170,7 @@ export default function ReviewList (props) {
                 avatar='https://joeschmoe.io/api/v1/random'
                 content={item.reply}
                 datetime={
-                  <Tooltip title={moment(item.repliedOn).format('YYYY-MM-DD HH:mm:ss')}>
+                  <Tooltip title={moment(item.repliedOn).format('YYYY-MM-DD HH:mm')}>
                     <span>{moment(item.repliedOn).fromNow()}</span>
                   </Tooltip>
                 }
