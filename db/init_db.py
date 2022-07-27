@@ -799,6 +799,8 @@ class InitDB:
             return "Error - more than one user with this token"
         else:
             return list_result[0]['username']
+    
+    #def post_review(self, token, eventId)
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
