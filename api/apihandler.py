@@ -664,27 +664,33 @@ class Reviews(Resource):
 
         # create db engine
         temp_db = InitDB()
-        user_name = temp_db.get_host_username_from_token(token)
-        user_id = temp_db.get_host_id_from_token(token)
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        #user_name = temp_db.get_host_username_from_token(token)
+        
         
         #is_host = temp_db.check_user_isHost(user_id, eventId)
         #has_ticket = temp_db.check_user_hasTicket(user_id, eventId)
         #has_comment = temp_db.check_user_hasComment(user_id, eventId)
         
         result_dict = {}
-        result_dict['is_host'] = temp_db.check_user_isHost(user_id, eventId)
         result_dict['hostedBy'] = temp_db.get_event_hostname(eventId)
-        result_dict['has_ticket'] = temp_db.check_user_hasTicket(user_id, eventId)
-        result_dict['has_comment'] = temp_db.check_user_hasComment(user_id, eventId)
         
-        print(result_dict['has_comment'])
-        
+        if user_exists:
+            user_id = temp_db.get_host_id_from_token(token)
+            result_dict['is_host'] = temp_db.check_user_isHost(user_id, eventId)
+            result_dict['has_ticket'] = temp_db.check_user_hasTicket(user_id, eventId)
+            result_dict['has_comment'] = temp_db.check_user_hasComment(user_id, eventId)
+        else:
+            result_dict['is_host'] = False
+            result_dict['has_ticket'] = False
+            result_dict['has_comment'] = False
         
         result_dict['reviews'] = []
         
         event_reviews = temp_db.get_reviews_by_eventId(eventId)
-        
-        
         if (len(event_reviews) > 0):
             review_list = []
             for review in event_reviews:
@@ -702,5 +708,3 @@ class Reviews(Resource):
             'resultStatus': 'SUCCESS',
             'message': result_dict
         }
-        
-       
