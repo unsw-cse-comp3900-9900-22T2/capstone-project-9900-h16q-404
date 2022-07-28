@@ -146,12 +146,12 @@ export default function Watchlist() {
                             headers,
                           })
                           .then((res) => {
-                            console.log(res);
+                            message.success('Successfully unfollow the user');
                             setFollowArray(item.key, false);
                             setLoadArray(item.key, false);
                           })
                           .catch((err) => {
-                            console.log(err);
+                            message.error(err.data);
                           });
                       }}
                     >
@@ -176,12 +176,12 @@ export default function Watchlist() {
                             headers,
                           })
                           .then((res) => {
-                            console.log(res);
+                            message.success(res.data);
                             setFollowArray(item.key, true);
                             setLoadArray(item.key, false);
                           })
                           .catch((err) => {
-                            console.log(err);
+                            message.error(err.data);
                           });
                         setLoadArray(item.key, false);
                       }}

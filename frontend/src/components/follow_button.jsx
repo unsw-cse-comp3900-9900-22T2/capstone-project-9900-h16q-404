@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Button, Spin } from 'antd';
+import { Button, message, Spin } from 'antd';
 import axios from 'axios';
 import { LoadingOutlined } from '@ant-design/icons';
 
@@ -34,11 +34,11 @@ export default function FollowButton(userId) {
           params: { target_id: userId },
         })
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           setFollow(res.data);
         })
         .catch((err) => {
-          console.log(err);
+          message.error(err.data);
         });
     }
   }, [userId]);
@@ -88,12 +88,14 @@ export default function FollowButton(userId) {
               axios
                 .put('http://127.0.0.1:5000/follow', data, { headers })
                 .then((res) => {
-                  console.log(res);
+                  // console.log(res);
+                  message.success('Successfully unfollow the user');
                   setFollow(false);
                   setLoad(false);
                 })
                 .catch((err) => {
-                  console.log(err);
+                  // console.log(err);
+                  message.error(err.data);
                 });
             }}
           >
@@ -113,12 +115,12 @@ export default function FollowButton(userId) {
               axios
                 .post('http://127.0.0.1:5000/follow', data, { headers })
                 .then((res) => {
-                  console.log(res);
+                  message.success(res.data);
                   setFollow(true);
                   setLoad(false);
                 })
                 .catch((err) => {
-                  console.log(err);
+                  message.error(err.data);
                 });
             }}
           >
