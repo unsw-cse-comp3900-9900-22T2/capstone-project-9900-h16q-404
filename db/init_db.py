@@ -352,7 +352,7 @@ class InitDB:
 
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
-        query = db.select([self.events])
+        query = db.select([self.events]).where(self.events.c.deleted == False)
         try:
             result = self.engine.execute(query)
             result = ({'result': [dict(row) for row in result]})
