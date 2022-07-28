@@ -19,7 +19,7 @@ import './create_event.css';
 import { InputComp } from './create_event';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const { Content } = Layout;
+const { Content, Footer } = Layout;
 const { TextArea } = Input;
 const { Option } = Select;
 /*
@@ -199,7 +199,7 @@ export default function EditEvent() {
   };
 
   return (
-    <>
+    <div>
       <Layout>
         <PageHeader />
         <Content
@@ -343,7 +343,8 @@ export default function EditEvent() {
             </div>
           </div>
         </Content>
+        <Footer style={{ textAlign: 'center' }}>9900-H16Q-404</Footer>
       </Layout>
-    </>
+    </div>
   );
 }
