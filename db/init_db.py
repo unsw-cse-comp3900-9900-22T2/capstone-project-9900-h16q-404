@@ -916,6 +916,20 @@ class InitDB:
             return result["result"]
         except IntegrityError as e:
             return (400, "could not find review for event")
+    
+    def select_ratings_by_host(self, host):
+        rating_host_query = db.select([self.reviews]).where(self.reviews.c.host == host)
+        
+        try:
+            result = self.engine.execute(rating_host_query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['reviewTimeStamp'] = str(result["result"][i]['reviewTimeStamp'])
+                result["result"][i]['replyTimeStamp'] = str(result["result"][i]['replyTimeStamp'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find review for event")
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
