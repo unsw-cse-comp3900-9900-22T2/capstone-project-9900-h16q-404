@@ -658,9 +658,6 @@ class Reviews(Resource):
         # assign variables
         token = args['token']
         eventId = args['eventId']
-        
-        print(token)
-        print(eventId)
 
         # create db engine
         temp_db = InitDB()
@@ -749,7 +746,27 @@ class Reviews(Resource):
         
         user_id = temp_db.get_host_id_from_token(token)
         
-        new_id = temp_db.post_review(user_id, eventId, timeStamp, comment, rating)
+        # check event exists
+        event_exists = temp_db.check_eventid_exists(eventId)
+        if event_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Event Id does not exist'
+            }
+        
+        # get event host and type by id
+        eventDetails = temp_db.select_event_byId(eventId)
+        
+        if (len(eventDetails) < 0):
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Unable to Retreive Event Details'
+            }
+        
+        host = eventDetails['host']
+        eventType = eventDetails['type']
+        
+        new_id = temp_db.post_review(user_id, eventId, timeStamp, comment, rating, host, eventType)
         
         if new_id == -1:
             return {"status": "Error", "message": "Could not add review"}
@@ -955,3 +972,70 @@ class HostReplies(Resource):
             return {"status": "Error", "message": "Could not delete reply!"}
         else:
             return {"status": "Success", "message": "Deleted Reply Succesfully"}
+
+
+class EventRatings(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='args')
+        parser.add_argument('eventId', type=int, location='args')
+        args = parser.parse_args()
+        # assign variables
+        token = args['token']
+        eventId = args['eventId']
+        
+        print(token)
+        print(eventId)
+
+        # create db engine
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        # check event exists
+        event_exists = temp_db.check_eventid_exists(eventId)
+        if event_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Event Id does not exist'
+            }
+        
+        # get event host and type by id
+        eventDetails = temp_db.select_event_byId(eventId)
+        
+        if (len(eventDetails) < 0):
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Unable to Retreive Event Details'
+            }
+        
+        host = eventDetails[0]['host']
+        eventType = eventDetails[0]['type']
+        hostName = eventDetails[0]['host_username']
+        
+        result_dict = {}
+        result_dict['Host Name'] = hostName
+        result_dict['Event Type'] = eventType
+        
+        # get ratings based on host and event type
+        eventRatings = temp_db.select_ratings_from_reviews(host, eventType)
+        numRatings = len(eventRatings)
+        
+        # Compute Average Rating
+        average_rating = 0
+        
+        if (len(eventRatings) > 0):
+            sum_ratings = 0
+            for rating in eventRatings:
+                sum_ratings += rating['rating']
+            average_rating = sum_ratings / numRatings
+        
+        result_dict['Average Rating'] = round(average_rating, 2)
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result_dict
+        }
+        
+        
