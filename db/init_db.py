@@ -550,7 +550,6 @@ class InitDB:
         self.insert_tix(data['gold_num'], 'gold', data['id'], data['gold_price'])
         self.insert_tix(data['silver_num'], 'silver', data['id'], data['silver_price'])
         self.insert_tix(data['bronze_num'], 'bronze', data['id'], data['bronze_price'])
-        pass
 
     def insert_tix(self, num_tix, tix_class, event_ID, price):
         for i in range(num_tix):

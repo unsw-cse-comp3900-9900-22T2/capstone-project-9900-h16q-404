@@ -7,6 +7,7 @@ This file handles the API requests for creating a new event
 
 from flask_restful import Resource, reqparse
 from db.init_db import InitDB
+from db.db_events import EventsDB
 
 
 class Create(Resource):
@@ -22,14 +23,15 @@ class Create(Resource):
         event_details = args['detail']
 
         # create db engine
-        temp_db = InitDB()
+        events_db = EventsDB()
 
         try:
-            new_id, insert_data = temp_db.create_event(token, event_details)
+            new_id, insert_data = events_db.create_event(token, event_details)
             insert_data['start_date'] = str(insert_data['start_date'])
             insert_data['start_time'] = str(insert_data['start_time'])[:-3]
             insert_data['end_date'] = str(insert_data['end_date'])
             insert_data['end_time'] = str(insert_data['end_time'])[:-3]
+
             return {
                 'resultStatus': 'SUCCESS',
                 'new_event_id': new_id,

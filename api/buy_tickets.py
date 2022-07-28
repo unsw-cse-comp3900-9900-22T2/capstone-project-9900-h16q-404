@@ -7,6 +7,8 @@ This file handles the API requests for getting ticket information, reserving tic
 
 from flask_restful import Resource, reqparse
 from db.init_db import InitDB
+from db.db_tickets import TicketsDB
+from db.db_token_handler import TokenHandlerDB
 
 
 class BuyTickets(Resource):
@@ -22,7 +24,7 @@ class BuyTickets(Resource):
         event_id = args['event_id']
 
         # create db engine
-        temp_db = InitDB()
+        temp_db = TicketsDB()
         result = temp_db.select_tickets_event_id(event_id)
 
         if len(result['result']) == 0:
@@ -37,6 +39,7 @@ class BuyTickets(Resource):
         }
 
     def post(self):
+
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str)
         parser.add_argument('tickets', action='append')
@@ -47,17 +50,17 @@ class BuyTickets(Resource):
         tickets = args['tickets']
 
         # create db engine
-        temp_db = InitDB()
+        token_db = TokenHandlerDB()
+        tickets_db = TicketsDB()
 
         # need to convert token to user_id
-        user_id = temp_db.get_host_id_from_token(token)
+        user_id = token_db.get_host_id_from_token(token)
         failed = []
         for i in tickets:
             try:
-                temp_db.reserve_tickets(i, user_id)
+                tickets_db.reserve_tickets(i, user_id)
             except:
                 failed.append(i)
-
         if len(failed) > 0:
             return{
                 'resultStatus': 'ERROR',
@@ -81,14 +84,15 @@ class BuyTickets(Resource):
         tickets = args['tickets']
 
         # create db engine
-        temp_db = InitDB()
+        token_db = TokenHandlerDB()
+        tickets_db = TicketsDB()
 
         # need to convert token to user_id
-        user_id = temp_db.get_host_id_from_token(token)
+        user_id = token_db.get_host_id_from_token(token)
         failed = []
         for i in tickets:
             try:
-                temp_db.refund_tickets(i, user_id)
+                tickets_db.refund_tickets(i, user_id)
             except:
                 failed.append(i)
 

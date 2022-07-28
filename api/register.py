@@ -6,10 +6,11 @@ This file handles all API requests for registering a user
 '''
 
 from flask_restful import Resource, reqparse
-from db.init_db import InitDB
+from db.db_users import UsersDB
 
 
 class Register(Resource):
+    # TODO: delete this GET function
     def get(self):
         return {
             'resultStatus': 'SUCCESS',
@@ -30,9 +31,9 @@ class Register(Resource):
         request_email = args['email']
         request_password = args['password']
 
-        temp_db = InitDB()
+        user_db = UsersDB()
         # check user exists
-        user_exists = temp_db.check_user_exists(request_email)
+        user_exists = user_db.check_user_exists(request_email)
 
         # if user does not exists return error
         if user_exists == True:
@@ -41,7 +42,7 @@ class Register(Resource):
 
         # TODO here:
         # if user does not exists, store password and username
-        new_id = temp_db.register_new_user(request_email, request_password)
+        new_id = user_db.register_new_user(request_email, request_password)
         if new_id == -1:
             return {"status": "Error", "message": "could not register new user"}
         else:
