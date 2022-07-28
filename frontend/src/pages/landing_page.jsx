@@ -37,7 +37,7 @@ export default function LandingPage() {
           <Radio.Button value='Business'>Business</Radio.Button>
           <Radio.Button value='Funeral'>Funeral</Radio.Button>
           <Radio.Button value='Others'>Others</Radio.Button>
-          <Radio.Button value='Follower'>Only from my follower</Radio.Button>
+          <Radio.Button value='Follower'>Events from My Watchlist</Radio.Button>
         </Radio.Group>
       );
     } else {
