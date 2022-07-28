@@ -648,3 +648,101 @@ class SearchEvent(Resource):
             'resultStatus': 'SUCCESS',
             'message': result
         } 
+
+class Follow(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        parser.add_argument('target_id', type=str, location='args')
+        args = parser.parse_args()
+        
+        # assign variables
+        token = args['token']
+        following_id = args['target_id']
+
+        temp_db = InitDB()
+        follower_id = temp_db.get_host_id_from_token(token)
+        return temp_db.check_follower(follower_id, following_id)
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        parser.add_argument('target_id', type=str)
+        args = parser.parse_args()
+        
+        # assign variables
+        token = args['token']
+        following_id = args['target_id']
+
+        temp_db = InitDB()
+        follower_id = temp_db.get_host_id_from_token(token)
+
+        return temp_db.add_follower(follower_id, following_id)
+
+    def put(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        parser.add_argument('target_id', type=str)
+        args = parser.parse_args()
+        
+        # assign variables
+        token = args['token']
+        following_id = args['target_id']
+
+        temp_db = InitDB()
+        follower_id = temp_db.get_host_id_from_token(token)
+
+        return temp_db.delete_follower(follower_id, following_id)
+
+class MyWatchlist(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        args = parser.parse_args()
+        
+        # assign variables
+        token = args['token']
+
+        temp_db = InitDB()
+        user_id = temp_db.get_host_id_from_token(token)
+
+        all_following_ids = temp_db.get_all_following_user_ids(user_id)
+        
+        all_following_user_details = []
+
+        for i in all_following_ids:
+            user_record = temp_db.get_user_record(i['following'])
+            if user_record != -1:
+                all_following_user_details.append(user_record[0])
+
+        return_users = []
+        for i in all_following_user_details:
+            user_dict = {}
+            user_dict['user_id'] = i[0]
+            user_dict['user_name'] = i[1]
+            return_users.append(user_dict)
+
+        return return_users
+
+
+class WatchedEvents(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='headers')
+        args = parser.parse_args()
+        
+        # assign variables
+        token = args['token']
+
+        temp_db = InitDB()
+        user_id = temp_db.get_host_id_from_token(token)
+
+        following_users = temp_db.get_all_following_user_ids(user_id)
+        
+        return_events = []
+        for i in following_users:
+            events = temp_db.select_events_hostid(i['following'])
+            for j in events:
+                return_events.append(j)
+
+        return return_events
