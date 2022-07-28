@@ -8,32 +8,59 @@ To run the applicaiton:
 $ flask run
 
 This file performs the below in order:
-1. Call db_main() function in the init_db.py file
+1. Import all third party libraries required and then the custom classes made by Group 404
+    
+2. Call db_main() function in the init_db.py file
     This will create a DB if it does not exist and load it full of data
-2. Initialise a Flask instance and start it running
+3. Initialise a Flask instance and start it running
     This will be where the front end sends requests for data to
-3. Define a number of resources which are located in apihandler.py 
+4. Define a number of resources which are located in apihandler.py 
     These resources can make queries on the database and return the data to the front end
 
 '''
-
-from flask import Flask, send_from_directory
-from flask_restful import Api, Resource, reqparse
+# import third part libraries 
+from flask import Flask
+from flask_restful import Api
 from flask_cors import CORS
-from api.apihandler import Test, Register, Events, Login, User, UserDetails, UserSensitiveDetails, UserChangePassword, Event, Create, BuyTickets, MyTickets, SearchEvent, Filter
+
+# import database class
 from db.init_db import db_main
+
+# import login and register classes
+from api.register import Register
+from api.login import Login
+
+# import all user-based classes
+from api.user import User
+from api.user_details import UserDetails
+from api.user_change_password import UserChangePassword
+from api.user_sensitive_details import UserSensitiveDetails
+
+# import all events-based classes
+from api.events import Events
+from api.event import Event
+from api.create import Create
+
+# import classes used for landing page features
+from api.filter import Filter
+from api.search_event import SearchEvent
+
+# import the tickets-based classes
+from api.buy_tickets import BuyTickets
+from api.my_tickets import MyTickets
+
 
 # Run db_main() in the init_db.py file to create the DB and fill it with data
 db_main()
 
 # Create a Flask object and define api as the main entry point for the application
 app = Flask(__name__, static_url_path='', static_folder='frontend/build')
-# Yunran: since we are not deploying we need to have CORS
+
+# Since we are not deploying we need to have CORS
 CORS(app, supports_credentials=True)
 api = Api(app)
 
 # Matches URLs to resources defined in apihandler.py
-api.add_resource(Test, '/test')
 api.add_resource(Register, '/register')
 api.add_resource(Events, '/events')
 api.add_resource(Login, '/login')

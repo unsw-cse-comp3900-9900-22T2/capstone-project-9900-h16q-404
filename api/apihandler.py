@@ -6,7 +6,7 @@ This file defines the Resources that connect the front end URLs to the backend w
 
 '''
 
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Resource, reqparse
 from flask import request
 from db.init_db import InitDB
 from datetime import datetime
@@ -138,7 +138,6 @@ class Login(Resource):
             'resultStatus': 'SUCCESS',
             'message': result_dict
         }
-
 
 class User(Resource):
     def get(self):
@@ -383,9 +382,6 @@ class Event(Resource):
             'resultStatus': 'ERROR',
             } 
 
-
-
-
     def delete(self):
         # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
@@ -434,7 +430,7 @@ class Event(Resource):
             return {
                 'resultStatus': 'ERROR',
                 'message': result
-            }    
+            }
 
 class Create(Resource):
     def post(self):
@@ -495,6 +491,7 @@ class Filter(Resource):
             'resultStatus': 'SUCCESS',
             'event_details': result
         }
+    
 class BuyTickets(Resource):
     def get(self):
 
@@ -647,4 +644,4 @@ class SearchEvent(Resource):
         return {
             'resultStatus': 'SUCCESS',
             'message': result
-        } 
+        }
