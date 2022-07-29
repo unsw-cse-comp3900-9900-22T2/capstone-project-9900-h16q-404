@@ -245,6 +245,13 @@ class InitDB:
             max_id = 0
         return max_id + 1
 
+# The main function creates an InitDB class and then calls the fill_with_dummy_data method
+def db_main():
+    db = InitDB()
+    db.fill_dummy_data()
+
+
+
     # def select_event_name(self, event_name):
     #     # This functions searches for events with event_name as event_name and returns a list of all events
     #     query = db.select([self.events]).where(self.events.c.event_name == event_name)
@@ -618,8 +625,3 @@ class InitDB:
     #     start_time = str(result['result'][0]['start_time'])
     #     event_name = result['result'][0]['event_name']
     #     return start_date, start_time, event_name
-
-# The main function creates an InitDB class and then calls the fill_with_dummy_data method
-def db_main():
-    db = InitDB()
-    db.fill_dummy_data()
