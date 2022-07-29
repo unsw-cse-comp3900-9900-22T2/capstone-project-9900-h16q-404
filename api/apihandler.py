@@ -695,6 +695,7 @@ class Reviews(Resource):
             review_list = []
             for review in event_reviews:
                 review_list.append({"reviewedBy":temp_db.get_username_from_id(review['userId']),
+                                    "reviewedByUserId":review['userId'],
                                     "review":review['review'],
                                     "reviewedOn":review['reviewTimeStamp'],
                                     "rating":review['rating'],

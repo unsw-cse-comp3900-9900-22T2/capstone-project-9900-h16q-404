@@ -1,32 +1,18 @@
 import React, { useState } from "react";
-import { Comment, List, Tooltip, Rate, Input, Form, Button, Modal, Avatar, Divider } from 'antd';
+import { Comment, List, Tooltip, Rate, Input, Form, Button, Modal, Avatar, Divider, message } from 'antd';
 import moment from 'moment';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import WriteReview from "./write_review";
+import EditReview from "./edit_review";
 import axios from 'axios';
 import { useEffect } from "react";
 
 const { TextArea } = Input;
 const { confirm } = Modal;
 
-const showDeleteConfirm = () => {
-  confirm({
-    title: 'Are you sure delete this reply?',
-    icon: <ExclamationCircleOutlined />,
-    okText: 'Yes',
-    okType: 'danger',
-    cancelText: 'No',
-
-    onOk() {
-      // TODO: send data to backend when backend completed
-      console.log("Trying to delete...")
-    },
-
-    onCancel() {
-      return;
-    },
-  });
-};
+/**
+ * Host Reply Related functions (start)
+ */
 
 const ReplyTextArea = ({onChange, onSubmit, onClose, value}) => 
   (
@@ -43,8 +29,7 @@ const ReplyTextArea = ({onChange, onSubmit, onClose, value}) =>
     </>
   )
 
-
-const ReplyButton = () => {
+const ReplyButton = (props) => {
   const [commentArea, setCommentArea] = useState(false);
   const [value, setValue] = useState('');
 
@@ -57,8 +42,24 @@ const ReplyButton = () => {
   }
 
   const sendComment = () => {
-    // TODO: send data to backend when backend is finished!
-    console.log(value);
+    const body = {
+      "token":localStorage.getItem('token'),
+      "eventId":parseInt(new URLSearchParams(window.location.search).get("event_id")),
+      "targetUserId":props.targetUserId,
+      "timeStamp":moment().format("YYYY-MM-DD HH:mm"),
+      "reply": value
+    }
+
+    axios.patch("http://127.0.0.1:5000/hostreplies", body)
+      .then(response => response.data)
+      .then(data => {
+        if (data.status.toUpperCase() === "SUCCESS") {
+          window.location.reload()
+        }
+        else {
+          message.error(data.message);
+        }
+      })
   }
 
   const onContentChange = (e) => {
@@ -89,18 +90,70 @@ const ReplyButton = () => {
   )
 }
 
-const DeleteReplyButton = () => {
+const showDeleteConfirm = (targetUserId) => {
+  confirm({
+    title: 'Are you sure delete this reply?',
+    icon: <ExclamationCircleOutlined />,
+    okText: 'Yes',
+    okType: 'danger',
+    cancelText: 'No',
+
+    onOk() {
+      axios.delete("http://127.0.0.1:5000/hostreplies", {data:{
+        "token":localStorage.getItem("token"),
+        "eventId":new URLSearchParams(window.location.search).get("event_id"),
+        "targetUserId":targetUserId
+      }})
+        .then(response => response.data)
+        .then(data => {
+          if (data.status.toUpperCase() === "SUCCESS") {
+            window.location.reload();
+          }
+          else {
+            message.error(data.message);
+          }
+        })
+    },
+
+    onCancel() {
+      return;
+    },
+  });
+};
+
+const DeleteReplyButton = ({targetUserId}) => {
   const deleteAction = () => {
-    showDeleteConfirm()
+    showDeleteConfirm(targetUserId)
   }
   return (
     <span key="comment-list-reply-to-0" onClick={deleteAction}>Delete Reply</span>
   )
 }
 
+/**
+ * Host Reply Related functions (end)
+ */
+
+// component export
+
 export default function ReviewList (props) {
 
   const [reviewList, setReviewList] = useState({});
+
+  const handleReviewSubmit = (e) => {
+    axios.post("http://127.0.0.1:5000/reviews", e)
+      .then(res=>res.data)
+      .then(data=>{
+        if (data.status.toUpperCase() === "SUCCESS"){
+          message.success("Review Posted!")
+          window.location.reload();
+        }
+        else {
+          message.error(data.message);
+          return;
+        }
+      })
+  }
 
   useEffect(()=>{
     const requestURL = "http://127.0.0.1:5000/reviews?token="
@@ -120,24 +173,23 @@ export default function ReviewList (props) {
       )
     }
     else {
-      if( !reviewList.has_commeent){
+      if(reviewList.has_comment){
         return(
-          <h2>You have already left your comment.</h2>
+          <EditReview />
         )
       }
       else {
         return(
-          <WriteReview eventId={props.eventId} />
+          <WriteReview handleSumbit={handleReviewSubmit} />
         )
       }
     }
   }
 
-
   return (
     <>
     <Divider orientation="left">Write Review</Divider>
-    <WriteReviewSection />
+    <WriteReviewSection handleSumbit={handleReviewSubmit} />
     <Divider orientation="left">Review List</Divider>
     <List
       className="comment-list"
@@ -146,7 +198,7 @@ export default function ReviewList (props) {
       renderItem={(item) => (
         <li>
           <Comment
-            actions={reviewList.isHost? (item.reply? null : [<ReplyButton />]) : null}
+            actions={reviewList.is_host? (item.reply? null : [<ReplyButton targetUserId={item.reviewedByUserId} />]) : null}
             author={item.reviewedBy}
             avatar='https://joeschmoe.io/api/v1/random'
             content={
@@ -165,7 +217,7 @@ export default function ReviewList (props) {
             {
               item.reply ? 
               <Comment 
-                actions={props.isEventHost? [<DeleteReplyButton />] : null}
+                actions={props.isEventHost? [<DeleteReplyButton targetUserId={item.reviewedByUserId} />] : null}
                 author={reviewList.hostedBy}
                 avatar='https://joeschmoe.io/api/v1/random'
                 content={item.reply}

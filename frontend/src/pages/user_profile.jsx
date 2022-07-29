@@ -3,9 +3,8 @@ import { Layout, Avatar, Rate, Button, message, List, Divider } from 'antd';
 import PageHeader from '../components/page_header';
 import './user_profile.css';
 import { UserOutlined } from '@ant-design/icons';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const { Content, Footer } = Layout;
 

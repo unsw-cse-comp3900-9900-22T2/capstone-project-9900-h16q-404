@@ -25,7 +25,6 @@ const ReviewBar = ({ onCommentChange, onRateChange, commentValue, rateValue, onS
   </>
 );
 
-// maybe used later
 export default function WriteReview (props) {
   const [rateValue, setRateValue] = useState(0.0);
   const [commentValue, setCommentValue] = useState('');
@@ -41,13 +40,13 @@ export default function WriteReview (props) {
   const onSubmit = () => {
     const body = {
       "token":localStorage.getItem("token"),
-      "eventId":props.eventId,
+      "eventId":new URLSearchParams(window.location.search).get("event_id"),
       "timeStamp":moment().format("YYYY-MM-DD HH:mm"),
       "comment":commentValue,
       "rating":rateValue
     }
 
-    console.log(body);
+    props.handleSumbit(body);
   }
 
   return (
