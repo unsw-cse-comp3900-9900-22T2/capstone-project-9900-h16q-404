@@ -1,3 +1,18 @@
-id,eventId,userId,reviewTimeStamp,review,rating,replyTimeStamp,reply
-1,1,3,2022-07-10 18:00,"The show was Awesome!",4,2022-07-10 19:00,"Glad you enjoyed the show. Thanks for feedback."
-2,1,2,2022-07-12 09:00,"It was too crowded and sound was not nice",2,2022-07-13 10:00,"Sorry for your experience. We will use your feedback to improve in future"
+id,eventId,userId,reviewTimeStamp,review,rating,replyTimeStamp,reply,host,eventType
+1,1,3,2022-07-10 18:00,"The show was Awesome!",4,2022-07-10 19:00,"Glad you enjoyed the show. Thanks for feedback.",1,Music
+2,1,2,2022-07-12 09:00,"It was too crowded and sound was not nice",2,2022-07-13 10:00,"Sorry for your experience. We will use your feedback to improve in future",1,Music
+3,6,1,2022-07-10 18:00,"Awesome",4,2022-07-10 19:00,"Thanks for feedback.",3,Music
+4,7,1,2022-07-10 18:00,"Awful",1,2022-07-10 19:00,"Thanks for feedback.",3,Music
+5,8,1,2022-07-10 18:00,"Great",5,2022-07-10 19:00,"Thanks for feedback.",3,Music
+6,9,1,2022-07-10 18:00,"ok",2,2022-07-10 19:00,"Thanks for feedback.",3,Music
+7,10,1,2022-07-10 18:00,"Not Bad",3,2022-07-10 19:00,"Thanks for feedback.",3,Music
+8,6,2,2022-07-11 18:00,"Awesome",4,2022-07-11 19:00,"Thanks for feedback.",3,Music
+9,7,2,2022-07-11 18:00,"Awesome",4,2022-07-11 19:00,"Thanks for feedback.",3,Music
+10,8,2,2022-07-11 18:00,"ok",3,2022-07-11 19:00,"Thanks for feedback.",3,Music
+11,9,2,2022-07-11 18:00,"Awful",1,2022-07-11 19:00,"Thanks for feedback.",3,Music
+12,10,2,2022-07-11 18:00,"Awful",1,2022-07-11 19:00,"Thanks for feedback.",3,Music
+13,6,4,2022-07-12 18:00,"Great",5,2022-07-12 19:00,"Thanks for feedback.",3,Music
+14,7,4,2022-07-12 18:00,"Great",4,2022-07-12 19:00,"Thanks for feedback.",3,Music
+15,8,4,2022-07-12 18:00,"Average",3,2022-07-12 19:00,"Thanks for feedback.",3,Music
+16,9,4,2022-07-12 18:00,"Average",2,2022-07-12 19:00,"Thanks for feedback.",3,Music
+17,10,4,2022-07-12 18:00,"Awful",1,2022-07-12 19:00,"Thanks for feedback.",3,Music

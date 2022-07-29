@@ -87,7 +87,9 @@ class InitDB:
             db.Column('review', db.Text(), nullable=False),
             db.Column('rating', db.Integer(), nullable=True),
             db.Column('replyTimeStamp', db.DateTime(), nullable=True),
-            db.Column('reply', db.Text(), nullable=True)
+            db.Column('reply', db.Text(), nullable=True),
+            db.Column('host', db.Text(), nullable=True),
+            db.Column('eventType', db.Text(), nullable=True)
         )
         
         # create all objects in the metadata object
@@ -172,7 +174,9 @@ class InitDB:
                 "review" : row.review,
                 "rating" : row.rating,
                 "replyTimeStamp" : datetime.datetime.strptime(row.replyTimeStamp, "%Y-%m-%d %H:%M"),
-                "reply" : row.reply
+                "reply" : row.reply,
+                "host" : row.host,
+                "eventType" : row.eventType
             }
             result = self.insert_reviews(data, True)
             if result == None or result == -1:
@@ -317,7 +321,9 @@ class InitDB:
                     review = data['review'],
                     rating = data['rating'],
                     replyTimeStamp = data['replyTimeStamp'],
-                    reply = data['reply']
+                    reply = data['reply'],
+                    host = data['host'],
+                    eventType = data['eventType']
                 )
             else:
                 query = db.insert(self.reviews).values(
@@ -326,7 +332,9 @@ class InitDB:
                     userId = data["userId"],
                     reviewTimeStamp = data["reviewTimeStamp"],
                     review = data['review'],
-                    rating = data['rating']
+                    rating = data['rating'],
+                    host = data['host'],
+                    eventType = data['eventType']
                 )
             
             try:
@@ -790,7 +798,7 @@ class InitDB:
             return False
     
     def get_event_hostname(self, event_id):
-        # This functions searches for events with event_name as event_name and returns a list of all events
+        # This functions returns the host name of the event with wvent_id
         query_host = db.select([self.events]).where(self.events.c.id == event_id)
         try:
             result = self.engine.execute(query_host)
@@ -815,7 +823,7 @@ class InitDB:
         max_id = self.engine.execute(query_max_id).scalar()
         return max_id + 1
     
-    def post_review(self, userId, eventId, timeStamp, comment, rating):
+    def post_review(self, userId, eventId, timeStamp, comment, rating, host, eventType):
         
         data = {
             "id":self.get_new_review_id(), 
@@ -823,7 +831,9 @@ class InitDB:
             "userId": userId,
             "reviewTimeStamp": datetime.datetime.strptime(timeStamp, "%Y-%m-%d %H:%M"),
             "review": comment,
-            "rating": rating
+            "rating": rating,
+            "host": host,
+            "eventType": eventType
         }
 
         try:
@@ -858,6 +868,54 @@ class InitDB:
             return self.engine.execute(delete_query)
         except:
             return -1
+    
+    def check_eventid_exists(self, eventId):
+        event_exists = False
+        check_query = db.select([self.events]).where(self.events.c.id == eventId)
+        check_result = self.engine.execute(check_query).fetchall()
+        if len(check_result) > 0:
+            event_exists = True
+        return event_exists
+    
+    def select_event_byId(self, eventId):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.id == eventId,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def select_ratings_from_reviews(self, host, eventType):
+        review_rating_query = db.select([self.reviews]).where(
+            and_(
+                self.reviews.c.host == host,
+                self.reviews.c.eventType == eventType
+                )
+            )
+        
+        try:
+            result = self.engine.execute(review_rating_query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['reviewTimeStamp'] = str(result["result"][i]['reviewTimeStamp'])
+                result["result"][i]['replyTimeStamp'] = str(result["result"][i]['replyTimeStamp'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find review for event")
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
