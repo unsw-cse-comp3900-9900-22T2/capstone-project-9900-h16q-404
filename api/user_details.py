@@ -4,25 +4,28 @@ Written by: Group 404
 This file handles the API requests for editing user details
 
 '''
-
+# import third party libraries
 from flask_restful import Resource
-from yaml import Token
-from db.init_db import InitDB
 from flask import request
+
+# import custom classes used to interact with the DB
 from db.db_users import UsersDB
 from db.db_token_handler import TokenHandlerDB
 
 
 class UserDetails(Resource):
     def patch(self):
-        users_db = UsersDB()
-        token_db = TokenHandlerDB()
 
+        # parse request
         getRequest = request.json
         if ('token' in getRequest):
             user_token = request.json['token']
         else:
             return {"status": "Error", "message": "User Token was not Sent"}
+
+        # create db engines
+        users_db = UsersDB()
+        token_db = TokenHandlerDB()
 
         user_exists = token_db.check_usertoken_exists(user_token)
 

@@ -1,8 +1,10 @@
-
-
-from db.init_db import InitDB
+# import third party libaries
 import sqlalchemy as db
 from sqlalchemy import and_
+
+# import custom classes used to interact with the DB
+from db.init_db import InitDB
+
 
 class UsersDB:
     def __init__(self):
@@ -54,11 +56,9 @@ class UsersDB:
         return user_exists
 
     def register_new_user(self, username, password):
-        # need to get new userID
-        # function to get highest ID value
 
         data = {
-            "id":self.temp_db.get_new_user_id(), 
+            "id":self.get_new_user_id(), 
             "username": username,
             "password": password,
             "token": username,
@@ -94,17 +94,7 @@ class UsersDB:
             return -1
 
     def update_user_details(self, params, token):
-        # update_query = self.users.update(). \
-        # values({
-        #     'phone': bindparam('phone'),
-        #     'firstname': bindparam('firstname'),
-        #     'lastname': bindparam('lastname')
-        # }).where(self.users.c.token == token)
-        # TODO: Ganesh can we delete all this stuff above^
         update_query = self.temp_db.users.update().values(params).where(self.temp_db.users.c.token == token)
-        a = self.temp_db.engine.execute(update_query)
-        # TODO: Ganesh this line is not required ^
-        
         try:
             return self.temp_db.engine.execute(update_query)
         except:
@@ -125,3 +115,9 @@ class UsersDB:
             return user_result
         else:
             return -1
+
+    def get_new_user_id(self):
+        # returns the highest id in the user table plus 1
+        query_max_id = db.select([db.func.max(self.temp_db.users.columns.id)])
+        max_id = self.temp_db.engine.execute(query_max_id).scalar()
+        return max_id + 1

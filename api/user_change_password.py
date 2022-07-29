@@ -4,25 +4,28 @@ Written by: Group 404
 This file handles the API requests for editing user login information
 
 '''
-
+# import third party libraries
 from flask_restful import Resource
-from db.init_db import InitDB
 from flask import request
+
+# import custom classes used to interact with the DB
 from db.db_token_handler import TokenHandlerDB
 from db.db_users import UsersDB
 
 
 class UserChangePassword(Resource):
     def patch(self):
-        
-        token_db = TokenHandlerDB()
-        users_db = UsersDB()
 
+        # parse request
         getRequest = request.json
         if ('token' in getRequest):
             user_token = request.json['token']
         else:
             return {"status": "Error", "message": "User Token was not Sent"}
+
+        # create db engines
+        token_db = TokenHandlerDB()
+        users_db = UsersDB()
         
         user_exists = token_db.check_usertoken_exists(user_token)
         

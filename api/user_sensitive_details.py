@@ -4,26 +4,29 @@ Written by: Group 404
 This file handles the API requests for editing sensitive user details
 
 '''
-
+# import third party libraries
 from flask_restful import Resource
-from db.init_db import InitDB
 from flask import request
 from datetime import datetime
-from db.db_token_handler import TokenHandlerDB
+
+# import custom classes used to interact with the DB
 from db.db_users import UsersDB
+from db.db_token_handler import TokenHandlerDB
 
 
 class UserSensitiveDetails(Resource):
     def patch(self):
 
-        token_db = TokenHandlerDB()
-        user_db = UsersDB()
-        
+        # parse request
         getRequest = request.json
         if ('token' in getRequest):
             user_token = request.json['token']
         else:
             return {"status": "Error", "message": "User Token was not Sent"}
+
+        # create db engines
+        token_db = TokenHandlerDB()
+        user_db = UsersDB()
             
         user_exists = token_db.check_usertoken_exists(user_token)
         

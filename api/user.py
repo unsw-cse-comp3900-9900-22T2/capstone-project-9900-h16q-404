@@ -4,15 +4,17 @@ Written by: Group 404
 This file handles the API requests for visting a user page and returning user information
 
 '''
-
+# import third party libraries
 from flask_restful import Resource, reqparse
-from db.init_db import InitDB
+
+# import custom classes used to interact with the DB
 from db.db_users import UsersDB
 from db.db_events import EventsDB
 
 
 class User(Resource):
     def get(self):
+
         # parse request
         parser = reqparse.RequestParser()
         parser.add_argument('userId', type=int, location='args')
@@ -20,6 +22,7 @@ class User(Resource):
 
         request_userId = args['userId']
 
+        # create db engines
         user_db = UsersDB()
         events_db = EventsDB()
 

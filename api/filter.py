@@ -4,14 +4,16 @@ Written by: Group 404
 This file handles the API requests for the filer feature on the landing page
 
 '''
-
+# import third party libraries
 from flask_restful import Resource, reqparse
-from db.init_db import InitDB
+
+# import custom classes used to interact with the DB
 from db.db_filter import FilterDB
 
 
 class Filter(Resource):
     def get(self):
+
         # parse the event filter type arguments
         parser = reqparse.RequestParser()
         parser.add_argument('filterType', type=str, location="args")
@@ -20,7 +22,7 @@ class Filter(Resource):
         # assign variables
         filter_type = args['filterType']
         
-        # create db engine
+        # create db engines
         filter_db = FilterDB()
         
         # Get events hosted by this user

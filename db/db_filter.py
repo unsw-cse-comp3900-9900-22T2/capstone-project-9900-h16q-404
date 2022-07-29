@@ -1,12 +1,11 @@
-
-from db.init_db import InitDB
+# import third party libaries
 import sqlalchemy as db
 from sqlalchemy import and_
-import json
-import datetime
-from db.db_token_handler import TokenHandlerDB
-from db.db_tickets import TicketsDB
 from sqlalchemy.exc import IntegrityError
+
+# import custom classes used to interact with the DB
+from db.init_db import InitDB
+
 
 class FilterDB:
     def __init__(self):

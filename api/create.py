@@ -4,14 +4,16 @@ Written by: Group 404
 This file handles the API requests for creating a new event
 
 '''
-
+# import third party libraries
 from flask_restful import Resource, reqparse
-from db.init_db import InitDB
+
+# import custom classes used to interact with the DB
 from db.db_events import EventsDB
 
 
 class Create(Resource):
     def post(self):
+
         # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str)

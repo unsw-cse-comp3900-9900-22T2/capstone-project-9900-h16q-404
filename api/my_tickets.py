@@ -4,10 +4,11 @@ Written by: Group 404
 This file handles the API requests for getting reserved ticket information for a user
 
 '''
-
+# import third party libraries
 from flask_restful import Resource, reqparse
+
+# import custom classes used to interact with the DB
 from db.db_tickets import TicketsDB
-from db.init_db import InitDB
 from db.db_tickets import TicketsDB
 from db.db_events import EventsDB
 from db.db_token_handler import TokenHandlerDB
@@ -15,13 +16,15 @@ from db.db_token_handler import TokenHandlerDB
 
 class MyTickets(Resource):
     def get(self):
+
+        # parse request
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str, location='headers')
         args = parser.parse_args()
-        # assign variables
+
         token = args['token']
 
-        # create db engine
+        # create db engines
         tickets_db = TicketsDB()
         events_db = EventsDB()
         token_db = TokenHandlerDB()

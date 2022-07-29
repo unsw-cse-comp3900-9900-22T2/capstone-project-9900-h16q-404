@@ -6,6 +6,8 @@ This file defines the Resources that connect the front end URLs to the backend w
 
 '''
 
+# TODO: Delete this file
+
 from flask_restful import Resource, reqparse
 from flask import request
 from db.init_db import InitDB

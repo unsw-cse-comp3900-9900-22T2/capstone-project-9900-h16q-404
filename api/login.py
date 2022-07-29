@@ -4,9 +4,10 @@ Written by: Group 404
 This file handles the API requests for logging in a user 
 
 '''
-
+# import third party libraries
 from flask_restful import Resource, reqparse
-from db.init_db import InitDB
+
+# import custom classes used to interact with the DB
 from db.db_users import UsersDB
 
 class Login(Resource):
@@ -18,11 +19,12 @@ class Login(Resource):
         parser.add_argument('password', type=str)
         args = parser.parse_args()
 
-        # get email and password
         request_username = args['username']
         request_password = args['password']
 
+        # create db engines
         users_db = UsersDB()
+
         user_exists = users_db.check_user_exists(request_username)
         
         if user_exists == False:

@@ -1,8 +1,10 @@
-
-from db.init_db import InitDB
+# import third party libaries
 import sqlalchemy as db
 from sqlalchemy import and_
 import json
+
+# import custom classes used to interact with the DB
+from db.init_db import InitDB
 
 
 class TicketsDB:

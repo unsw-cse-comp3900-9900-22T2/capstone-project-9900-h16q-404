@@ -1,12 +1,14 @@
-
-from db.init_db import InitDB
+# import third party libraries
 import sqlalchemy as db
 from sqlalchemy import and_
-import json
 import datetime
-from db.db_token_handler import TokenHandlerDB
-from db.db_tickets import TicketsDB
 from sqlalchemy.exc import IntegrityError
+import pandas as pd
+
+# import custom classes used to interact with the DB
+from db.init_db import InitDB
+from db.db_tickets import TicketsDB
+from db.db_token_handler import TokenHandlerDB
 
 class EventsDB:
     def __init__(self):
@@ -18,7 +20,7 @@ class EventsDB:
         # token, formats all of the data required for the insertion into the event table and 
         # finally returns the event details and event ID
 
-        event_details = self.temp_db.flatten_details(event_details)
+        event_details = self.flatten_details(event_details)
         new_id = self.get_new_event_id()
         
         token_db = TokenHandlerDB()
@@ -109,7 +111,7 @@ class EventsDB:
 
     def select_event_id(self, event_id):
         # This functions searches for events with id as event_id and returns a list of all events
-        query = db.select([self.temp_db.events]).where(self.self.temp_db.c.id == event_id)
+        query = db.select([self.temp_db.events]).where(self.temp_db.events.c.id == event_id)
         try:
             result = self.temp_db.engine.execute(query)
             result = ({'result': [dict(row) for row in result]})
@@ -123,14 +125,12 @@ class EventsDB:
             return (400, "could not find event")
 
     def update_event(self, event_id, event_details, token):
-        # TODO:
-        # 1. Flatten event_details
-        # 2. Format event_details
-        # 3. Update row
 
-        event_details = self.temp_db.flatten_details(event_details)
-        host = self.temp_db.get_host_id_from_token(token)
-        host_username = self.temp_db.get_host_username_from_token(token)
+        token_db = TokenHandlerDB()
+
+        event_details = self.flatten_details(event_details)
+        host = token_db.get_host_id_from_token(token)
+        host_username = token_db.get_host_username_from_token(token)
 
         update_data = {}
         update_data['event_name'] = event_details['title']
@@ -161,7 +161,7 @@ class EventsDB:
             return False
 
     def delete_event_name(self, event_name):
-        if self.temp_db.check_event_exists(event_name, "event_name"):
+        if self.check_event_exists(event_name, "event_name"):
             try:
                 query = self.temp_db.events.update().values(deleted=True).where(self.temp_db.events.c.event_name == event_name)
                 result = self.temp_db.engine.execute(query)
@@ -186,7 +186,7 @@ class EventsDB:
         return event_exists
 
     def delete_event_id(self, event_id):
-        if self.temp_db.check_event_exists(event_id, "id"):
+        if self.check_event_exists(event_id, "id"):
             try:
                 query = self.temp_db.events.update().values(deleted=True).where(self.temp_db.events.c.id == event_id)
                 result = self.temp_db.engine.execute(query)
@@ -240,3 +240,6 @@ class EventsDB:
             return result["result"]
         except IntegrityError as e:
             return (400, "could not find event")
+
+    def flatten_details(self, data):
+        return pd.json_normalize(data, sep='_').to_dict(orient='records')[0]

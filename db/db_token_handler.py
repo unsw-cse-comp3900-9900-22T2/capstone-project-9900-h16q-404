@@ -1,6 +1,9 @@
-
-from db.init_db import InitDB
+# import third party libraries
 import sqlalchemy as db
+
+# import custom classes used to interact with the DB
+from db.init_db import InitDB
+
 
 class TokenHandlerDB:
     def __init__(self):

@@ -84,6 +84,8 @@ class InitDB:
 
     def fill_dummy_data(self):
         # This function will read one or more CSVs and then insert the data from those CSVs into the relevant tables
+        
+        # read in dummy data from CSVs
         dummy_events_df = pd.read_csv("db/dummy_events.csv")
         dummy_users_df = pd.read_csv("db/dummy_users.csv")
 
@@ -218,334 +220,6 @@ class InitDB:
         else:
             print("Item " + str(data["event_name"]) + " not added to events table as it failed the insert check")
 
-    def select_event_name(self, event_name):
-        # This functions searches for events with event_name as event_name and returns a list of all events
-        query = db.select([self.events]).where(self.events.c.event_name == event_name)
-        try:
-            result = self.engine.execute(query)
-            result = ({'result': [dict(row) for row in result]})
-            for i in range(len(result['result'])):
-                result["result"][i]['event_date'] = str(result["result"][i]['event_date'])
-            return result["result"]
-        except IntegrityError as e:
-            return (400, "could not find event")
-
-    def select_event_id(self, event_id):
-        # This functions searches for events with id as event_id and returns a list of all events
-        query = db.select([self.events]).where(self.events.c.id == event_id)
-        try:
-            result = self.engine.execute(query)
-            result = ({'result': [dict(row) for row in result]})
-            for i in range(len(result['result'])):
-                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])[:-3]
-                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])[:-3]
-            return result["result"]
-        except IntegrityError as e:
-            return (400, "could not find event")
-
-    def delete_event_name(self, event_name):
-        if self.check_event_exists(event_name, "event_name"):
-            try:
-                query = self.events.update().values(deleted=True).where(self.events.c.event_name == event_name)
-                result = self.engine.execute(query)
-                if result:
-                    return (True)
-            except IntegrityError as e:
-                return (400, "Error updating delete column for " + event_name)
-        else:
-            return ("Error finding event " + event_name + " in events table")
-
-    def delete_event_id(self, event_id):
-        if self.check_event_exists(event_id, "id"):
-            try:
-                query = self.events.update().values(deleted=True).where(self.events.c.id == event_id)
-                result = self.engine.execute(query)
-                if result:
-                    return (True)
-            except IntegrityError as e:
-                return ("Error updating delete column for " + event_id)
-        else:
-            return ("Error finding event " + str(event_id) + " in events table")
-            
-    def create_event(self, token, event_details):
-        # This function takes a token and a nested dictionary of event details, it flattens 
-        # the dict, finds a new ID for the new event, gets the host ID and username from the
-        # token, formats all of the data required for the insertion into the event table and 
-        # finally returns the event details and event ID
-
-        event_details = self.flatten_details(event_details)
-        new_id = self.get_new_event_id()
-
-        host = self.get_host_id_from_token(token)
-        host_username = self.get_host_username_from_token(token)
-
-        insert_data = {}
-        insert_data['id'] = new_id
-        insert_data['event_name'] = event_details['title']
-        insert_data['type'] = event_details['type']
-        insert_data['location'] = event_details['location']
-        insert_data['host'] = host
-        insert_data['host_username'] = host_username
-        insert_data['deleted'] = False 
-        insert_data['description'] = event_details['desc']
-        insert_data['adult_only'] = event_details['cond_adult']
-        insert_data['vax_only'] = event_details['cond_vax'] 
-        insert_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
-        insert_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
-        insert_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
-        insert_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
-        insert_data['gold_num'] = event_details['gold_num']
-        insert_data['gold_price'] = event_details['gold_price']
-        insert_data['silver_num'] = event_details['silver_num']
-        insert_data['silver_price'] = event_details['silver_price']
-        insert_data['bronze_num'] = event_details['bronze_num']
-        insert_data['bronze_price'] = event_details['bronze_price']
-
-        result = self.insert_events(insert_data), insert_data
-        return result
-
-    def update_event(self, event_id, event_details, token):
-        # TODO:
-        # 1. Flatten event_details
-        # 2. Format event_details
-        # 3. Update row
-
-        event_details = self.flatten_details(event_details)
-        host = self.get_host_id_from_token(token)
-        host_username = self.get_host_username_from_token(token)
-
-        update_data = {}
-        update_data['event_name'] = event_details['title']
-        update_data['type'] = event_details['type']
-        update_data['location'] = event_details['location']
-        update_data['host'] = host
-        update_data['host_username'] = host_username
-        update_data['deleted'] = False 
-        update_data['description'] = event_details['desc']
-        update_data['adult_only'] = event_details['cond_adult']
-        update_data['vax_only'] = event_details['cond_vax'] 
-        update_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
-        update_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
-        update_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
-        update_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
-        update_data['gold_num'] = event_details['gold_num']
-        update_data['gold_price'] = event_details['gold_price']
-        update_data['silver_num'] = event_details['silver_num']
-        update_data['silver_price'] = event_details['silver_price']
-        update_data['bronze_num'] = event_details['bronze_num']
-        update_data['bronze_price'] = event_details['bronze_price']
-
-        try:
-            update_query = self.events.update().values(update_data).where(self.events.c.id == event_id)
-            result = self.engine.execute(update_query)
-            return True
-        except:
-            return False
-
-    def select_all_events(self):
-        # This funtion currently returns a list of all the rows of the events table
-        query = db.select([self.events])
-        try:
-            result = self.engine.execute(query)
-            result = ({'result': [dict(row) for row in result]})
-            for i in range(len(result['result'])):
-                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
-                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
-            return result["result"]
-        except IntegrityError as e:
-            return (400, "Could not select from table")
-    
-    def select_events_hostid(self, host_id):
-        # This functions searches for events with event_name as event_name and returns a list of all events
-        query = db.select([self.events]).where(
-            and_(
-                self.events.c.host == host_id,
-                self.events.c.deleted == False
-                )
-            )
-        try:
-            result = self.engine.execute(query)
-            result = ({'result': [dict(row) for row in result]})
-            for i in range(len(result['result'])):
-                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
-                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
-                
-            return result["result"]
-        except IntegrityError as e:
-            return (400, "could not find event")
-    
-    def select_events_bytype(self, type):
-        query = db.select([self.events]).where(
-            and_(
-                self.events.c.type == type,
-                self.events.c.deleted == False
-                )
-            )
-        try:
-            result = self.engine.execute(query)
-            result = ({'result': [dict(row) for row in result]})
-            for i in range(len(result['result'])):
-                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
-                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
-                
-            return result["result"]
-        except IntegrityError as e:
-            return (400, "could not find event")
-
-    def check_event_exists(self, event_detail, event_col):
-        event_exists = False
-
-        if event_col == "id":
-            check_query = db.select([self.events]).where(self.events.c.id == event_detail)
-        else: 
-            check_query = db.select([self.events]).where(self.events.c.event_name == event_detail)
-        
-        check_result = self.engine.execute(check_query).fetchall()
-        if len(check_result) > 0:
-            event_exists = True
-        return event_exists
-
-    def check_user_exists(self, username):
-        user_exists = False
-        check_query = db.select([self.users]).where(self.users.c.username == username)
-        check_result = self.engine.execute(check_query).fetchall()
-        if len(check_result) > 0:
-            user_exists = True
-        return user_exists
-
-    def check_passwords_match(self, username, password):
-        passwords_match = False
-        check_query = db.select([self.users]).where(
-            and_(
-                self.users.c.username == username,
-                self.users.c.password == password
-                )
-            )
-        check_result = self.engine.execute(check_query).fetchall()
-        if len(check_result) > 0:
-                passwords_match = True
-        return passwords_match
-    
-    def get_new_user_id(self):
-        # returns the highest id in the user table plus 1
-        query_max_id = db.select([db.func.max(self.users.columns.id)])
-        max_id = self.engine.execute(query_max_id).scalar()
-        return max_id + 1
-
-    def register_new_user(self, username, password):
-        # need to get new userID
-        # function to get highest ID value
-
-        data = {
-            "id":self.get_new_user_id(), 
-            "username": username,
-            "password": password,
-            "token": username,
-            "dateOfBirth": "",
-            "vaccinated": ""
-        }
-
-        try:
-            new_id = self.insert_users(data, False)    
-            return new_id
-        except:
-            return -1
-    
-    def check_userid_exists(self, userid):
-        user_exists = False
-        check_query = db.select([self.users]).where(self.users.c.id == userid)
-        check_result = self.engine.execute(check_query).fetchall()
-        if len(check_result) > 0:
-            user_exists = True
-        return user_exists
-    
-    def get_user_record(self, userid):
-        user_query = db.select([self.users]).where(self.users.c.id == userid)
-        user_result = self.engine.execute(user_query).fetchall()
-        if len(user_result) > 0:
-            return user_result
-        else:
-            return -1
-    
-    def get_user_record_byname(self, username):
-        user_query = db.select([self.users]).where(self.users.c.username == username)
-        user_result = self.engine.execute(user_query).fetchall()
-        if len(user_result) > 0:
-            return user_result
-        else:
-            return -1
-    
-    def check_usertoken_exists(self, usertoken):
-        user_exists = False
-        check_query = db.select([self.users]).where(self.users.c.token == usertoken)
-        check_result = self.engine.execute(check_query).fetchall()
-        if len(check_result) > 0:
-            user_exists = True
-        return user_exists
-    
-    def update_user_details(self, params, token):
-        # update_query = self.users.update(). \
-        # values({
-        #     'phone': bindparam('phone'),
-        #     'firstname': bindparam('firstname'),
-        #     'lastname': bindparam('lastname')
-        # }).where(self.users.c.token == token)
-        update_query = self.users.update().values(params).where(self.users.c.token == token)
-        a = self.engine.execute(update_query)
-        
-        try:
-            return self.engine.execute(update_query)
-        except:
-            return -1
-
-    def get_new_event_id(self):
-        # returns the highest id in the user table plus 1
-        query_max_id = db.select([db.func.max(self.events.columns.id)])
-        max_id = self.engine.execute(query_max_id).scalar()
-        return max_id + 1
-
-    def flatten_details(self, data):
-        return pd.json_normalize(data, sep='_').to_dict(orient='records')[0]
-
-    def get_host_id_from_token(self, token):
-        check_query = db.select([self.users]).where(self.users.c.token == token)
-        check_result = self.engine.execute(check_query)
-        check_result = ({'result': [dict(row) for row in check_result]})
-        list_result = check_result['result']
-        if len(list_result) > 1:
-            return "Error - more than one user with this token"
-        else:
-            return list_result[0]['id']
-
-    def get_host_username_from_token(self, token):
-        check_query = db.select([self.users]).where(self.users.c.token == token)
-        check_result = self.engine.execute(check_query)
-        check_result = ({'result': [dict(row) for row in check_result]})
-        list_result = check_result['result']
-        if len(list_result) > 1:
-            return "Error - more than one user with this token"
-        else:
-            return list_result[0]['username']
-    
-    def select_tickets_event_id(self, event_id):
-        tickets_query = db.select([self.tickets]).where(
-            and_(
-                self.tickets.c.event_id == event_id,
-                self.tickets.c.purchased == False
-                )
-            )
-        result = self.engine.execute(tickets_query)
-        result = ({'result': [dict(row) for row in result]})
-        return result
-
     def pre_fill_tickets(self, data):
         self.insert_tix(data['gold_num'], 'gold', data['id'], data['gold_price'])
         self.insert_tix(data['silver_num'], 'silver', data['id'], data['silver_price'])
@@ -563,32 +237,6 @@ class InitDB:
             )
             result = self.engine.execute(query).inserted_primary_key
 
-    def reserve_tickets(self, data, user_id):
-        data = json.loads(data.replace("'", '"'))
-        card_number = data['card_number']
-        update_query = self.tickets.update().values(purchased=True, user_id=user_id, card_number=card_number).where(
-            and_(
-                self.tickets.c.event_id == data['event_id'],
-                self.tickets.c.seat_num == data['seat_num'],
-                self.tickets.c.tix_class == data['tix_class']
-                )
-            )
-        result = self.engine.execute(update_query)
-        return result
-
-    def refund_tickets(self, data, user_id):
-        data = json.loads(data.replace("'", '"'))
-        update_query = self.tickets.update().values(purchased=db.false(), user_id=db.null(), card_number=db.null()).where(
-            and_(
-                self.tickets.c.user_id == user_id,
-                self.tickets.c.event_id == data['event_id'],
-                self.tickets.c.seat_num == data['seat_num'],
-                self.tickets.c.tix_class == data['tix_class']
-                )
-            )
-        result = self.engine.execute(update_query)
-        return result
-
     def get_max_ticket_id(self):
         # returns the highest id in the tickets table plus 1
         query_max_id = db.select([db.func.max(self.tickets.columns.id)])
@@ -597,25 +245,379 @@ class InitDB:
             max_id = 0
         return max_id + 1
 
-    def select_all_tickets(self, user_id):
-        user_tickets_query = db.select([self.tickets]).where(
-            and_(
-                self.tickets.c.user_id == user_id,
-                self.tickets.c.purchased == True
-                )
-            )
-        result = self.engine.execute(user_tickets_query)
-        result = ({'result': [dict(row) for row in result]})
-        return result
+    # def select_event_name(self, event_name):
+    #     # This functions searches for events with event_name as event_name and returns a list of all events
+    #     query = db.select([self.events]).where(self.events.c.event_name == event_name)
+    #     try:
+    #         result = self.engine.execute(query)
+    #         result = ({'result': [dict(row) for row in result]})
+    #         for i in range(len(result['result'])):
+    #             result["result"][i]['event_date'] = str(result["result"][i]['event_date'])
+    #         return result["result"]
+    #     except IntegrityError as e:
+    #         return (400, "could not find event")
 
-    def get_event_time_date(self, event_id):
-        event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
-        result = self.engine.execute(event_start_query)
-        result = ({'result': [dict(row) for row in result]})
-        start_date = str(result['result'][0]['start_date'])
-        start_time = str(result['result'][0]['start_time'])
-        event_name = result['result'][0]['event_name']
-        return start_date, start_time, event_name
+    # def select_event_id(self, event_id):
+    #     # This functions searches for events with id as event_id and returns a list of all events
+    #     query = db.select([self.events]).where(self.events.c.id == event_id)
+    #     try:
+    #         result = self.engine.execute(query)
+    #         result = ({'result': [dict(row) for row in result]})
+    #         for i in range(len(result['result'])):
+    #             result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+    #             result["result"][i]['start_time'] = str(result["result"][i]['start_time'])[:-3]
+    #             result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+    #             result["result"][i]['end_time'] = str(result["result"][i]['end_time'])[:-3]
+    #         return result["result"]
+    #     except IntegrityError as e:
+    #         return (400, "could not find event")
+
+    # def delete_event_name(self, event_name):
+    #     if self.check_event_exists(event_name, "event_name"):
+    #         try:
+    #             query = self.events.update().values(deleted=True).where(self.events.c.event_name == event_name)
+    #             result = self.engine.execute(query)
+    #             if result:
+    #                 return (True)
+    #         except IntegrityError as e:
+    #             return (400, "Error updating delete column for " + event_name)
+    #     else:
+    #         return ("Error finding event " + event_name + " in events table")
+
+    # def delete_event_id(self, event_id):
+    #     if self.check_event_exists(event_id, "id"):
+    #         try:
+    #             query = self.events.update().values(deleted=True).where(self.events.c.id == event_id)
+    #             result = self.engine.execute(query)
+    #             if result:
+    #                 return (True)
+    #         except IntegrityError as e:
+    #             return ("Error updating delete column for " + event_id)
+    #     else:
+    #         return ("Error finding event " + str(event_id) + " in events table")
+            
+    # def create_event(self, token, event_details):
+    #     # This function takes a token and a nested dictionary of event details, it flattens 
+    #     # the dict, finds a new ID for the new event, gets the host ID and username from the
+    #     # token, formats all of the data required for the insertion into the event table and 
+    #     # finally returns the event details and event ID
+
+    #     event_details = self.flatten_details(event_details)
+    #     new_id = self.get_new_event_id()
+
+    #     host = self.get_host_id_from_token(token)
+    #     host_username = self.get_host_username_from_token(token)
+
+    #     insert_data = {}
+    #     insert_data['id'] = new_id
+    #     insert_data['event_name'] = event_details['title']
+    #     insert_data['type'] = event_details['type']
+    #     insert_data['location'] = event_details['location']
+    #     insert_data['host'] = host
+    #     insert_data['host_username'] = host_username
+    #     insert_data['deleted'] = False 
+    #     insert_data['description'] = event_details['desc']
+    #     insert_data['adult_only'] = event_details['cond_adult']
+    #     insert_data['vax_only'] = event_details['cond_vax'] 
+    #     insert_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
+    #     insert_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
+    #     insert_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
+    #     insert_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
+    #     insert_data['gold_num'] = event_details['gold_num']
+    #     insert_data['gold_price'] = event_details['gold_price']
+    #     insert_data['silver_num'] = event_details['silver_num']
+    #     insert_data['silver_price'] = event_details['silver_price']
+    #     insert_data['bronze_num'] = event_details['bronze_num']
+    #     insert_data['bronze_price'] = event_details['bronze_price']
+
+    #     result = self.insert_events(insert_data), insert_data
+    #     return result
+
+    # def update_event(self, event_id, event_details, token):
+    #     # TODO:
+    #     # 1. Flatten event_details
+    #     # 2. Format event_details
+    #     # 3. Update row
+
+    #     event_details = self.flatten_details(event_details)
+    #     host = self.get_host_id_from_token(token)
+    #     host_username = self.get_host_username_from_token(token)
+
+    #     update_data = {}
+    #     update_data['event_name'] = event_details['title']
+    #     update_data['type'] = event_details['type']
+    #     update_data['location'] = event_details['location']
+    #     update_data['host'] = host
+    #     update_data['host_username'] = host_username
+    #     update_data['deleted'] = False 
+    #     update_data['description'] = event_details['desc']
+    #     update_data['adult_only'] = event_details['cond_adult']
+    #     update_data['vax_only'] = event_details['cond_vax'] 
+    #     update_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
+    #     update_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
+    #     update_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
+    #     update_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
+    #     update_data['gold_num'] = event_details['gold_num']
+    #     update_data['gold_price'] = event_details['gold_price']
+    #     update_data['silver_num'] = event_details['silver_num']
+    #     update_data['silver_price'] = event_details['silver_price']
+    #     update_data['bronze_num'] = event_details['bronze_num']
+    #     update_data['bronze_price'] = event_details['bronze_price']
+
+    #     try:
+    #         update_query = self.events.update().values(update_data).where(self.events.c.id == event_id)
+    #         result = self.engine.execute(update_query)
+    #         return True
+    #     except:
+    #         return False
+
+    # def select_all_events(self):
+    #     # This funtion currently returns a list of all the rows of the events table
+    #     query = db.select([self.events])
+    #     try:
+    #         result = self.engine.execute(query)
+    #         result = ({'result': [dict(row) for row in result]})
+    #         for i in range(len(result['result'])):
+    #             result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+    #             result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+    #             result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+    #             result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+    #         return result["result"]
+    #     except IntegrityError as e:
+    #         return (400, "Could not select from table")
+    
+    # def select_events_hostid(self, host_id):
+    #     # This functions searches for events with event_name as event_name and returns a list of all events
+    #     query = db.select([self.events]).where(
+    #         and_(
+    #             self.events.c.host == host_id,
+    #             self.events.c.deleted == False
+    #             )
+    #         )
+    #     try:
+    #         result = self.engine.execute(query)
+    #         result = ({'result': [dict(row) for row in result]})
+    #         for i in range(len(result['result'])):
+    #             result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+    #             result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+    #             result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+    #             result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+    #         return result["result"]
+    #     except IntegrityError as e:
+    #         return (400, "could not find event")
+    
+    # def select_events_bytype(self, type):
+    #     query = db.select([self.events]).where(
+    #         and_(
+    #             self.events.c.type == type,
+    #             self.events.c.deleted == False
+    #             )
+    #         )
+    #     try:
+    #         result = self.engine.execute(query)
+    #         result = ({'result': [dict(row) for row in result]})
+    #         for i in range(len(result['result'])):
+    #             result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+    #             result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+    #             result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+    #             result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+    #         return result["result"]
+    #     except IntegrityError as e:
+    #         return (400, "could not find event")
+
+    # def check_event_exists(self, event_detail, event_col):
+    #     event_exists = False
+
+    #     if event_col == "id":
+    #         check_query = db.select([self.events]).where(self.events.c.id == event_detail)
+    #     else: 
+    #         check_query = db.select([self.events]).where(self.events.c.event_name == event_detail)
+        
+    #     check_result = self.engine.execute(check_query).fetchall()
+    #     if len(check_result) > 0:
+    #         event_exists = True
+    #     return event_exists
+
+    # def check_user_exists(self, username):
+    #     user_exists = False
+    #     check_query = db.select([self.users]).where(self.users.c.username == username)
+    #     check_result = self.engine.execute(check_query).fetchall()
+    #     if len(check_result) > 0:
+    #         user_exists = True
+    #     return user_exists
+
+    # def check_passwords_match(self, username, password):
+    #     passwords_match = False
+    #     check_query = db.select([self.users]).where(
+    #         and_(
+    #             self.users.c.username == username,
+    #             self.users.c.password == password
+    #             )
+    #         )
+    #     check_result = self.engine.execute(check_query).fetchall()
+    #     if len(check_result) > 0:
+    #             passwords_match = True
+    #     return passwords_match
+    
+    # def get_new_user_id(self):
+    #     # returns the highest id in the user table plus 1
+    #     query_max_id = db.select([db.func.max(self.users.columns.id)])
+    #     max_id = self.engine.execute(query_max_id).scalar()
+    #     return max_id + 1
+
+    # def register_new_user(self, username, password):
+    #     # need to get new userID
+    #     # function to get highest ID value
+
+    #     data = {
+    #         "id":self.get_new_user_id(), 
+    #         "username": username,
+    #         "password": password,
+    #         "token": username,
+    #         "dateOfBirth": "",
+    #         "vaccinated": ""
+    #     }
+
+    #     try:
+    #         new_id = self.insert_users(data, False)    
+    #         return new_id
+    #     except:
+    #         return -1
+    
+    # def check_userid_exists(self, userid):
+    #     user_exists = False
+    #     check_query = db.select([self.users]).where(self.users.c.id == userid)
+    #     check_result = self.engine.execute(check_query).fetchall()
+    #     if len(check_result) > 0:
+    #         user_exists = True
+    #     return user_exists
+    
+    # def get_user_record(self, userid):
+    #     user_query = db.select([self.users]).where(self.users.c.id == userid)
+    #     user_result = self.engine.execute(user_query).fetchall()
+    #     if len(user_result) > 0:
+    #         return user_result
+    #     else:
+    #         return -1
+    
+    # def get_user_record_byname(self, username):
+    #     user_query = db.select([self.users]).where(self.users.c.username == username)
+    #     user_result = self.engine.execute(user_query).fetchall()
+    #     if len(user_result) > 0:
+    #         return user_result
+    #     else:
+    #         return -1
+    
+    # def check_usertoken_exists(self, usertoken):
+    #     user_exists = False
+    #     check_query = db.select([self.users]).where(self.users.c.token == usertoken)
+    #     check_result = self.engine.execute(check_query).fetchall()
+    #     if len(check_result) > 0:
+    #         user_exists = True
+    #     return user_exists
+    
+    # def update_user_details(self, params, token):
+    #     # update_query = self.users.update(). \
+    #     # values({
+    #     #     'phone': bindparam('phone'),
+    #     #     'firstname': bindparam('firstname'),
+    #     #     'lastname': bindparam('lastname')
+    #     # }).where(self.users.c.token == token)
+    #     update_query = self.users.update().values(params).where(self.users.c.token == token)
+    #     a = self.engine.execute(update_query)
+        
+    #     try:
+    #         return self.engine.execute(update_query)
+    #     except:
+    #         return -1
+
+    # def get_new_event_id(self):
+    #     # returns the highest id in the user table plus 1
+    #     query_max_id = db.select([db.func.max(self.events.columns.id)])
+    #     max_id = self.engine.execute(query_max_id).scalar()
+    #     return max_id + 1
+
+    # def flatten_details(self, data):
+    #     return pd.json_normalize(data, sep='_').to_dict(orient='records')[0]
+
+    # def get_host_id_from_token(self, token):
+    #     check_query = db.select([self.users]).where(self.users.c.token == token)
+    #     check_result = self.engine.execute(check_query)
+    #     check_result = ({'result': [dict(row) for row in check_result]})
+    #     list_result = check_result['result']
+    #     if len(list_result) > 1:
+    #         return "Error - more than one user with this token"
+    #     else:
+    #         return list_result[0]['id']
+
+    # def get_host_username_from_token(self, token):
+    #     check_query = db.select([self.users]).where(self.users.c.token == token)
+    #     check_result = self.engine.execute(check_query)
+    #     check_result = ({'result': [dict(row) for row in check_result]})
+    #     list_result = check_result['result']
+    #     if len(list_result) > 1:
+    #         return "Error - more than one user with this token"
+    #     else:
+    #         return list_result[0]['username']
+    
+    # def select_tickets_event_id(self, event_id):
+    #     tickets_query = db.select([self.tickets]).where(
+    #         and_(
+    #             self.tickets.c.event_id == event_id,
+    #             self.tickets.c.purchased == False
+    #             )
+    #         )
+    #     result = self.engine.execute(tickets_query)
+    #     result = ({'result': [dict(row) for row in result]})
+    #     return result
+
+    # def reserve_tickets(self, data, user_id):
+    #     data = json.loads(data.replace("'", '"'))
+    #     card_number = data['card_number']
+    #     update_query = self.tickets.update().values(purchased=True, user_id=user_id, card_number=card_number).where(
+    #         and_(
+    #             self.tickets.c.event_id == data['event_id'],
+    #             self.tickets.c.seat_num == data['seat_num'],
+    #             self.tickets.c.tix_class == data['tix_class']
+    #             )
+    #         )
+    #     result = self.engine.execute(update_query)
+    #     return result
+
+    # def refund_tickets(self, data, user_id):
+    #     data = json.loads(data.replace("'", '"'))
+    #     update_query = self.tickets.update().values(purchased=db.false(), user_id=db.null(), card_number=db.null()).where(
+    #         and_(
+    #             self.tickets.c.user_id == user_id,
+    #             self.tickets.c.event_id == data['event_id'],
+    #             self.tickets.c.seat_num == data['seat_num'],
+    #             self.tickets.c.tix_class == data['tix_class']
+    #             )
+    #         )
+    #     result = self.engine.execute(update_query)
+    #     return result
+
+    # def select_all_tickets(self, user_id):
+    #     user_tickets_query = db.select([self.tickets]).where(
+    #         and_(
+    #             self.tickets.c.user_id == user_id,
+    #             self.tickets.c.purchased == True
+    #             )
+    #         )
+    #     result = self.engine.execute(user_tickets_query)
+    #     result = ({'result': [dict(row) for row in result]})
+    #     return result
+
+    # def get_event_time_date(self, event_id):
+    #     event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
+    #     result = self.engine.execute(event_start_query)
+    #     result = ({'result': [dict(row) for row in result]})
+    #     start_date = str(result['result'][0]['start_date'])
+    #     start_time = str(result['result'][0]['start_time'])
+    #     event_name = result['result'][0]['event_name']
+    #     return start_date, start_time, event_name
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
