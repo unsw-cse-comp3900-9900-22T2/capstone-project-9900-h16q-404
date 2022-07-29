@@ -92,6 +92,12 @@ class InitDB:
             db.Column('eventType', db.Text(), nullable=True)
         )
         
+        self.broadcast = db.Table('broadcast', self.metadata,
+            db.Column('id', db.Integer(), primary_key=True),
+            db.Column('eventId', db.Integer(), ForeignKey('events.id'), nullable=False),
+            db.Column('message', db.Text(), nullable=False)
+        )
+        
         # create all objects in the metadata object
         self.metadata.create_all(self.engine, checkfirst=True)
 
@@ -344,6 +350,30 @@ class InitDB:
                 return -1
         else:
             print("Review " + str(data["id"]) + " not added to reviews table as it failed the insert check")
+    
+    def insert_broadcast(self, data):
+        insert_check = True
+        check_query = db.select([self.broadcast]).where(self.broadcast.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        
+        # if no row exists with current primary key add new row
+        if insert_check == True:
+            query = db.insert(self.broadcast).values(
+                id = data["id"],
+                eventId = data["eventId"],
+                message = data["message"]
+            )
+            try:
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
+            except:
+                return -1
+        else:
+            print("Broadcast Message " + str(data["id"]) + " not added to broadcast table as it failed the insert check")
 
     def select_event_name(self, event_name):
         # This functions searches for events with event_name as event_name and returns a list of all events
@@ -821,7 +851,10 @@ class InitDB:
         # returns the highest id in the user table plus 1
         query_max_id = db.select([db.func.max(self.reviews.columns.id)])
         max_id = self.engine.execute(query_max_id).scalar()
+        if max_id == None:
+            max_id = 0
         return max_id + 1
+
     
     def post_review(self, userId, eventId, timeStamp, comment, rating, host, eventType):
         
@@ -928,6 +961,51 @@ class InitDB:
                 result["result"][i]['replyTimeStamp'] = str(result["result"][i]['replyTimeStamp'])
                 
             return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find review for event")
+    
+    def get_new_broadcast_id(self):
+        # returns the highest id in the user table plus 1
+        query_max_id = db.select([db.func.max(self.broadcast.columns.id)])
+        max_id = self.engine.execute(query_max_id).scalar()
+        if max_id == None:
+            max_id = 0
+        return max_id + 1
+    
+    def post_broadcast(self, eventId, msg):
+        
+        data = {
+            "id":self.get_new_broadcast_id(), 
+            "eventId": eventId,
+            "message": msg
+        }
+
+        try:
+            new_id = self.insert_broadcast(data)
+            return new_id
+        except:
+            return -1
+    
+    def get_alluser_record(self):
+        user_query = db.select([self.users])
+        user_result = self.engine.execute(user_query).fetchall()
+        if len(user_result) > 0:
+            return user_result
+        else:
+            return -1
+    
+    def get_userid_with_tickets(self, eventId):
+        user_ticket_query = db.select([self.tickets]).where(self.tickets.c.event_id == eventId)
+        userid_with_tickets = set()
+        
+        try:
+            result = self.engine.execute(user_ticket_query)
+            result = ({'result': [dict(row) for row in result]})
+            
+            for i in range(len(result['result'])):
+                userid_with_tickets.add(result["result"][i]['user_id'])
+            
+            return userid_with_tickets
         except IntegrityError as e:
             return (400, "could not find review for event")
 

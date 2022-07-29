@@ -2,6 +2,9 @@
 Written by: Group 404
 For COMP9900 Project 7 Event Management System
 
+# Send-grid API Key
+#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
+
 This file is the entry point for the flask application which will reveive JSON requests from the front end
 
 To run the applicaiton:
@@ -17,10 +20,11 @@ This file performs the below in order:
 
 '''
 
+#import os
 from flask import Flask, send_from_directory
 from flask_restful import Api, Resource, reqparse
 from flask_cors import CORS
-from api.apihandler import Test, Register, Events, Login, User, UserDetails, UserSensitiveDetails, UserChangePassword, Event, Create, BuyTickets, MyTickets, SearchEvent, Filter, Reviews, HostReplies, EventRatings, UserRatings
+from api.apihandler import Test, Register, Events, Login, User, UserDetails, UserSensitiveDetails, UserChangePassword, Event, Create, BuyTickets, MyTickets, SearchEvent, Filter, Reviews, HostReplies, EventRatings, UserRatings, Broadcast
 from db.init_db import db_main
 
 # Run db_main() in the init_db.py file to create the DB and fill it with data
@@ -28,6 +32,7 @@ db_main()
 
 # Create a Flask object and define api as the main entry point for the application
 app = Flask(__name__, static_url_path='', static_folder='frontend/build')
+
 # Yunran: since we are not deploying we need to have CORS
 CORS(app, supports_credentials=True)
 api = Api(app)
@@ -51,3 +56,4 @@ api.add_resource(Reviews, '/reviews')
 api.add_resource(HostReplies, '/hostreplies')
 api.add_resource(EventRatings, '/eventratings')
 api.add_resource(UserRatings, '/userratings')
+api.add_resource(Broadcast, '/broadcast')

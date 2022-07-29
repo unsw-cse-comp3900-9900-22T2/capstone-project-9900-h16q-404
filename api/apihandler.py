@@ -6,11 +6,15 @@ This file defines the Resources that connect the front end URLs to the backend w
 
 '''
 
-from flask_restful import Api, Resource, reqparse
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from flask_restful import Resource, reqparse
 from flask import request
 from db.init_db import InitDB
 from datetime import datetime
 from collections import defaultdict
+
 
 class Register(Resource):
     def get(self):
@@ -1077,4 +1081,63 @@ class UserRatings(Resource):
             'resultStatus': 'SUCCESS',
             'message': result_dict
         }
-    
+
+class Broadcast(Resource):
+    def post(self):
+        getRequest = request.json
+        if ('eventId' in getRequest):
+            eventId = getRequest['eventId']
+        else:
+            return {"status": "Error", "message": "Event Id was not Sent"}
+        
+        if ('msg' in getRequest):
+            messageToBroadcast = getRequest['msg']
+        else:
+            return {"status": "Error", "message": "msg was not Sent"}
+        
+        # create db engine
+        temp_db = InitDB()
+        
+        # post message to broadcast table
+        new_id = temp_db.post_broadcast(eventId, messageToBroadcast)
+        
+        # get email of all users who have tickets to eventId
+        get_users = temp_db.get_alluser_record()
+        users_dict = {}
+        
+        if (len(get_users) > 0):
+            for user in get_users:
+                get_name = user['username'].split('@')[0].replace("."," ").title()
+                users_dict[user['id']] = (user['username'], get_name)
+        
+        # fetch all user id from tickets for eventId
+        user_has_tickets = temp_db.get_userid_with_tickets(eventId)
+        user_mail_list = []
+        
+        if (len(user_has_tickets) > 0):
+            for user in user_has_tickets:
+                user_mail_list.append(users_dict[user])
+
+        to_emails = user_mail_list
+        sender_email = os.environ.get('MAIL_DEFAULT_SENDER')
+        sender_name = os.environ.get('MAIL_SENDER_NAME')
+
+        message = Mail(
+        from_email=(sender_email, sender_name),
+        subject='Hello',
+        plain_text_content=messageToBroadcast,
+        to_emails=to_emails,
+        is_multiple=True)
+        
+        try:
+            sendgrid_client = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sendgrid_client.send(message)
+        except Exception as e:
+            return {"status": "Error", "message": "Error broadcasting message to ticket holders"}
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': "Successfully broadcasted email to all ticket holders for this event"
+        }
+        
+        
