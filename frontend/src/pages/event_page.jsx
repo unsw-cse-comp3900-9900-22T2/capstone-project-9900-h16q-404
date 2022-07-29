@@ -3,7 +3,7 @@ import { Layout, Descriptions, Rate, Collapse, Modal } from 'antd';
 import PageHeader from '../components/page_header';
 import { Col, Row, Statistic, Button, Divider, message } from 'antd';
 import axios from 'axios'
-import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import ReviewList from '../components/review_list';
 import PastEventBuyTicketMask from '../components/past_event_buy_ticket_mask';
@@ -13,9 +13,6 @@ const { confirm } = Modal;
 // Content and Footer 
 const { Content, Footer } = Layout;
 
-// Component of rating stars
-const Rating = () => (<Rate disabled allowHalf defaultValue={2.5}/>);
-
 // To return event page
 export default function EventPage () {
 
@@ -24,55 +21,58 @@ export default function EventPage () {
   const [usrInfo, setUsrInfo] = useState({});
 	// a switch to distinguish past event and upcoming event
 	const [eventFinished, setEventFinished] = useState(false);
+	const [rating, setRating] = useState(0.0);
 
 	useEffect(() => {
 		var requestURL = 
 				'http://127.0.0.1:5000/event?event_id=' + searchParams.get("event_id");
-		//console.log("Sending request with event_id=" + searchParams.get("event_id"));
 		axios.get(requestURL)
 			.then(res => res.data.event_details)
 			.then(data => {
-				//console.log(data);
 				setEventInfo(data[0]);
-				//console.log("get event: " + eventInfo.event_name);
-				//console.log(eventInfo);
 				// set eventFinished based on event start date
 				const today = new Date()
 				const endDate = new Date(data[0].end_date); 
 				if ( endDate < today ){
 					setEventFinished(true);
-					//console.log("event finished!")
 				}
 				else {
 					setEventFinished(false);
-					//console.log("event not finished!")
 				}
 				return;
 			})
 			.catch(error => {
-				//console.log(error);
 				message.error("This event does not exist...", 5);
-				//navigate('/');
 			});
+
+			const getRatingURL = "http://127.0.0.1:5000/eventratings?eventId=" + searchParams.get("event_id");
+			axios.get(getRatingURL)
+				.then(response => response.data)
+				.then(data => {
+					if (data.resultStatus === "SUCCESS"){
+						let rate = parseFloat(data.message["Average Rating"]);
+						rate = Math.round(rate*2)/2;
+						setRating(rate)
+					}
+				})
 			
 		if(localStorage.getItem('userId') != null)
-		{requestURL =
+		{
+			requestURL =
 			'http://127.0.0.1:5000/user?userId=' + localStorage.getItem('userId');
-		axios
-			.get(requestURL, {
+			axios.get(requestURL, {
 				headers: {
 					'Content-Type': 'application/json',
 				},
 			})
 			.then((res) => res.data.message)
 			.then((data) => {
-				//console.log("getting user info...")
-				//console.log(data);
 				setUsrInfo(data);
 			})
 			.catch((error) => {
-				//console.log(error);
-			});}
+			});
+			
+		}
 		}, [searchParams]);
 
 	let navigate = useNavigate();
@@ -107,12 +107,10 @@ export default function EventPage () {
 		var diff_ms = Date.now() - date.getTime();
 		var age_dt = new Date(diff_ms); 
 		var year = Math.abs(age_dt.getUTCFullYear() - 1970);
-		//console.log(year);
 		if (year < 18) {
 			return true;
 		}
 		else {
-			// console.log("can not by as you are teen.");
 			return false;
 		}
 	}
@@ -130,7 +128,7 @@ export default function EventPage () {
 					href={"user?userId=" + eventInfo.host}>{eventInfo.host_username}</Button>
 				</Descriptions.Item>
 				<Descriptions.Item label="location">{eventInfo.location}</Descriptions.Item>
-				<Descriptions.Item label="Rating"><Rating/></Descriptions.Item>
+				<Descriptions.Item label="Rating"><Rate disabled allowHalf defaultValue={rating}/></Descriptions.Item>
 				<Descriptions.Item label="Time">{time}</Descriptions.Item>
 			</Descriptions>
 		</>
@@ -152,7 +150,7 @@ export default function EventPage () {
 
 	const SpecialConsiderationBar = () => {
 		const onChange = (key) => {
-			//console.log(key);
+
 		};
 
 		return (
@@ -175,7 +173,7 @@ export default function EventPage () {
 				style={{ marginTop: 16 }} 
 				type="primary"
 				disabled={
-					(usrInfo.vac != true && eventInfo.vax_only) ||
+					(usrInfo.vac !== true && eventInfo.vax_only) ||
 					(usrIsNotAdult() && eventInfo.adult_only)
 				}
 				href={'/buyticket/' + eventInfo.id}>
@@ -193,7 +191,6 @@ export default function EventPage () {
 			<Layout>
 				<PageHeader/>
 				<Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
-					
 
 					<EventInfoBlock/>
 

@@ -641,7 +641,7 @@ class SearchEvent(Resource):
                 for item in searchTerms:
                     if item in eventsStrToSearch:
                         queryinEvent = True
-                        break;
+                        break
                 if queryinEvent:
                     result.append(event)
         
@@ -765,8 +765,8 @@ class Reviews(Resource):
                 'message': 'Unable to Retreive Event Details'
             }
         
-        host = eventDetails['host']
-        eventType = eventDetails['type']
+        host = eventDetails[0]['host']
+        eventType = eventDetails[0]['type']
         
         new_id = temp_db.post_review(user_id, eventId, timeStamp, comment, rating, host, eventType)
         
@@ -979,18 +979,13 @@ class HostReplies(Resource):
 class EventRatings(Resource):
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str, location='args')
         parser.add_argument('eventId', type=int, location='args')
         args = parser.parse_args()
         # assign variables
-        token = args['token']
         eventId = args['eventId']
 
         # create db engine
         temp_db = InitDB()
-        
-        # check user exists
-        user_exists = temp_db.check_usertoken_exists(token)
         
         # check event exists
         event_exists = temp_db.check_eventid_exists(eventId)

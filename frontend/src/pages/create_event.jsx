@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, } from 'react';
 import {
   Layout,
   Button,
@@ -21,7 +21,7 @@ import moment from 'moment';
 import './create_event.css';
 import PropTypes from 'prop-types';
 
-const { Content } = Layout;
+const { Content, Footer } = Layout;
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -263,6 +263,7 @@ export default function CreateEvent() {
                 <Option value={'Film'}>Film</Option>
                 <Option value={'Festival'}>Festival</Option>
                 <Option value={'Funeral'}>Funeral</Option>
+                <Option value={'Holiday'}>Holiday</Option>
                 <Option value={'Other'}>Other</Option>
               </Select>
             </Space>
@@ -428,6 +429,9 @@ export default function CreateEvent() {
             </div>
           </div>
         </Content>
+        <Footer style={{textAlign:'center'}}>
+          9900-H16Q-404
+        </Footer>
       </Layout>
     </>
   );

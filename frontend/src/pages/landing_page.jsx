@@ -32,6 +32,7 @@ export default function LandingPage () {
           <Radio.Button value="Food and Drink">Food & Drink</Radio.Button>
           <Radio.Button value="Business">Business</Radio.Button>
           <Radio.Button value="Funeral">Funeral</Radio.Button>
+          <Radio.Button value="Holiday">Holiday</Radio.Button>
           <Radio.Button value="Others">Others</Radio.Button>
           <Radio.Button value="Follower">Only from my follower</Radio.Button>
         </Radio.Group>
@@ -49,6 +50,7 @@ export default function LandingPage () {
           <Radio.Button value="Food and Drink">Food & Drink</Radio.Button>
           <Radio.Button value="Business">Business</Radio.Button>
           <Radio.Button value="Funeral">Funeral</Radio.Button>
+          <Radio.Button value="Holiday">Holiday</Radio.Button>
           <Radio.Button value="Others">Others</Radio.Button>
         </Radio.Group>
       )
