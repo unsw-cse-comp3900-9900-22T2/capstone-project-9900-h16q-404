@@ -11,9 +11,10 @@ const { TextArea } = Input;
 const { confirm } = Modal;
 
 /**
- * Host Reply Related functions (start)
+ * Host Reply Related functions
  */
 
+// The text area for event host replying to existing reviews [start]
 const ReplyTextArea = ({onChange, onSubmit, onClose, value}) => 
   (
     <>
@@ -28,7 +29,9 @@ const ReplyTextArea = ({onChange, onSubmit, onClose, value}) =>
       </Form.Item>
     </>
   )
+// The text area for event host replying to existing reviews [end]
 
+// The "reply" button for event host replying existing reviews and relating functions [start]
 const ReplyButton = (props) => {
   const [commentArea, setCommentArea] = useState(false);
   const [value, setValue] = useState('');
@@ -89,7 +92,13 @@ const ReplyButton = (props) => {
     </>
   )
 }
+// The "reply" button for event host replying existing reviews and relating functions [end]
 
+/**
+ * Host deleting reply functions
+ */
+
+// The confirm prompt of deleting reply on reviews [start]
 const showDeleteConfirm = (targetUserId) => {
   confirm({
     title: 'Are you sure delete this reply?',
@@ -120,7 +129,9 @@ const showDeleteConfirm = (targetUserId) => {
     },
   });
 };
+// The confirm prompt of deleting reply on reviews [end]
 
+// Then "delete button" for event host deleting their replies on reviews [start]
 const DeleteReplyButton = ({targetUserId}) => {
   const deleteAction = () => {
     showDeleteConfirm(targetUserId)
@@ -129,10 +140,7 @@ const DeleteReplyButton = ({targetUserId}) => {
     <span key="comment-list-reply-to-0" onClick={deleteAction}>Delete Reply</span>
   )
 }
-
-/**
- * Host Reply Related functions (end)
- */
+// Then "delete button" for event host deleting their replies on reviews [end]
 
 // component export
 

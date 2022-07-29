@@ -16,10 +16,10 @@ const EditReviewTextArea = ({ onCommentChange, onRateChange, commentValue, rateV
       <TextArea rows={4} onChange={onCommentChange} value={commentValue} />
     </Form.Item>
     <Form.Item>
-      <Button htmlType="submit"  onClick={onSubmit} type="primary" style={{margin:'0 4px'}}>
+      <Button htmlType="submit"  onClick={onSubmit} type="primary" style={{margin:'0 5px'}}>
         Sumbit
       </Button>
-      <Button htmlType="submit"  onClick={onClose} style={{margin:'0 4px'}}>
+      <Button htmlType="submit"  onClick={onClose} style={{margin:'0 5px'}}>
         Cancel
       </Button>
     </Form.Item>
@@ -147,5 +147,4 @@ export default function EditReview () {
         </div>
       )
     }
-
 }
