@@ -16,6 +16,8 @@ Benjamin McCoy (z3464555, z3464555@ad.unsw.edu.au)
 
 Ganashram Jayaraman (z3228822, z3228822@ad.unsw.edu.au)
 
+// TODO: Add the installation of python, nodejs, pip, etc
+
 # How to run application:
 
 Clone Repo:

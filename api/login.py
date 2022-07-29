@@ -7,6 +7,7 @@ This file handles the API requests for logging in a user
 
 from flask_restful import Resource, reqparse
 from db.init_db import InitDB
+from db.db_users import UsersDB
 
 class Login(Resource):
     def post(self):
@@ -21,20 +22,20 @@ class Login(Resource):
         request_username = args['username']
         request_password = args['password']
 
-        temp_db = InitDB()
-        user_exists = temp_db.check_user_exists(request_username)
+        users_db = UsersDB()
+        user_exists = users_db.check_user_exists(request_username)
         
         if user_exists == False:
             return {"status": "Error", "message": "User does not exists"}
 
         # if user does exist, check passwords match
         if user_exists == True:
-            passwords_match = temp_db.check_passwords_match(request_username, request_password)
+            passwords_match = users_db.check_passwords_match(request_username, request_password)
         
         if passwords_match == False:
             return {"status": "Error", "message": "Password is incorrect"}
         
-        user_record = temp_db.get_user_record_byname(request_username)
+        user_record = users_db.get_user_record_byname(request_username)
         result_dict = {}
         result_dict['userId'] = user_record[0][0]
         result_dict['email'] = user_record[0][4]

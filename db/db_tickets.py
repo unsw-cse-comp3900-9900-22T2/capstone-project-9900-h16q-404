@@ -4,6 +4,7 @@ import sqlalchemy as db
 from sqlalchemy import and_
 import json
 
+
 class TicketsDB:
     def __init__(self):
         self.temp_db = InitDB()
@@ -69,3 +70,14 @@ class TicketsDB:
         if max_id == None:
             max_id = 0
         return max_id + 1
+
+    def select_all_tickets(self, user_id):
+        user_tickets_query = db.select([self.temp_db.tickets]).where(
+            and_(
+                self.temp_db.tickets.c.user_id == user_id,
+                self.temp_db.tickets.c.purchased == True
+                )
+            )
+        result = self.temp_db.engine.execute(user_tickets_query)
+        result = ({'result': [dict(row) for row in result]})
+        return result

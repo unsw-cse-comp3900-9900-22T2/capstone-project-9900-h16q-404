@@ -7,6 +7,7 @@ This file handles the API requests for the filer feature on the landing page
 
 from flask_restful import Resource, reqparse
 from db.init_db import InitDB
+from db.db_filter import FilterDB
 
 
 class Filter(Resource):
@@ -20,10 +21,10 @@ class Filter(Resource):
         filter_type = args['filterType']
         
         # create db engine
-        temp_db = InitDB()
+        filter_db = FilterDB()
         
         # Get events hosted by this user
-        result = temp_db.select_events_bytype(filter_type)
+        result = filter_db.select_events_bytype(filter_type)
         
         if not result:
             return {

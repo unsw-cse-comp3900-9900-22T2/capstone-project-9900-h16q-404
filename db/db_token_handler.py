@@ -35,3 +35,11 @@ class TokenHandlerDB:
             return "Error - more than one user with this token"
         else:
             return list_result[0]['username']
+
+    def check_usertoken_exists(self, usertoken):
+        user_exists = False
+        check_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.token == usertoken)
+        check_result = self.temp_db.engine.execute(check_query).fetchall()
+        if len(check_result) > 0:
+            user_exists = True
+        return user_exists

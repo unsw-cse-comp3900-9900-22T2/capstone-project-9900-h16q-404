@@ -6,6 +6,7 @@ import json
 import datetime
 from db.db_token_handler import TokenHandlerDB
 from db.db_tickets import TicketsDB
+from sqlalchemy.exc import IntegrityError
 
 class EventsDB:
     def __init__(self):
@@ -105,3 +106,137 @@ class EventsDB:
         query_max_id = db.select([db.func.max(self.temp_db.events.columns.id)])
         max_id = self.temp_db.engine.execute(query_max_id).scalar()
         return max_id + 1
+
+    def select_event_id(self, event_id):
+        # This functions searches for events with id as event_id and returns a list of all events
+        query = db.select([self.temp_db.events]).where(self.self.temp_db.c.id == event_id)
+        try:
+            result = self.temp_db.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])[:-3]
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])[:-3]
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+
+    def update_event(self, event_id, event_details, token):
+        # TODO:
+        # 1. Flatten event_details
+        # 2. Format event_details
+        # 3. Update row
+
+        event_details = self.temp_db.flatten_details(event_details)
+        host = self.temp_db.get_host_id_from_token(token)
+        host_username = self.temp_db.get_host_username_from_token(token)
+
+        update_data = {}
+        update_data['event_name'] = event_details['title']
+        update_data['type'] = event_details['type']
+        update_data['location'] = event_details['location']
+        update_data['host'] = host
+        update_data['host_username'] = host_username
+        update_data['deleted'] = False 
+        update_data['description'] = event_details['desc']
+        update_data['adult_only'] = event_details['cond_adult']
+        update_data['vax_only'] = event_details['cond_vax'] 
+        update_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
+        update_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
+        update_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
+        update_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
+        update_data['gold_num'] = event_details['gold_num']
+        update_data['gold_price'] = event_details['gold_price']
+        update_data['silver_num'] = event_details['silver_num']
+        update_data['silver_price'] = event_details['silver_price']
+        update_data['bronze_num'] = event_details['bronze_num']
+        update_data['bronze_price'] = event_details['bronze_price']
+
+        try:
+            update_query = self.temp_db.events.update().values(update_data).where(self.temp_db.events.c.id == event_id)
+            result = self.temp_db.engine.execute(update_query)
+            return True
+        except:
+            return False
+
+    def delete_event_name(self, event_name):
+        if self.temp_db.check_event_exists(event_name, "event_name"):
+            try:
+                query = self.temp_db.events.update().values(deleted=True).where(self.temp_db.events.c.event_name == event_name)
+                result = self.temp_db.engine.execute(query)
+                if result:
+                    return (True)
+            except IntegrityError as e:
+                return (400, "Error updating delete column for " + event_name)
+        else:
+            return ("Error finding event " + event_name + " in events table")
+
+    def check_event_exists(self, event_detail, event_col):
+        event_exists = False
+
+        if event_col == "id":
+            check_query = db.select([self.temp_db.events]).where(self.temp_db.events.c.id == event_detail)
+        else: 
+            check_query = db.select([self.temp_db.events]).where(self.temp_db.events.c.event_name == event_detail)
+        
+        check_result = self.temp_db.engine.execute(check_query).fetchall()
+        if len(check_result) > 0:
+            event_exists = True
+        return event_exists
+
+    def delete_event_id(self, event_id):
+        if self.temp_db.check_event_exists(event_id, "id"):
+            try:
+                query = self.temp_db.events.update().values(deleted=True).where(self.temp_db.events.c.id == event_id)
+                result = self.temp_db.engine.execute(query)
+                if result:
+                    return (True)
+            except IntegrityError as e:
+                return ("Error updating delete column for " + event_id)
+
+    def select_all_events(self):
+        # This funtion currently returns a list of all the rows of the events table
+        query = db.select([self.temp_db.events]).where(self.temp_db.events.c.deleted == False)
+        try:
+            result = self.temp_db.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "Could not select from table")
+
+
+    def get_event_time_date(self, event_id):
+        event_start_query = db.select([self.temp_db.events]).where(self.temp_db.events.c.id == event_id)
+        result = self.temp_db.engine.execute(event_start_query)
+        result = ({'result': [dict(row) for row in result]})
+        start_date = str(result['result'][0]['start_date'])
+        start_time = str(result['result'][0]['start_time'])
+        event_name = result['result'][0]['event_name']
+        return start_date, start_time, event_name
+
+    def select_events_hostid(self, host_id):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.temp_db.events]).where(
+            and_(
+                self.temp_db.events.c.host == host_id,
+                self.temp_db.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.temp_db.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")

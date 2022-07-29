@@ -8,18 +8,23 @@ This file handles the API requests for editing user login information
 from flask_restful import Resource
 from db.init_db import InitDB
 from flask import request
+from db.db_token_handler import TokenHandlerDB
+from db.db_users import UsersDB
 
 
 class UserChangePassword(Resource):
     def patch(self):
-        temp_db = InitDB()
+        
+        token_db = TokenHandlerDB()
+        users_db = UsersDB()
+
         getRequest = request.json
         if ('token' in getRequest):
             user_token = request.json['token']
         else:
             return {"status": "Error", "message": "User Token was not Sent"}
         
-        user_exists = temp_db.check_usertoken_exists(user_token)
+        user_exists = token_db.check_usertoken_exists(user_token)
         
         if (user_exists == False):
             return {"status": "Error", "message": "User does not exists"}
@@ -30,7 +35,7 @@ class UserChangePassword(Resource):
         else:
             return {"status": "Error", "message": "User Old Password was not Sent"}
         
-        password_match = temp_db.check_passwords_match(user_token, old_password)
+        password_match = users_db.check_passwords_match(user_token, old_password)
         if password_match == False:
             return {"status": "Error", "message": "Old password is not correct"}
         # Yunran: TODO: Please include update email here; can update email only or password only
@@ -44,7 +49,7 @@ class UserChangePassword(Resource):
             user_details_params['password'] = request.json['new_password']
         
         if user_details_params:
-            update_status = temp_db.update_user_details(user_details_params, user_token)
+            update_status = users_db.update_user_details(user_details_params, user_token)
         else:
             update_status = 0
         

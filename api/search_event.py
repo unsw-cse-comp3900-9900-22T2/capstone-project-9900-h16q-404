@@ -8,6 +8,7 @@ This file handles the API requests for getting reserved ticket information for a
 from flask_restful import Resource
 from db.init_db import InitDB
 from flask import request
+from db.db_events import EventsDB
 
 
 class SearchEvent(Resource):
@@ -19,9 +20,9 @@ class SearchEvent(Resource):
             return {"status": "Error", "message": "Search Key Word List was not Sent"}
         
         # create db engine
-        temp_db = InitDB()
+        events_db = EventsDB()
         
-        allEvents = temp_db.select_all_events()
+        allEvents = events_db.select_all_events()
         result = []
         
         if (len(searchTerms) > 0):

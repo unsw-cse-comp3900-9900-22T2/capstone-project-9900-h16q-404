@@ -6,7 +6,11 @@ This file handles the API requests for getting reserved ticket information for a
 '''
 
 from flask_restful import Resource, reqparse
+from db.db_tickets import TicketsDB
 from db.init_db import InitDB
+from db.db_tickets import TicketsDB
+from db.db_events import EventsDB
+from db.db_token_handler import TokenHandlerDB
 
 
 class MyTickets(Resource):
@@ -18,12 +22,15 @@ class MyTickets(Resource):
         token = args['token']
 
         # create db engine
-        temp_db = InitDB()
-        user_id = temp_db.get_host_id_from_token(token)
-        result = temp_db.select_all_tickets(user_id)
+        tickets_db = TicketsDB()
+        events_db = EventsDB()
+        token_db = TokenHandlerDB()
+
+        user_id = token_db.get_host_id_from_token(token)
+        result = tickets_db.select_all_tickets(user_id)
         if len(result['result']) > 0:
             for i in result['result']:
-                start_date, start_time, event_name = temp_db.get_event_time_date(i['event_id'])
+                start_date, start_time, event_name = events_db.get_event_time_date(i['event_id'])
                 i['start_date'] = start_date
                 i['start_time'] = start_time
                 i['event_name'] = event_name

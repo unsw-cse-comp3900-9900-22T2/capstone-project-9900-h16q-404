@@ -7,6 +7,8 @@ This file handles the API requests for visting a user page and returning user in
 
 from flask_restful import Resource, reqparse
 from db.init_db import InitDB
+from db.db_users import UsersDB
+from db.db_events import EventsDB
 
 
 class User(Resource):
@@ -18,13 +20,15 @@ class User(Resource):
 
         request_userId = args['userId']
 
-        temp_db = InitDB()
-        user_exists = temp_db.check_userid_exists(request_userId)
+        user_db = UsersDB()
+        events_db = EventsDB()
+
+        user_exists = user_db.check_userid_exists(request_userId)
         
         if (user_exists == False):
             return {"status": "Error", "message": "User does not exists"}
         
-        user_record = temp_db.get_user_record(request_userId)
+        user_record = user_db.get_user_record(request_userId)
         result_dict = {}
         result_dict['userId'] = user_record[0][0]
         result_dict['email'] = user_record[0][4]
@@ -43,7 +47,7 @@ class User(Resource):
         
         # Get events hosted by this user
         result_dict['events'] = []
-        user_events = temp_db.select_events_hostid(request_userId)
+        user_events = events_db.select_events_hostid(request_userId)
         if (len(user_events) > 0):
             event_list = []
             for event in user_events:

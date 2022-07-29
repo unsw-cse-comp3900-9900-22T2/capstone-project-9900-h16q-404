@@ -7,6 +7,7 @@ This file handles the API requests for getting, editing and deleting event infor
 
 from flask_restful import Resource, reqparse
 from db.init_db import InitDB
+from db.db_events import EventsDB
 
 
 class Event(Resource):
@@ -69,8 +70,9 @@ class Event(Resource):
         event_id = args['event_id']
 
         # create db engine
-        temp_db = InitDB()
-        result = temp_db.update_event(event_id, event_details, token)
+        events_db = EventsDB()
+
+        result = events_db.update_event(event_id, event_details, token)
         if result == True:
             return {
             'resultStatus': 'SUCCESS',
@@ -92,7 +94,7 @@ class Event(Resource):
         event_id = args['event_id']
 
         # create db engine
-        temp_db = InitDB()
+        events_db = EventsDB()
 
         if event_id and event_name:
             # if both parameters are provided, return error
@@ -102,11 +104,11 @@ class Event(Resource):
             }
         elif event_name:
             # if event_name provided
-            result = temp_db.delete_event_name(event_name)
+            result = events_db.delete_event_name(event_name)
             event_details = event_name
         elif event_id:
             # if event_id provided
-            result = temp_db.delete_event_id(event_id)
+            result = events_db.delete_event_id(event_id)
             event_details = event_id
         else:
             # if neither event_id or event_name provided return error
