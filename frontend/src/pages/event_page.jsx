@@ -180,7 +180,9 @@ export default function EventPage() {
           type='primary'
           disabled={
             (usrInfo.vac != true && eventInfo.vax_only) ||
-            (usrIsNotAdult() && eventInfo.adult_only)
+            (usrIsNotAdult() && eventInfo.adult_only) ||
+            localStorage.getItem('token') === null ||
+            localStorage.getItem('token') === undefined
           }
           href={'/buyticket/' + eventInfo.id}
         >
