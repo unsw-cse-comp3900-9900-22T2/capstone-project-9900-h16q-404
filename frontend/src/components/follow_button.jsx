@@ -22,9 +22,13 @@ export default function FollowButton(userId) {
   }
 
   useEffect(() => {
-    if (localStorage.getItem('token') === undefined || null) {
+    if (
+      localStorage.getItem('token') === undefined ||
+      localStorage.getItem('token') === null
+    ) {
       setFollow(false);
     } else {
+      console.log(localStorage.getItem('token'));
       axios
         .get('http://127.0.0.1:5000/follow', {
           headers: {
@@ -52,6 +56,7 @@ export default function FollowButton(userId) {
           type='primary'
           onClick={() => {
             console.log('Please login to do this');
+            message.warning('Please login to do this');
           }}
         >
           Follow
@@ -65,9 +70,6 @@ export default function FollowButton(userId) {
           <Button
             style={{ width: 100 }}
             href={'/watchlist'}
-            onClick={() => {
-              console.log('to Watchlist');
-            }}
           >
             Watchlist
           </Button>
