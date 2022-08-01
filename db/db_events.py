@@ -274,6 +274,8 @@ class EventsDB:
             dictionary["result"][i]['start_time'] = str(dictionary["result"][i]['start_time'])[:-3]
             dictionary["result"][i]['end_date'] = str(dictionary["result"][i]['end_date'])
             dictionary["result"][i]['end_time'] = str(dictionary["result"][i]['end_time'])[:-3]
+        
+        return dictionary
 
     def flatten_details(self, data):
         return pd.json_normalize(data, sep='_').to_dict(orient='records')[0]
