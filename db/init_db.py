@@ -69,7 +69,7 @@ class InitDB:
             db.Column("dateOfBirth", db.Date, nullable=True),
             db.Column("gender", db.String(255), nullable=True),
             db.Column("phone", db.String(255), nullable=True),
-            db.Column("vaccinated", db.Boolean(), nullable=True)
+            db.Column("vaccinated", db.Boolean(), nullable=True),
         )
 
         self.tickets = db.Table(
@@ -82,7 +82,7 @@ class InitDB:
             db.Column("tix_class", db.String(10), nullable=False),
             db.Column("purchased", db.Boolean(), nullable=False),
             db.Column("card_number", db.Integer(), nullable=True),
-            db.Column("ticket_price", db.String(16), nullable=False)
+            db.Column("ticket_price", db.String(16), nullable=False),
         )
 
         self.watchlist = db.Table(
@@ -90,7 +90,7 @@ class InitDB:
             self.metadata,
             db.Column("id", db.Integer(), primary_key=True),
             db.Column("follower", db.Integer(), ForeignKey("users.id"), nullable=False),
-            db.Column("following", db.Integer(), ForeignKey("users.id"), nullable=False)
+            db.Column("following", db.Integer(), ForeignKey("users.id"), nullable=False),
         )
         
         # create all objects in the metadata object
@@ -135,67 +135,70 @@ class InitDB:
 
         for index, row in dummy_users_df.iterrows():
             data = {
-                "id":row.id, 
+                "id": row.id, 
                 "username": row.username,
                 "password": row.password,
                 "token": row.token,
-                "email" : row.username,
-                "firstName" : "",
-                "lastName" : "",
-                "dateOfBirth" : datetime.datetime.strptime(row.dob, "%Y-%m-%d").date(),
-                "gender" : "",
-                "phone" : "",
-                "vaccinated" : row.vac
+                "email": row.username,
+                "firstName": "",
+                "lastName": "",
+                "dateOfBirth": datetime.datetime.strptime(row.dob, "%Y-%m-%d").date(),
+                "gender": "",
+                "phone": "",
+                "vaccinated": row.vac,
             }
             new_id = self.insert_users(data, True)
 
     def insert_users(self, data, dummy):
-        
+
         # check for row with existing primary key    
         insert_bool = self.insert_check(data)
-        
+
         # if no row exists with current primary key add new row
         if insert_bool == True:
             if dummy == True:
                 query = db.insert(self.users).values([data])
             try:
-                result = self.engine.execute(query).inserted_primary_key 
-                return result 
+                return self.engine.execute(query).inserted_primary_key  
             except:
                 return -1
         else:
-            print("Item " + str(data["username"]) + " not added to user table as it failed the insert check")
+            print(
+                "Item " 
+                + str(data["username"]) 
+                + " not added to user table as it failed the insert check"
+            )
 
     def insert_events(self, data):
         # This function takes a JSON object "data" and inserts the object into the DB as a new row
         # But first the function checks if a row with the same ID aleady exists
-        
+
         # check for row with existing primary key        
         insert_bool = self.insert_check(data)
 
         # if no row exists with current primary key add new row
         if insert_bool == True:
             query = db.insert(self.events).values(
-                id = data["id"],
-                event_name = data["event_name"],
-                host = data["host"],
-                host_username = data["host_username"],
-                type = data["type"],
-                start_date = data["start_date"],
-                start_time = data["start_time"],
-                end_date = data["end_date"],
-                end_time = data["end_time"],
-                deleted = data["deleted"],
-                location = data["location"],
-                adult_only = data["adult_only"],
-                vax_only = data["vax_only"],
-                description = data["description"],
-                gold_num = data["gold_num"],
-                gold_price = data["gold_price"],
-                silver_num = data["silver_num"],
-                silver_price = data["silver_price"],
-                bronze_num = data["bronze_num"],
-                bronze_price = data["bronze_price"]
+                id=data["id"],
+                event_name=data["event_name"],
+                host=data["host"],
+                host_username=data["host_username"],
+                type=data["type"],
+                start_date=data["start_date"],
+                start_time=data["start_time"],
+                end_date=data["end_date"],
+                end_time=data["end_time"],
+                deleted=data["deleted"],
+                location=data["location"],
+                adult_only=data["adult_only"],
+                vax_only=data["vax_only"],
+                description=data["description"],
+                gold_num=data["gold_num"],
+                gold_price=data["gold_price"],
+                silver_num=data["silver_num"],
+                silver_price=data["silver_price"],
+                bronze_num=data["bronze_num"],
+                bronze_price=data["bronze_price"],
             )
             try:
                 result = self.engine.execute(query).inserted_primary_key 
@@ -204,7 +207,11 @@ class InitDB:
             except:
                 return -1
         else:
-            print("Item " + str(data["event_name"]) + " not added to events table as it failed the insert check")
+            print(
+                "Item " 
+                + str(data["event_name"]) 
+                + " not added to events table as it failed the insert check"
+            )
 
     def pre_fill_tickets(self, data):
         self.insert_tix(data["gold_num"], "gold", data["id"], data["gold_price"])
@@ -214,12 +221,12 @@ class InitDB:
     def insert_tix(self, num_tix, tix_class, event_ID, price):
         for i in range(num_tix):
             query = db.insert(self.tickets).values(
-                id = self.get_max_ticket_id(),
-                event_id = event_ID,
-                tix_class = tix_class,
-                seat_num = i,
-                purchased = False,
-                ticket_price = price
+                id=self.get_max_ticket_id(),
+                event_id=event_ID,
+                tix_class=tix_class,
+                seat_num=i,
+                purchased=False,
+                ticket_price=price,
             )
             result = self.engine.execute(query).inserted_primary_key
 
@@ -233,19 +240,16 @@ class InitDB:
 
     def select_all_tickets(self, user_id):
         user_tickets_query = db.select([self.tickets]).where(
-            and_(
-                self.tickets.c.user_id == user_id,
-                self.tickets.c.purchased == True
-                )
-            )
+            and_(self.tickets.c.user_id == user_id, self.tickets.c.purchased == True)
+        )
         result = self.engine.execute(user_tickets_query)
-        result = ({"result": [dict(row) for row in result]})
+        result = {"result": [dict(row) for row in result]}
         return result
 
     def get_event_time_date(self, event_id):
         event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
         result = self.engine.execute(event_start_query)
-        result = ({"result": [dict(row) for row in result]})
+        result = {"result": [dict(row) for row in result]}
         start_date = str(result["result"][0]["start_date"])
         start_time = str(result["result"][0]["start_time"])
         event_name = result["result"][0]["event_name"]
@@ -260,15 +264,15 @@ class InitDB:
         return max_id + 1
 
     def check_follower(self, follower_id, following_id):
-        
+
         check_follower_query = db.select([self.watchlist]).where(
             and_(
                 self.watchlist.c.follower == follower_id,
-                self.watchlist.c.following == following_id
-                )
+                self.watchlist.c.following == following_id,
             )
+        )
         result = self.engine.execute(check_follower_query)
-        result = ({"result": [dict(row) for row in result]})
+        result = {"result": [dict(row) for row in result]}
 
         if len(result["result"]) > 0:
             return True
@@ -280,11 +284,11 @@ class InitDB:
         if self.check_follower(follower_id, following_id) == False:
             try:
                 query = db.insert(self.watchlist).values(
-                        id = self.get_max_watchlist_id(),
-                        follower = follower_id,
-                        following = following_id
-                    )
-                result = self.engine.execute(query).inserted_primary_key 
+                    id = self.get_max_watchlist_id(),
+                    follower = follower_id,
+                    following = following_id,
+                )
+                self.engine.execute(query).inserted_primary_key 
                 return "Success: Added to watchlist"
             except:
                 return "ERROR: Could not add to watchlist"
@@ -298,7 +302,7 @@ class InitDB:
                 delete_follower_query = db.delete(self.watchlist).where(
                     and_(
                         self.watchlist.c.follower == follower_id,
-                        self.watchlist.c.following == following_id
+                        self.watchlist.c.following == following_id,
                     )
                 )
                 result = self.engine.execute(delete_follower_query)
@@ -310,22 +314,25 @@ class InitDB:
 
     def get_all_following_user_ids(self, user_id):
 
-        check_follower_query = db.select([self.watchlist]).where(self.watchlist.c.follower == user_id)
+        check_follower_query = db.select([self.watchlist]).where(
+            self.watchlist.c.follower == user_id
+        )
         result = self.engine.execute(check_follower_query)
-        result = ({"result": [dict(row) for row in result]}) 
+        result = {"result": [dict(row) for row in result]}
         return result["result"]
 
     def insert_check(self, data):
 
         check_query = db.select([self.users]).where(self.users.c.id == data["id"])
         check_result = self.engine.execute(check_query)
-        check_result = ({"result": [dict(row) for row in check_result]})
+        check_result = {"result": [dict(row) for row in check_result]}
 
         insert_bool = True
         for i in range(len(check_result["result"])):
              if data["id"] == (check_result["result"][i]["id"]):
                 insert_bool = False
         return insert_bool
+
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
