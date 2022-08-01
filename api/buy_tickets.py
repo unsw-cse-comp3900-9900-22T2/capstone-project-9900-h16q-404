@@ -1,9 +1,9 @@
-'''
+"""
 Written by: Group 404
 
 This file handles the API requests for getting ticket information, reserving tickets and unreserving tickets 
 
-'''
+"""
 # import third party libaries
 from flask_restful import Resource, reqparse
 
@@ -17,28 +17,22 @@ class BuyTickets(Resource):
 
         # parse request
         parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str, location='args')
-        parser.add_argument('event_id', type=int, location='args')
+        parser.add_argument("token", type=str, location="args")
+        parser.add_argument("event_id", type=int, location="args")
         args = parser.parse_args()
 
-        token = args['token']
-        event_id = args['event_id']
+        token = args["token"]
+        event_id = args["event_id"]
 
         # create db engine
         temp_db = TicketsDB()
 
         result = temp_db.select_tickets_event_id(event_id)
 
-        if len(result['result']) == 0:
-            return {
-                'resultStatus': 'ERROR',
-                'message': 'no tickets for this event exist'                
-            }
+        if len(result["result"]) == 0:
+            return {"resultStatus": "ERROR", "message": "no tickets for this event exist"}
 
-        return {
-            'resultStatus': 'SUCCESS',
-            'message': result
-        }
+        return {"resultStatus": "SUCCESS", "message": result}
 
     def post(self):
 
@@ -50,22 +44,16 @@ class BuyTickets(Resource):
         # need to convert token to user_id
         user_id = token_db.get_host_id_from_token(token)
         failed = []
-        
+
         for i in tickets:
             try:
                 tickets_db.reserve_tickets(i, user_id)
             except:
                 failed.append(i)
         if len(failed) > 0:
-            return{
-                'resultStatus': 'ERROR',
-                'message': failed
-            }
+            return{"resultStatus": "ERROR", "message": failed}
         else:
-            return {
-                'resultStatus': 'SUCCESS',
-                'message': 'Tickets successfully booked'
-            }
+            return {"resultStatus": "SUCCESS", "message": "Tickets successfully booked"}
 
     def put(self):
 
@@ -85,27 +73,20 @@ class BuyTickets(Resource):
                 failed.append(i)
 
         if len(failed) > 0:
-            return{
-                'resultStatus': 'ERROR',
-                'message': failed
-            }
+            return{"resultStatus": "ERROR", "message": failed}
         else:
-            return {
-                'resultStatus': 'SUCCESS',
-                'message': 'Tickets successfully unreserved'
-            }
-
+            return {"resultStatus": "SUCCESS","message": "Tickets successfully unreserved"}
 
     def parse_request(self):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str)
-        parser.add_argument('tickets', action='append')
+        parser.add_argument("token", type=str)
+        parser.add_argument("tickets", action="append")
         args = parser.parse_args()
 
         # assign variables
-        token = args['token']
-        tickets = args['tickets']
+        token = args["token"]
+        tickets = args["tickets"]
 
         return token, tickets
 
