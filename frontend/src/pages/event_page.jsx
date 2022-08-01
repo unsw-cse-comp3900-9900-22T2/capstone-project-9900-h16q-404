@@ -5,6 +5,7 @@ import { Col, Row, Statistic, Button, Divider, message } from 'antd';
 import axios from 'axios'
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import BroadCast from '../components/broadcast_button';
 
 const { confirm } = Modal;
 
@@ -192,7 +193,7 @@ export default function EventPage () {
 					</p>
 
 					{ eventInfo.host == localStorage.getItem("userId") ? <>
-					<Button>Send Message</Button>
+					<BroadCast />
 					<Button href={'/editevent/'+ searchParams.get("event_id")}>Edit Event</Button>
 					<Button onClick={deleteConfirm}>
 						Delete
