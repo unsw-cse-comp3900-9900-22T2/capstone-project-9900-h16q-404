@@ -50,3 +50,10 @@ On Thursday we finished the sprint and discussed about the remaing part. We thou
 I add the ticket creation section to the create event page and start working on buy tickets.
 
 week 8
+I kept working on buy tickets pages and fixed various bugs. We had meeting on Tuesday, Thursday and Sunday.
+The ticket system is finished. I merged the backend written by Ben and they worked well with each other. We received some comments on our current implementation.
+I plan to work out the follow/watchlist feature
+
+week 9
+Working on follow button and watchlist. After merging the backend it seems to be work with some minor bugs, I fixed them.
+I tested the ways to add images to the current website. Later on I need to put it to the right place and add the same stuff to user profile.
