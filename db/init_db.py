@@ -249,7 +249,7 @@ class InitDB:
 def db_main():
     db = InitDB()
     db.fill_dummy_data()
-
+    return db
 
 
     # def select_event_name(self, event_name):

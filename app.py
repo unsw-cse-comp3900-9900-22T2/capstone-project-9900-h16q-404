@@ -50,7 +50,7 @@ from api.my_tickets import MyTickets
 
 
 # Run db_main() in the init_db.py file to create the DB and fill it with data
-db_main()
+databaseTables = db_main()
 
 # Create a Flask object and define api as the main entry point for the application
 app = Flask(__name__, static_url_path='', static_folder='frontend/build')

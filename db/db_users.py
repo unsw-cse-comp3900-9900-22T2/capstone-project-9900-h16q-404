@@ -2,13 +2,11 @@
 import sqlalchemy as db
 from sqlalchemy import and_
 
-# import custom classes used to interact with the DB
-from db.init_db import InitDB
-
 
 class UsersDB:
     def __init__(self):
-        self.temp_db = InitDB()
+        from app import databaseTables
+        self.temp_db = databaseTables
 
     def insert_users(self, data, dummy):
         insert_check = True

@@ -3,13 +3,11 @@ import sqlalchemy as db
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 
-# import custom classes used to interact with the DB
-from db.init_db import InitDB
-
 
 class FilterDB:
     def __init__(self):
-        self.temp_db = InitDB()
+        from app import databaseTables
+        self.temp_db = databaseTables
 
     def select_events_bytype(self, type):
         query = db.select([self.temp_db.events]).where(

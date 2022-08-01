@@ -6,13 +6,13 @@ from sqlalchemy.exc import IntegrityError
 import pandas as pd
 
 # import custom classes used to interact with the DB
-from db.init_db import InitDB
 from db.db_tickets import TicketsDB
 from db.db_token_handler import TokenHandlerDB
 
 class EventsDB:
     def __init__(self):
-        self.temp_db = InitDB()
+        from app import databaseTables
+        self.temp_db = databaseTables
 
     def create_event(self, token, event_details):
         # This function takes a token and a nested dictionary of event details, it flattens 

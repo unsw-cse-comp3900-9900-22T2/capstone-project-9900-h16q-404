@@ -1,13 +1,11 @@
 # import third party libraries
 import sqlalchemy as db
 
-# import custom classes used to interact with the DB
-from db.init_db import InitDB
-
 
 class TokenHandlerDB:
     def __init__(self):
-        self.temp_db = InitDB()
+        from app import databaseTables
+        self.temp_db = databaseTables
 
     def get_host_id_from_token(self, token):
         check_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.token == token)

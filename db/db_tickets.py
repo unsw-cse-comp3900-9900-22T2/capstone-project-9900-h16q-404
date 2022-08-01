@@ -3,13 +3,11 @@ import sqlalchemy as db
 from sqlalchemy import and_
 import json
 
-# import custom classes used to interact with the DB
-from db.init_db import InitDB
-
 
 class TicketsDB:
     def __init__(self):
-        self.temp_db = InitDB()
+        from app import databaseTables
+        self.temp_db = databaseTables
 
     def select_tickets_event_id(self, event_id):
         tickets_query = db.select([self.temp_db.tickets]).where(
