@@ -42,15 +42,13 @@ class EventsDB:
     def select_event_id(self, event_id):
         # This functions searches for events with id as event_id and returns a list of all events
         query = db.select([self.temp_db.events]).where(self.temp_db.events.c.id == event_id)
+        
         try:
             result = self.temp_db.engine.execute(query)
             result = ({'result': [dict(row) for row in result]})
-            for i in range(len(result['result'])):
-                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])[:-3]
-                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])[:-3]
+            result = self.convert_date_time_to_string(result)
             return result["result"]
+
         except IntegrityError as e:
             return (400, "could not find event")
 
@@ -62,16 +60,13 @@ class EventsDB:
                 self.temp_db.events.c.deleted == False
                 )
             )
+        
         try:
             result = self.temp_db.engine.execute(query)
             result = ({'result': [dict(row) for row in result]})
-            for i in range(len(result['result'])):
-                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
-                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
-                
+            result = self.convert_date_time_to_string(result)
             return result["result"]
+        
         except IntegrityError as e:
             return (400, "could not find event")
 
@@ -272,6 +267,13 @@ class EventsDB:
         start_time = str(result['result'][0]['start_time'])
         event_name = result['result'][0]['event_name']
         return start_date, start_time, event_name
+
+    def convert_date_time_to_string(self, dictionary):
+        for i in range(len(dictionary['result'])):
+            dictionary["result"][i]['start_date'] = str(dictionary["result"][i]['start_date'])
+            dictionary["result"][i]['start_time'] = str(dictionary["result"][i]['start_time'])[:-3]
+            dictionary["result"][i]['end_date'] = str(dictionary["result"][i]['end_date'])
+            dictionary["result"][i]['end_time'] = str(dictionary["result"][i]['end_time'])[:-3]
 
     def flatten_details(self, data):
         return pd.json_normalize(data, sep='_').to_dict(orient='records')[0]
