@@ -143,14 +143,11 @@ class InitDB:
 
     def insert_users(self, data, dummy):
         
-        check_query = db.select([self.users]).where(self.users.c.id == data["id"])
-        check_result = self.engine.execute(check_query)
-        check_result = ({'result': [dict(row) for row in check_result]})
-        
-        insert_check = self.insert_check(check_result, data)
+        # check for row with existing primary key    
+        insert_bool = self.insert_check(data)
         
         # if no row exists with current primary key add new row
-        if insert_check == True:
+        if insert_bool == True:
             if dummy == True:
                 query = db.insert(self.users).values([data])
             try:
@@ -165,16 +162,11 @@ class InitDB:
         # This function takes a JSON object "data" and inserts the object into the DB as a new row
         # But first the function checks if a row with the same ID aleady exists
         
-        # check for row with existing primary key
-
-        check_query = db.select([self.events]).where(self.events.c.id == data["id"])
-        check_result = self.engine.execute(check_query)
-        check_result = ({'result': [dict(row) for row in check_result]})
-        
-        insert_check = self.insert_check(check_result, data)
+        # check for row with existing primary key        
+        insert_bool = self.insert_check(data)
 
         # if no row exists with current primary key add new row
-        if insert_check == True:
+        if insert_bool == True:
             query = db.insert(self.events).values(
                 id = data["id"],
                 event_name = data["event_name"],
@@ -315,12 +307,17 @@ class InitDB:
         result = ({'result': [dict(row) for row in result]}) 
         return result['result']
 
-    def insert_check(self, check_result, data):
-        insert_check = True
+    def insert_check(self, data):
+
+        check_query = db.select([self.users]).where(self.users.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+
+        insert_bool = True
         for i in range(len(check_result['result'])):
              if data["id"] == (check_result["result"][i]['id']):
-                insert_check = False
-        return insert_check
+                insert_bool = False
+        return insert_bool
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
