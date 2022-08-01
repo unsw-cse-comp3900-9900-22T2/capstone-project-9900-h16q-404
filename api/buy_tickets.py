@@ -109,7 +109,7 @@ class BuyTickets(Resource):
 
         return token, tickets
 
-    def gen_db_engines():
+    def gen_db_engines(self):
         # create db engine
         token_db = TokenHandlerDB()
         tickets_db = TicketsDB()

@@ -47,37 +47,38 @@ class UsersDB:
 # Functions for inserting into the Users table
 
     def register_new_user(self, username, password):
-
+        
         data = {
-            "id":self.get_new_user_id(), 
+            "id": self.get_new_user_id(), 
             "username": username,
             "password": password,
             "token": username,
-            "dateOfBirth": "",
-            "vaccinated": ""
+            "email": username
         }
 
         try:
-            new_id = self.temp_db.insert_users(data, False)    
+            new_id = self.insert_users(data, False)    
             return new_id
         except:
             return -1
 
     def insert_users(self, data, dummy):
-        insert_check = True
-        check_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.id == data["id"])
-        check_result = self.temp_db.engine.execute(check_query)
-        check_result = ({'result': [dict(row) for row in check_result]})
-        for i in range(len(check_result['result'])):
-             if data["id"] == (check_result["result"][i]['id']):
-                insert_check = False
-        
-        # if no row exists with current primary key add new row
-        if insert_check == True:
-            query = db.insert(self.temp_db.users).values([data])
+
+        insert_check = self.check_userid_exists(data["id"])
+
+        if insert_check == False:
+            query = db.insert(self.temp_db.users).values(
+                id = data['id'],
+                username = data['username'],
+                password = data['password'],
+                token = data['token'],
+                email = data['email']
+            )
+
             try:
                 result = self.temp_db.engine.execute(query).inserted_primary_key 
                 return result 
+            
             except:
                 return -1
         else:

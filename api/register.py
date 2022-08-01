@@ -36,6 +36,7 @@ class Register(Resource):
 
         # if user does not exists, store password and username
         new_id = user_db.register_new_user(request_email, request_password)
+
         if new_id == -1:
             return {"status": "Error", "message": "could not register new user"}
         else:

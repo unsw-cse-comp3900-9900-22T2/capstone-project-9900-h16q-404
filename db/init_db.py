@@ -56,10 +56,10 @@ class InitDB:
         # define the users tables
         self.users = db.Table('users', self.metadata,
             db.Column('id', db.Integer(), primary_key=True),
-            db.Column('username', db.String(255), nullable=False),
-            db.Column('password', db.String(255), nullable=False),
-            db.Column('token', db.String(255), nullable=False),
-            db.Column('email', db.String(255), nullable=False),
+            db.Column('username', db.String(255), nullable=True),
+            db.Column('password', db.String(255), nullable=True),
+            db.Column('token', db.String(255), nullable=True),
+            db.Column('email', db.String(255), nullable=True),
             db.Column('firstName', db.String(255), nullable=True),
             db.Column('lastName', db.String(255), nullable=True),
             db.Column('dateOfBirth', db.Date, nullable=True),
@@ -142,34 +142,17 @@ class InitDB:
             new_id = self.insert_users(data, True)
 
     def insert_users(self, data, dummy):
-        insert_check = True
+        
         check_query = db.select([self.users]).where(self.users.c.id == data["id"])
         check_result = self.engine.execute(check_query)
         check_result = ({'result': [dict(row) for row in check_result]})
-        for i in range(len(check_result['result'])):
-             if data["id"] == (check_result["result"][i]['id']):
-                insert_check = False
+        
+        insert_check = self.insert_check(check_result, data)
         
         # if no row exists with current primary key add new row
         if insert_check == True:
             if dummy == True:
-                query = db.insert(self.users).values(
-                    id = data["id"],
-                    username = data["username"],
-                    password = data["password"],
-                    token = data["token"],
-                    email = data['username'],
-                    dateOfBirth = data['dateOfBirth'],
-                    vaccinated = data['vaccinated']
-                )
-            else:
-                query = db.insert(self.users).values(
-                    id = data["id"],
-                    username = data["username"],
-                    password = data["password"],
-                    token = data["token"],
-                    email = data['username'],
-                )
+                query = db.insert(self.users).values([data])
             try:
                 result = self.engine.execute(query).inserted_primary_key 
                 return result 
@@ -178,20 +161,17 @@ class InitDB:
         else:
             print("Item " + str(data["username"]) + " not added to user table as it failed the insert check")
 
-
     def insert_events(self, data):
         # This function takes a JSON object "data" and inserts the object into the DB as a new row
         # But first the function checks if a row with the same ID aleady exists
         
         # check for row with existing primary key
 
-        insert_check = True
         check_query = db.select([self.events]).where(self.events.c.id == data["id"])
         check_result = self.engine.execute(check_query)
         check_result = ({'result': [dict(row) for row in check_result]})
-        for i in range(len(check_result['result'])):
-             if data["id"] == (check_result["result"][i]['id']):
-                insert_check = False
+        
+        insert_check = self.insert_check(check_result, data)
 
         # if no row exists with current primary key add new row
         if insert_check == True:
@@ -334,6 +314,13 @@ class InitDB:
         result = self.engine.execute(check_follower_query)
         result = ({'result': [dict(row) for row in result]}) 
         return result['result']
+
+    def insert_check(self, check_result, data):
+        insert_check = True
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        return insert_check
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
