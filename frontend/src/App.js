@@ -14,6 +14,7 @@ import EditEvent from './pages/edit_event';
 import MyTicket from './pages/my_ticket';
 import EditSensitiveProfile from './pages/edit_sensitive_profile';
 import BuyTicket from './pages/buyticket';
+import Watchlist from './pages/watchlist';
 
 function App () {
   return (
@@ -32,6 +33,7 @@ function App () {
         <Route path='/my_ticket' element={<MyTicket />}></Route>
         <Route path='/edit_sensitive_profile' element={<EditSensitiveProfile />}></Route>
         <Route path='/buyticket/:eventid' element={<BuyTicket />}></Route>
+        <Route path='/watchlist' element={<Watchlist />}></Route>
       </Routes >
     </div >
   );
