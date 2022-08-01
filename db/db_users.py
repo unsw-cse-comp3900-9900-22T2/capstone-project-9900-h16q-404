@@ -74,24 +74,7 @@ class UsersDB:
         
         # if no row exists with current primary key add new row
         if insert_check == True:
-            if dummy == True:
-                query = db.insert(self.temp_db.users).values(
-                    id = data["id"],
-                    username = data["username"],
-                    password = data["password"],
-                    token = data["token"],
-                    email = data['username'],
-                    dateOfBirth = data['dateOfBirth'],
-                    vaccinated = data['vaccinated']
-                )
-            else:
-                query = db.insert(self.temp_db.users).values(
-                    id = data["id"],
-                    username = data["username"],
-                    password = data["password"],
-                    token = data["token"],
-                    email = data['username'],
-                )
+            query = db.insert(self.temp_db.users).values([data])
             try:
                 result = self.temp_db.engine.execute(query).inserted_primary_key 
                 return result 
