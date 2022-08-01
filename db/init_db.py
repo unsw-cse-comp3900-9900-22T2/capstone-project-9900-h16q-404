@@ -10,15 +10,17 @@ fill_with_dummy_data function. This function reads dummy data from a csv and ins
 the database.
 """
 
-from asyncio import events
-from requests import delete
-from sqlalchemy.exc import IntegrityError
-import sqlalchemy as db
-from sqlalchemy import ForeignKey, null, select, and_, func
-import pandas as pd
 import datetime
-from flask import jsonify
 import json
+from asyncio import events
+
+import pandas as pd
+import sqlalchemy as db
+from flask import jsonify
+from requests import delete
+from sqlalchemy import ForeignKey, null, select, and_, func
+from sqlalchemy.exc import IntegrityError
+
 
 # InitDB class
 class InitDB:
@@ -31,7 +33,7 @@ class InitDB:
 
         # Define the events tables
         self.events = db.Table(
-            "events", 
+            "events",
             self.metadata,
             db.Column("id", db.Integer(), primary_key=True),
             db.Column("event_name", db.String(255), nullable=False),
@@ -57,7 +59,7 @@ class InitDB:
 
         # define the users tables
         self.users = db.Table(
-            "users", 
+            "users",
             self.metadata,
             db.Column("id", db.Integer(), primary_key=True),
             db.Column("username", db.String(255), nullable=True),
@@ -73,10 +75,12 @@ class InitDB:
         )
 
         self.tickets = db.Table(
-            "tickets", 
+            "tickets",
             self.metadata,
             db.Column("id", db.Integer(), primary_key=True),
-            db.Column("event_id", db.Integer(), ForeignKey("events.id"), nullable=False),
+            db.Column(
+                "event_id", db.Integer(), ForeignKey("events.id"), nullable=False
+            ),
             db.Column("user_id", db.Integer(), ForeignKey("users.id"), nullable=True),
             db.Column("seat_num", db.Integer(), nullable=False),
             db.Column("tix_class", db.String(10), nullable=False),
@@ -86,13 +90,15 @@ class InitDB:
         )
 
         self.watchlist = db.Table(
-            "watchlist", 
+            "watchlist",
             self.metadata,
             db.Column("id", db.Integer(), primary_key=True),
             db.Column("follower", db.Integer(), ForeignKey("users.id"), nullable=False),
-            db.Column("following", db.Integer(), ForeignKey("users.id"), nullable=False),
+            db.Column(
+                "following", db.Integer(), ForeignKey("users.id"), nullable=False
+            ),
         )
-        
+
         # create all objects in the metadata object
         self.metadata.create_all(self.engine, checkfirst=True)
 
@@ -106,13 +112,17 @@ class InitDB:
         # Iterate through events pandas DF and insert each row into table using insert function
         for index, row in dummy_events_df.iterrows():
             data = {
-                "id": row.id, 
+                "id": row.id,
                 "event_name": row.event_name,
                 "host": row.host,
                 "host_username": row.host_username,
                 "type": row.type,
-                "start_date": datetime.datetime.strptime(row.start_date, "%d-%m-%Y").date(),
-                "start_time": datetime.datetime.strptime(row.start_time, "%H:%M").time(),
+                "start_date": datetime.datetime.strptime(
+                    row.start_date, "%d-%m-%Y"
+                ).date(),
+                "start_time": datetime.datetime.strptime(
+                    row.start_time, "%H:%M"
+                ).time(),
                 "end_date": datetime.datetime.strptime(row.end_date, "%d-%m-%Y").date(),
                 "end_time": datetime.datetime.strptime(row.end_time, "%H:%M").time(),
                 "deleted": row.deleted,
@@ -135,7 +145,7 @@ class InitDB:
 
         for index, row in dummy_users_df.iterrows():
             data = {
-                "id": row.id, 
+                "id": row.id,
                 "username": row.username,
                 "password": row.password,
                 "token": row.token,
@@ -151,7 +161,7 @@ class InitDB:
 
     def insert_users(self, data, dummy):
 
-        # check for row with existing primary key    
+        # check for row with existing primary key
         insert_bool = self.insert_check(data)
 
         # if no row exists with current primary key add new row
@@ -159,13 +169,13 @@ class InitDB:
             if dummy == True:
                 query = db.insert(self.users).values([data])
             try:
-                return self.engine.execute(query).inserted_primary_key  
+                return self.engine.execute(query).inserted_primary_key
             except:
                 return -1
         else:
             print(
-                "Item " 
-                + str(data["username"]) 
+                "Item "
+                + str(data["username"])
                 + " not added to user table as it failed the insert check"
             )
 
@@ -173,7 +183,7 @@ class InitDB:
         # This function takes a JSON object "data" and inserts the object into the DB as a new row
         # But first the function checks if a row with the same ID aleady exists
 
-        # check for row with existing primary key        
+        # check for row with existing primary key
         insert_bool = self.insert_check(data)
 
         # if no row exists with current primary key add new row
@@ -201,15 +211,15 @@ class InitDB:
                 bronze_price=data["bronze_price"],
             )
             try:
-                result = self.engine.execute(query).inserted_primary_key 
+                result = self.engine.execute(query).inserted_primary_key
                 self.pre_fill_tickets(data)
                 return result
             except:
                 return -1
         else:
             print(
-                "Item " 
-                + str(data["event_name"]) 
+                "Item "
+                + str(data["event_name"])
                 + " not added to events table as it failed the insert check"
             )
 
@@ -284,11 +294,11 @@ class InitDB:
         if self.check_follower(follower_id, following_id) == False:
             try:
                 query = db.insert(self.watchlist).values(
-                    id = self.get_max_watchlist_id(),
-                    follower = follower_id,
-                    following = following_id,
+                    id=self.get_max_watchlist_id(),
+                    follower=follower_id,
+                    following=following_id,
                 )
-                self.engine.execute(query).inserted_primary_key 
+                self.engine.execute(query).inserted_primary_key
                 return "Success: Added to watchlist"
             except:
                 return "ERROR: Could not add to watchlist"
@@ -329,7 +339,7 @@ class InitDB:
 
         insert_bool = True
         for i in range(len(check_result["result"])):
-             if data["id"] == (check_result["result"][i]["id"]):
+            if data["id"] == (check_result["result"][i]["id"]):
                 insert_bool = False
         return insert_bool
 
@@ -339,7 +349,6 @@ def db_main():
     db = InitDB()
     db.fill_dummy_data()
     return db
-
 
     # def select_event_name(self, event_name):
     #     # This functions searches for events with event_name as event_name and returns a list of all events
