@@ -1,4 +1,4 @@
-'''
+"""
 Written by: Group 404
 For COMP9900 Project 7 Event Management System
 
@@ -8,7 +8,7 @@ querying functions
 This file also has a main function, which when called creates an InitDB class and runs the 
 fill_with_dummy_data function. This function reads dummy data from a csv and inserts it into 
 the database.
-'''
+"""
 
 from asyncio import events
 from requests import delete
@@ -25,64 +25,72 @@ class InitDB:
     # This function is run upon creating an instance of the class
     def __init__(self):
         # create engine and connect to databse in the db folder
-        self.engine = db.create_engine('sqlite:///db/group_404')
+        self.engine = db.create_engine("sqlite:///db/group_404")
         # Metadata is a container object that kees together many of the different features fo a db
         self.metadata = db.MetaData()
-        
+
         # Define the events tables
-        self.events = db.Table('events', self.metadata,
-            db.Column('id', db.Integer(), primary_key=True),
-            db.Column('event_name', db.String(255), nullable=False),
-            db.Column('host', db.Integer(), nullable=True),
-            db.Column('host_username', db.String(255), nullable=True),
-            db.Column('type', db.String(255), nullable=True),
-            db.Column('start_date', db.Date, nullable=True),
-            db.Column('start_time', db.Time, nullable=True),
-            db.Column('end_date', db.Date, nullable=True),
-            db.Column('end_time', db.Time, nullable=True),
-            db.Column('deleted', db.Boolean, nullable=True),
-            db.Column('location', db.String(255), nullable=True),
-            db.Column('adult_only', db.Boolean, nullable=True),
-            db.Column('vax_only', db.Boolean, nullable=True),
-            db.Column('description', db.String(255), nullable=True),
-            db.Column('gold_num', db.Integer(), nullable=True),
-            db.Column('gold_price', db.Float(), nullable=True),
-            db.Column('silver_num', db.Integer(), nullable=True),
-            db.Column('silver_price', db.Float(), nullable=True),
-            db.Column('bronze_num', db.Integer(), nullable=True),
-            db.Column('bronze_price', db.Float(), nullable=True),
+        self.events = db.Table(
+            "events", 
+            self.metadata,
+            db.Column("id", db.Integer(), primary_key=True),
+            db.Column("event_name", db.String(255), nullable=False),
+            db.Column("host", db.Integer(), nullable=True),
+            db.Column("host_username", db.String(255), nullable=True),
+            db.Column("type", db.String(255), nullable=True),
+            db.Column("start_date", db.Date, nullable=True),
+            db.Column("start_time", db.Time, nullable=True),
+            db.Column("end_date", db.Date, nullable=True),
+            db.Column("end_time", db.Time, nullable=True),
+            db.Column("deleted", db.Boolean, nullable=True),
+            db.Column("location", db.String(255), nullable=True),
+            db.Column("adult_only", db.Boolean, nullable=True),
+            db.Column("vax_only", db.Boolean, nullable=True),
+            db.Column("description", db.String(255), nullable=True),
+            db.Column("gold_num", db.Integer(), nullable=True),
+            db.Column("gold_price", db.Float(), nullable=True),
+            db.Column("silver_num", db.Integer(), nullable=True),
+            db.Column("silver_price", db.Float(), nullable=True),
+            db.Column("bronze_num", db.Integer(), nullable=True),
+            db.Column("bronze_price", db.Float(), nullable=True),
         )
 
         # define the users tables
-        self.users = db.Table('users', self.metadata,
-            db.Column('id', db.Integer(), primary_key=True),
-            db.Column('username', db.String(255), nullable=True),
-            db.Column('password', db.String(255), nullable=True),
-            db.Column('token', db.String(255), nullable=True),
-            db.Column('email', db.String(255), nullable=True),
-            db.Column('firstName', db.String(255), nullable=True),
-            db.Column('lastName', db.String(255), nullable=True),
-            db.Column('dateOfBirth', db.Date, nullable=True),
-            db.Column('gender', db.String(255), nullable=True),
-            db.Column('phone', db.String(255), nullable=True),
-            db.Column('vaccinated', db.Boolean(), nullable=True)
+        self.users = db.Table(
+            "users", 
+            self.metadata,
+            db.Column("id", db.Integer(), primary_key=True),
+            db.Column("username", db.String(255), nullable=True),
+            db.Column("password", db.String(255), nullable=True),
+            db.Column("token", db.String(255), nullable=True),
+            db.Column("email", db.String(255), nullable=True),
+            db.Column("firstName", db.String(255), nullable=True),
+            db.Column("lastName", db.String(255), nullable=True),
+            db.Column("dateOfBirth", db.Date, nullable=True),
+            db.Column("gender", db.String(255), nullable=True),
+            db.Column("phone", db.String(255), nullable=True),
+            db.Column("vaccinated", db.Boolean(), nullable=True)
         )
 
-        self.tickets = db.Table('tickets', self.metadata,
-            db.Column('id', db.Integer(), primary_key=True),
-            db.Column('event_id', db.Integer(), ForeignKey('events.id'), nullable=False),
-            db.Column('user_id', db.Integer(), ForeignKey('users.id'), nullable=True),
-            db.Column('seat_num', db.Integer(), nullable=False),
-            db.Column('tix_class', db.String(10), nullable=False),
-            db.Column('purchased', db.Boolean(), nullable=False),
-            db.Column('card_number', db.Integer(), nullable=True),
-            db.Column('ticket_price', db.String(16), nullable=False)
+        self.tickets = db.Table(
+            "tickets", 
+            self.metadata,
+            db.Column("id", db.Integer(), primary_key=True),
+            db.Column("event_id", db.Integer(), ForeignKey("events.id"), nullable=False),
+            db.Column("user_id", db.Integer(), ForeignKey("users.id"), nullable=True),
+            db.Column("seat_num", db.Integer(), nullable=False),
+            db.Column("tix_class", db.String(10), nullable=False),
+            db.Column("purchased", db.Boolean(), nullable=False),
+            db.Column("card_number", db.Integer(), nullable=True),
+            db.Column("ticket_price", db.String(16), nullable=False)
         )
 
-        self.watchlist = db.Table('watchlist', self.metadata,
-            db.Column('id', db.Integer(), primary_key=True),
-            db.Column('follower', db.Integer(), ForeignKey('users.id'), nullable=False),
-            db.Column('following', db.Integer(), ForeignKey('users.id'), nullable=False)
+        self.watchlist = db.Table(
+            "watchlist", 
+            self.metadata,
+            db.Column("id", db.Integer(), primary_key=True),
+            db.Column("follower", db.Integer(), ForeignKey("users.id"), nullable=False),
+            db.Column("following", db.Integer(), ForeignKey("users.id"), nullable=False)
         )
         
         # create all objects in the metadata object
@@ -90,7 +98,7 @@ class InitDB:
 
     def fill_dummy_data(self):
         # This function will read one or more CSVs and then insert the data from those CSVs into the relevant tables
-        
+
         # read in dummy data from CSVs
         dummy_events_df = pd.read_csv("db/dummy_events.csv")
         dummy_users_df = pd.read_csv("db/dummy_users.csv")
@@ -98,7 +106,7 @@ class InitDB:
         # Iterate through events pandas DF and insert each row into table using insert function
         for index, row in dummy_events_df.iterrows():
             data = {
-                "id":row.id, 
+                "id": row.id, 
                 "event_name": row.event_name,
                 "host": row.host,
                 "host_username": row.host_username,
@@ -132,11 +140,11 @@ class InitDB:
                 "password": row.password,
                 "token": row.token,
                 "email" : row.username,
-                "firstName" : '',
-                "lastName" : '',
-                "dateOfBirth" : datetime.datetime.strptime(row.dob, '%Y-%m-%d').date(),
-                "gender" : '',
-                "phone" : '',
+                "firstName" : "",
+                "lastName" : "",
+                "dateOfBirth" : datetime.datetime.strptime(row.dob, "%Y-%m-%d").date(),
+                "gender" : "",
+                "phone" : "",
                 "vaccinated" : row.vac
             }
             new_id = self.insert_users(data, True)
@@ -171,7 +179,7 @@ class InitDB:
                 id = data["id"],
                 event_name = data["event_name"],
                 host = data["host"],
-                host_username = data['host_username'],
+                host_username = data["host_username"],
                 type = data["type"],
                 start_date = data["start_date"],
                 start_time = data["start_time"],
@@ -199,9 +207,9 @@ class InitDB:
             print("Item " + str(data["event_name"]) + " not added to events table as it failed the insert check")
 
     def pre_fill_tickets(self, data):
-        self.insert_tix(data['gold_num'], 'gold', data['id'], data['gold_price'])
-        self.insert_tix(data['silver_num'], 'silver', data['id'], data['silver_price'])
-        self.insert_tix(data['bronze_num'], 'bronze', data['id'], data['bronze_price'])
+        self.insert_tix(data["gold_num"], "gold", data["id"], data["gold_price"])
+        self.insert_tix(data["silver_num"], "silver", data["id"], data["silver_price"])
+        self.insert_tix(data["bronze_num"], "bronze", data["id"], data["bronze_price"])
 
     def insert_tix(self, num_tix, tix_class, event_ID, price):
         for i in range(num_tix):
@@ -231,16 +239,16 @@ class InitDB:
                 )
             )
         result = self.engine.execute(user_tickets_query)
-        result = ({'result': [dict(row) for row in result]})
+        result = ({"result": [dict(row) for row in result]})
         return result
 
     def get_event_time_date(self, event_id):
         event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
         result = self.engine.execute(event_start_query)
-        result = ({'result': [dict(row) for row in result]})
-        start_date = str(result['result'][0]['start_date'])
-        start_time = str(result['result'][0]['start_time'])
-        event_name = result['result'][0]['event_name']
+        result = ({"result": [dict(row) for row in result]})
+        start_date = str(result["result"][0]["start_date"])
+        start_time = str(result["result"][0]["start_time"])
+        event_name = result["result"][0]["event_name"]
         return start_date, start_time, event_name
 
     def get_max_watchlist_id(self):
@@ -260,9 +268,9 @@ class InitDB:
                 )
             )
         result = self.engine.execute(check_follower_query)
-        result = ({'result': [dict(row) for row in result]})
+        result = ({"result": [dict(row) for row in result]})
 
-        if len(result['result']) > 0:
+        if len(result["result"]) > 0:
             return True
         else:
             return False
@@ -304,18 +312,18 @@ class InitDB:
 
         check_follower_query = db.select([self.watchlist]).where(self.watchlist.c.follower == user_id)
         result = self.engine.execute(check_follower_query)
-        result = ({'result': [dict(row) for row in result]}) 
-        return result['result']
+        result = ({"result": [dict(row) for row in result]}) 
+        return result["result"]
 
     def insert_check(self, data):
 
         check_query = db.select([self.users]).where(self.users.c.id == data["id"])
         check_result = self.engine.execute(check_query)
-        check_result = ({'result': [dict(row) for row in check_result]})
+        check_result = ({"result": [dict(row) for row in check_result]})
 
         insert_bool = True
-        for i in range(len(check_result['result'])):
-             if data["id"] == (check_result["result"][i]['id']):
+        for i in range(len(check_result["result"])):
+             if data["id"] == (check_result["result"][i]["id"]):
                 insert_bool = False
         return insert_bool
 
@@ -331,9 +339,9 @@ def db_main():
     #     query = db.select([self.events]).where(self.events.c.event_name == event_name)
     #     try:
     #         result = self.engine.execute(query)
-    #         result = ({'result': [dict(row) for row in result]})
-    #         for i in range(len(result['result'])):
-    #             result["result"][i]['event_date'] = str(result["result"][i]['event_date'])
+    #         result = ({"result": [dict(row) for row in result]})
+    #         for i in range(len(result["result"])):
+    #             result["result"][i]["event_date"] = str(result["result"][i]["event_date"])
     #         return result["result"]
     #     except IntegrityError as e:
     #         return (400, "could not find event")
@@ -343,12 +351,12 @@ def db_main():
     #     query = db.select([self.events]).where(self.events.c.id == event_id)
     #     try:
     #         result = self.engine.execute(query)
-    #         result = ({'result': [dict(row) for row in result]})
-    #         for i in range(len(result['result'])):
-    #             result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-    #             result["result"][i]['start_time'] = str(result["result"][i]['start_time'])[:-3]
-    #             result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-    #             result["result"][i]['end_time'] = str(result["result"][i]['end_time'])[:-3]
+    #         result = ({"result": [dict(row) for row in result]})
+    #         for i in range(len(result["result"])):
+    #             result["result"][i]["start_date"] = str(result["result"][i]["start_date"])
+    #             result["result"][i]["start_time"] = str(result["result"][i]["start_time"])[:-3]
+    #             result["result"][i]["end_date"] = str(result["result"][i]["end_date"])
+    #             result["result"][i]["end_time"] = str(result["result"][i]["end_time"])[:-3]
     #         return result["result"]
     #     except IntegrityError as e:
     #         return (400, "could not find event")
@@ -390,26 +398,26 @@ def db_main():
     #     host_username = self.get_host_username_from_token(token)
 
     #     insert_data = {}
-    #     insert_data['id'] = new_id
-    #     insert_data['event_name'] = event_details['title']
-    #     insert_data['type'] = event_details['type']
-    #     insert_data['location'] = event_details['location']
-    #     insert_data['host'] = host
-    #     insert_data['host_username'] = host_username
-    #     insert_data['deleted'] = False 
-    #     insert_data['description'] = event_details['desc']
-    #     insert_data['adult_only'] = event_details['cond_adult']
-    #     insert_data['vax_only'] = event_details['cond_vax'] 
-    #     insert_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
-    #     insert_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
-    #     insert_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
-    #     insert_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
-    #     insert_data['gold_num'] = event_details['gold_num']
-    #     insert_data['gold_price'] = event_details['gold_price']
-    #     insert_data['silver_num'] = event_details['silver_num']
-    #     insert_data['silver_price'] = event_details['silver_price']
-    #     insert_data['bronze_num'] = event_details['bronze_num']
-    #     insert_data['bronze_price'] = event_details['bronze_price']
+    #     insert_data["id"] = new_id
+    #     insert_data["event_name"] = event_details["title"]
+    #     insert_data["type"] = event_details["type"]
+    #     insert_data["location"] = event_details["location"]
+    #     insert_data["host"] = host
+    #     insert_data["host_username"] = host_username
+    #     insert_data["deleted"] = False 
+    #     insert_data["description"] = event_details["desc"]
+    #     insert_data["adult_only"] = event_details["cond_adult"]
+    #     insert_data["vax_only"] = event_details["cond_vax"] 
+    #     insert_data["start_date"] = datetime.datetime.strptime(event_details["startdate"], "%Y-%m-%d").date()
+    #     insert_data["start_time"] = datetime.datetime.strptime( event_details["starttime"], "%H:%M").time()
+    #     insert_data["end_date"] = datetime.datetime.strptime(event_details["enddate"], "%Y-%m-%d").date()
+    #     insert_data["end_time"] = datetime.datetime.strptime( event_details["endtime"], "%H:%M").time()
+    #     insert_data["gold_num"] = event_details["gold_num"]
+    #     insert_data["gold_price"] = event_details["gold_price"]
+    #     insert_data["silver_num"] = event_details["silver_num"]
+    #     insert_data["silver_price"] = event_details["silver_price"]
+    #     insert_data["bronze_num"] = event_details["bronze_num"]
+    #     insert_data["bronze_price"] = event_details["bronze_price"]
 
     #     result = self.insert_events(insert_data), insert_data
     #     return result
@@ -425,25 +433,25 @@ def db_main():
     #     host_username = self.get_host_username_from_token(token)
 
     #     update_data = {}
-    #     update_data['event_name'] = event_details['title']
-    #     update_data['type'] = event_details['type']
-    #     update_data['location'] = event_details['location']
-    #     update_data['host'] = host
-    #     update_data['host_username'] = host_username
-    #     update_data['deleted'] = False 
-    #     update_data['description'] = event_details['desc']
-    #     update_data['adult_only'] = event_details['cond_adult']
-    #     update_data['vax_only'] = event_details['cond_vax'] 
-    #     update_data['start_date'] = datetime.datetime.strptime(event_details['startdate'], "%Y-%m-%d").date()
-    #     update_data['start_time'] = datetime.datetime.strptime( event_details['starttime'], "%H:%M").time()
-    #     update_data['end_date'] = datetime.datetime.strptime(event_details['enddate'], "%Y-%m-%d").date()
-    #     update_data['end_time'] = datetime.datetime.strptime( event_details['endtime'], "%H:%M").time()
-    #     update_data['gold_num'] = event_details['gold_num']
-    #     update_data['gold_price'] = event_details['gold_price']
-    #     update_data['silver_num'] = event_details['silver_num']
-    #     update_data['silver_price'] = event_details['silver_price']
-    #     update_data['bronze_num'] = event_details['bronze_num']
-    #     update_data['bronze_price'] = event_details['bronze_price']
+    #     update_data["event_name"] = event_details["title"]
+    #     update_data["type"] = event_details["type"]
+    #     update_data["location"] = event_details["location"]
+    #     update_data["host"] = host
+    #     update_data["host_username"] = host_username
+    #     update_data["deleted"] = False 
+    #     update_data["description"] = event_details["desc"]
+    #     update_data["adult_only"] = event_details["cond_adult"]
+    #     update_data["vax_only"] = event_details["cond_vax"] 
+    #     update_data["start_date"] = datetime.datetime.strptime(event_details["startdate"], "%Y-%m-%d").date()
+    #     update_data["start_time"] = datetime.datetime.strptime( event_details["starttime"], "%H:%M").time()
+    #     update_data["end_date"] = datetime.datetime.strptime(event_details["enddate"], "%Y-%m-%d").date()
+    #     update_data["end_time"] = datetime.datetime.strptime( event_details["endtime"], "%H:%M").time()
+    #     update_data["gold_num"] = event_details["gold_num"]
+    #     update_data["gold_price"] = event_details["gold_price"]
+    #     update_data["silver_num"] = event_details["silver_num"]
+    #     update_data["silver_price"] = event_details["silver_price"]
+    #     update_data["bronze_num"] = event_details["bronze_num"]
+    #     update_data["bronze_price"] = event_details["bronze_price"]
 
     #     try:
     #         update_query = self.events.update().values(update_data).where(self.events.c.id == event_id)
@@ -457,12 +465,12 @@ def db_main():
     #     query = db.select([self.events])
     #     try:
     #         result = self.engine.execute(query)
-    #         result = ({'result': [dict(row) for row in result]})
-    #         for i in range(len(result['result'])):
-    #             result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-    #             result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
-    #             result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-    #             result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+    #         result = ({"result": [dict(row) for row in result]})
+    #         for i in range(len(result["result"])):
+    #             result["result"][i]["start_date"] = str(result["result"][i]["start_date"])
+    #             result["result"][i]["start_time"] = str(result["result"][i]["start_time"])
+    #             result["result"][i]["end_date"] = str(result["result"][i]["end_date"])
+    #             result["result"][i]["end_time"] = str(result["result"][i]["end_time"])
     #         return result["result"]
     #     except IntegrityError as e:
     #         return (400, "Could not select from table")
@@ -477,12 +485,12 @@ def db_main():
     #         )
     #     try:
     #         result = self.engine.execute(query)
-    #         result = ({'result': [dict(row) for row in result]})
-    #         for i in range(len(result['result'])):
-    #             result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-    #             result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
-    #             result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-    #             result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+    #         result = ({"result": [dict(row) for row in result]})
+    #         for i in range(len(result["result"])):
+    #             result["result"][i]["start_date"] = str(result["result"][i]["start_date"])
+    #             result["result"][i]["start_time"] = str(result["result"][i]["start_time"])
+    #             result["result"][i]["end_date"] = str(result["result"][i]["end_date"])
+    #             result["result"][i]["end_time"] = str(result["result"][i]["end_time"])
                 
     #         return result["result"]
     #     except IntegrityError as e:
@@ -497,12 +505,12 @@ def db_main():
     #         )
     #     try:
     #         result = self.engine.execute(query)
-    #         result = ({'result': [dict(row) for row in result]})
-    #         for i in range(len(result['result'])):
-    #             result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
-    #             result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
-    #             result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
-    #             result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+    #         result = ({"result": [dict(row) for row in result]})
+    #         for i in range(len(result["result"])):
+    #             result["result"][i]["start_date"] = str(result["result"][i]["start_date"])
+    #             result["result"][i]["start_time"] = str(result["result"][i]["start_time"])
+    #             result["result"][i]["end_date"] = str(result["result"][i]["end_date"])
+    #             result["result"][i]["end_time"] = str(result["result"][i]["end_time"])
                 
     #         return result["result"]
     #     except IntegrityError as e:
@@ -602,9 +610,9 @@ def db_main():
     # def update_user_details(self, params, token):
     #     # update_query = self.users.update(). \
     #     # values({
-    #     #     'phone': bindparam('phone'),
-    #     #     'firstname': bindparam('firstname'),
-    #     #     'lastname': bindparam('lastname')
+    #     #     "phone": bindparam("phone"),
+    #     #     "firstname": bindparam("firstname"),
+    #     #     "lastname": bindparam("lastname")
     #     # }).where(self.users.c.token == token)
     #     update_query = self.users.update().values(params).where(self.users.c.token == token)
     #     a = self.engine.execute(update_query)
@@ -621,27 +629,27 @@ def db_main():
     #     return max_id + 1
 
     # def flatten_details(self, data):
-    #     return pd.json_normalize(data, sep='_').to_dict(orient='records')[0]
+    #     return pd.json_normalize(data, sep="_").to_dict(orient="records")[0]
 
     # def get_host_id_from_token(self, token):
     #     check_query = db.select([self.users]).where(self.users.c.token == token)
     #     check_result = self.engine.execute(check_query)
-    #     check_result = ({'result': [dict(row) for row in check_result]})
-    #     list_result = check_result['result']
+    #     check_result = ({"result": [dict(row) for row in check_result]})
+    #     list_result = check_result["result"]
     #     if len(list_result) > 1:
     #         return "Error - more than one user with this token"
     #     else:
-    #         return list_result[0]['id']
+    #         return list_result[0]["id"]
 
     # def get_host_username_from_token(self, token):
     #     check_query = db.select([self.users]).where(self.users.c.token == token)
     #     check_result = self.engine.execute(check_query)
-    #     check_result = ({'result': [dict(row) for row in check_result]})
-    #     list_result = check_result['result']
+    #     check_result = ({"result": [dict(row) for row in check_result]})
+    #     list_result = check_result["result"]
     #     if len(list_result) > 1:
     #         return "Error - more than one user with this token"
     #     else:
-    #         return list_result[0]['username']
+    #         return list_result[0]["username"]
     
     # def select_tickets_event_id(self, event_id):
     #     tickets_query = db.select([self.tickets]).where(
@@ -651,30 +659,30 @@ def db_main():
     #             )
     #         )
     #     result = self.engine.execute(tickets_query)
-    #     result = ({'result': [dict(row) for row in result]})
+    #     result = ({"result": [dict(row) for row in result]})
     #     return result
 
     # def reserve_tickets(self, data, user_id):
-    #     data = json.loads(data.replace("'", '"'))
-    #     card_number = data['card_number']
+    #     data = json.loads(data.replace(""", """))
+    #     card_number = data["card_number"]
     #     update_query = self.tickets.update().values(purchased=True, user_id=user_id, card_number=card_number).where(
     #         and_(
-    #             self.tickets.c.event_id == data['event_id'],
-    #             self.tickets.c.seat_num == data['seat_num'],
-    #             self.tickets.c.tix_class == data['tix_class']
+    #             self.tickets.c.event_id == data["event_id"],
+    #             self.tickets.c.seat_num == data["seat_num"],
+    #             self.tickets.c.tix_class == data["tix_class"]
     #             )
     #         )
     #     result = self.engine.execute(update_query)
     #     return result
 
     # def refund_tickets(self, data, user_id):
-    #     data = json.loads(data.replace("'", '"'))
+    #     data = json.loads(data.replace(""", """))
     #     update_query = self.tickets.update().values(purchased=db.false(), user_id=db.null(), card_number=db.null()).where(
     #         and_(
     #             self.tickets.c.user_id == user_id,
-    #             self.tickets.c.event_id == data['event_id'],
-    #             self.tickets.c.seat_num == data['seat_num'],
-    #             self.tickets.c.tix_class == data['tix_class']
+    #             self.tickets.c.event_id == data["event_id"],
+    #             self.tickets.c.seat_num == data["seat_num"],
+    #             self.tickets.c.tix_class == data["tix_class"]
     #             )
     #         )
     #     result = self.engine.execute(update_query)
@@ -688,14 +696,14 @@ def db_main():
     #             )
     #         )
     #     result = self.engine.execute(user_tickets_query)
-    #     result = ({'result': [dict(row) for row in result]})
+    #     result = ({"result": [dict(row) for row in result]})
     #     return result
 
     # def get_event_time_date(self, event_id):
     #     event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
     #     result = self.engine.execute(event_start_query)
-    #     result = ({'result': [dict(row) for row in result]})
-    #     start_date = str(result['result'][0]['start_date'])
-    #     start_time = str(result['result'][0]['start_time'])
-    #     event_name = result['result'][0]['event_name']
+    #     result = ({"result": [dict(row) for row in result]})
+    #     start_date = str(result["result"][0]["start_date"])
+    #     start_time = str(result["result"][0]["start_time"])
+    #     event_name = result["result"][0]["event_name"]
     #     return start_date, start_time, event_name
