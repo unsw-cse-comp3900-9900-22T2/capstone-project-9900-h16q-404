@@ -1,3 +1,21 @@
+'''
+Functions:
+# get/select
+- get_user_record
+- get_user_record_byname
+# create/insert
+- insert_users
+- register_new_user
+# update
+- update_user_details
+# delete
+# helper
+- get_new_user_id
+- check_user_exists
+- check_userid_exists
+- check_passwords_match
+'''
+
 # import third party libaries
 import sqlalchemy as db
 from sqlalchemy import and_
@@ -7,6 +25,43 @@ class UsersDB:
     def __init__(self):
         from app import databaseTables
         self.temp_db = databaseTables
+
+# Functions for selecting/getting user data
+
+    def get_user_record(self, userid):
+        user_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.id == userid)
+        user_result = self.temp_db.engine.execute(user_query).fetchall()
+        if len(user_result) > 0:
+            return user_result
+        else:
+            return -1
+
+    def get_user_record_byname(self, username):
+        user_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.username == username)
+        user_result = self.temp_db.engine.execute(user_query).fetchall()
+        if len(user_result) > 0:
+            return user_result
+        else:
+            return -1
+
+# Functions for inserting into the Users table
+
+    def register_new_user(self, username, password):
+
+        data = {
+            "id":self.get_new_user_id(), 
+            "username": username,
+            "password": password,
+            "token": username,
+            "dateOfBirth": "",
+            "vaccinated": ""
+        }
+
+        try:
+            new_id = self.temp_db.insert_users(data, False)    
+            return new_id
+        except:
+            return -1
 
     def insert_users(self, data, dummy):
         insert_check = True
@@ -45,6 +100,17 @@ class UsersDB:
         else:
             print("Item " + str(data["username"]) + " not added to user table as it failed the insert check")
 
+# Functions for updating rows in the Users table
+
+    def update_user_details(self, params, token):
+        update_query = self.temp_db.users.update().values(params).where(self.temp_db.users.c.token == token)
+        try:
+            return self.temp_db.engine.execute(update_query)
+        except:
+            return -1
+
+# Helper functions 
+
     def check_user_exists(self, username):
         user_exists = False
         check_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.username == username)
@@ -52,23 +118,6 @@ class UsersDB:
         if len(check_result) > 0:
             user_exists = True
         return user_exists
-
-    def register_new_user(self, username, password):
-
-        data = {
-            "id":self.get_new_user_id(), 
-            "username": username,
-            "password": password,
-            "token": username,
-            "dateOfBirth": "",
-            "vaccinated": ""
-        }
-
-        try:
-            new_id = self.temp_db.insert_users(data, False)    
-            return new_id
-        except:
-            return -1
 
     def check_passwords_match(self, username, password):
         passwords_match = False
@@ -83,21 +132,6 @@ class UsersDB:
                 passwords_match = True
         return passwords_match
 
-    def get_user_record_byname(self, username):
-        user_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.username == username)
-        user_result = self.temp_db.engine.execute(user_query).fetchall()
-        if len(user_result) > 0:
-            return user_result
-        else:
-            return -1
-
-    def update_user_details(self, params, token):
-        update_query = self.temp_db.users.update().values(params).where(self.temp_db.users.c.token == token)
-        try:
-            return self.temp_db.engine.execute(update_query)
-        except:
-            return -1
-
     def check_userid_exists(self, userid):
         user_exists = False
         check_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.id == userid)
@@ -105,14 +139,6 @@ class UsersDB:
         if len(check_result) > 0:
             user_exists = True
         return user_exists
-
-    def get_user_record(self, userid):
-        user_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.id == userid)
-        user_result = self.temp_db.engine.execute(user_query).fetchall()
-        if len(user_result) > 0:
-            return user_result
-        else:
-            return -1
 
     def get_new_user_id(self):
         # returns the highest id in the user table plus 1

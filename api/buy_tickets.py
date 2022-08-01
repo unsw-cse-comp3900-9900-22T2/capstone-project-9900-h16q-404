@@ -42,22 +42,15 @@ class BuyTickets(Resource):
 
     def post(self):
 
-        parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str)
-        parser.add_argument('tickets', action='append')
-        args = parser.parse_args()
-
-        # assign variables
-        token = args['token']
-        tickets = args['tickets']
+        token, tickets = self.parse_request()
 
         # create db engine
-        token_db = TokenHandlerDB()
-        tickets_db = TicketsDB()
+        token_db, tickets_db = self.gen_db_engines()
 
         # need to convert token to user_id
         user_id = token_db.get_host_id_from_token(token)
         failed = []
+        
         for i in tickets:
             try:
                 tickets_db.reserve_tickets(i, user_id)
@@ -76,22 +69,15 @@ class BuyTickets(Resource):
 
     def put(self):
 
-        parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str)
-        parser.add_argument('tickets', action='append')
-        args = parser.parse_args()
-
-        # assign variables
-        token = args['token']
-        tickets = args['tickets']
+        token, tickets = self.parse_request()
 
         # create db engine
-        token_db = TokenHandlerDB()
-        tickets_db = TicketsDB()
+        token_db, tickets_db = self.gen_db_engines()
 
         # need to convert token to user_id
         user_id = token_db.get_host_id_from_token(token)
         failed = []
+
         for i in tickets:
             try:
                 tickets_db.refund_tickets(i, user_id)
@@ -108,3 +94,24 @@ class BuyTickets(Resource):
                 'resultStatus': 'SUCCESS',
                 'message': 'Tickets successfully unreserved'
             }
+
+
+    def parse_request(self):
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str)
+        parser.add_argument('tickets', action='append')
+        args = parser.parse_args()
+
+        # assign variables
+        token = args['token']
+        tickets = args['tickets']
+
+        return token, tickets
+
+    def gen_db_engines():
+        # create db engine
+        token_db = TokenHandlerDB()
+        tickets_db = TicketsDB()
+
+        return token_db, tickets_db

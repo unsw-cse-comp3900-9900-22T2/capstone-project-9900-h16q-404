@@ -13,13 +13,9 @@ from db.db_events import EventsDB
 
 class Event(Resource):
     def get(self):
-        # parse the event_id and/or event_name arguments
-        parser = reqparse.RequestParser()
-        parser.add_argument('event_id', type=int, location="args")
-        args = parser.parse_args()
 
-        # assign variables
-        event_id = args['event_id']
+        # parse request
+        event_id = self.parse_get_delete()
 
         # create db engine
         events_db = EventsDB()
@@ -75,13 +71,8 @@ class Event(Resource):
 
     def delete(self):
 
-        # parse the event_id and/or event_name arguments
-        parser = reqparse.RequestParser()
-        parser.add_argument('event_id', type=int, location="args")
-        args = parser.parse_args()
-
-        # assign variables
-        event_id = args['event_id']
+        # parse request
+        event_id = self.parse_get_delete()
 
         # create db engine
         events_db = EventsDB()
@@ -111,3 +102,14 @@ class Event(Resource):
                 'resultStatus': 'ERROR',
                 'message': result
             }
+
+    def parse_get_delete(self):
+        # parse the event_id and/or event_name arguments
+        parser = reqparse.RequestParser()
+        parser.add_argument('event_id', type=int, location="args")
+        args = parser.parse_args()
+
+        # assign variables
+        event_id = args['event_id']
+
+        return event_id

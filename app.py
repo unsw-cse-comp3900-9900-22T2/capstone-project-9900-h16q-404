@@ -23,7 +23,7 @@ from flask_restful import Api
 from flask_cors import CORS
 
 # import database class
-from api.apihandler import Test, Register, Events, Login, User, UserDetails, UserSensitiveDetails, UserChangePassword, Event, Create, BuyTickets, MyTickets, SearchEvent, Filter, Follow, WatchedEvents, MyWatchlist
+# from api.apihandler import Test, Register, Events, Login, User, UserDetails, UserSensitiveDetails, UserChangePassword, Event, Create, BuyTickets, MyTickets, SearchEvent, Filter, Follow, WatchedEvents, MyWatchlist
 from db.init_db import db_main
 
 # import login and register classes
@@ -76,6 +76,6 @@ api.add_resource(Filter, '/filter')
 api.add_resource(BuyTickets, '/buytickets')
 api.add_resource(MyTickets, '/mytickets')
 api.add_resource(SearchEvent, '/event/search')
-api.add_resource(Follow, '/follow')
-api.add_resource(WatchedEvents, '/watchedevents')
-api.add_resource(MyWatchlist, '/mywatchlist')
+# api.add_resource(Follow, '/follow')
+# api.add_resource(WatchedEvents, '/watchedevents')
+# api.add_resource(MyWatchlist, '/mywatchlist')

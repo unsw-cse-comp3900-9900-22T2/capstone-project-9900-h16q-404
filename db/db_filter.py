@@ -1,3 +1,13 @@
+'''
+Functions:
+# get/select
+- select_events_bytype
+# create/insert
+# update
+# delete
+# helper
+'''
+
 # import third party libaries
 import sqlalchemy as db
 from sqlalchemy import and_
@@ -8,6 +18,8 @@ class FilterDB:
     def __init__(self):
         from app import databaseTables
         self.temp_db = databaseTables
+
+# Functions for selecting/getting events
 
     def select_events_bytype(self, type):
         query = db.select([self.temp_db.events]).where(
