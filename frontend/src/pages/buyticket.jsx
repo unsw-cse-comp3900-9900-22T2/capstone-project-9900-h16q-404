@@ -47,6 +47,7 @@ const formItemLayoutWithOutLabel = {
     },
   },
 };
+
 export default function BuyTicket() {
   const params = useParams();
   const eventid = params.eventid;
@@ -65,8 +66,8 @@ export default function BuyTicket() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('username')) {
-      setToken(localStorage.getItem('username'));
+    if (localStorage.getItem('token')) {
+      setToken(localStorage.getItem('token'));
     } else {
       message.error('You must log in to do this!');
       navigate(-1);

@@ -1,32 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Avatar, Rate, Button, message, List, Divider } from 'antd';
 import PageHeader from '../components/page_header';
+import FollowButton from '../components/follow_button';
 import './user_profile.css';
 import { UserOutlined } from '@ant-design/icons';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import UserRating from '../components/user_rating';
 
 const { Content, Footer } = Layout;
 
 export default function UserProfilePage() {
   const [searchParams] = useSearchParams();
   const [isSelfProfle, setSelfProfile] = useState(false);
-  const [followed, setFollow] = useState(false);
   const [details, setDetails] = useState({});
   const [pastEvent, setPastEvent] = useState([]);
   const [ucEvent, setUCEvent] = useState([]);
   const navigate = useNavigate();
-
-  const followButtonOnClick = () => {
-    console.log('Trying to follow...');
-    setFollow(true);
-  };
-
-  const unfollowButtonOnClick = () => {
-    console.log('Trying to unfollow...');
-    setFollow(false);
-  };
 
   useEffect(() => {
     // compare the userId in params with userId in localStorage
@@ -35,7 +25,6 @@ export default function UserProfilePage() {
     } else if ( searchParams.get('userId') || searchParams.get('userId') !== localStorage.getItem('userId')) {
       // not logged in or not self profile
       setSelfProfile(false);
-      setFollow(false);
     } else {
       message.error('Oops... Something went wrong');
     }
@@ -87,9 +76,7 @@ export default function UserProfilePage() {
         >
           <div className='basic-profile-zone'>
             <div className='name-zone'>
-              <h1>
-                { fullname }
-              </h1>
+              <h1>{fullname}</h1>
               <h3>Email: {details.email}</h3>
               <h3>
                 Date of birth:{' '}
@@ -113,78 +100,59 @@ export default function UserProfilePage() {
                 icon={<UserOutlined />}
                 style={{ marginTop: '20px' }}
               />
-              {isSelfProfle ? (
-                <Button
-                  type='primary'
-                  size='small'
-                  style={{ marginTop: '5px' }}
-                >
-                  Watchlist
-                </Button>
-              ) : followed ? (
-                <Button
-                  size='small'
-                  style={{ marginTop: '5px' }}
-                  onClick={unfollowButtonOnClick}
-                >
-                  Unfollow
-                </Button>
-              ) : (
-                <Button
-                  size='small'
-                  style={{ marginTop: '5px' }}
-                  onClick={followButtonOnClick}
-                >
-                  Follow
-                </Button>
-              )}
+              {FollowButton(searchParams.get('userId'))}
             </div>
           </div>
           <div className='rating-zone'>
-            <h3>
-              {' '}
-              Music: <Rate disabled allowHalf value={3.5} />
-            </h3>
-            <h3> Party: No enough past events</h3>
+            <Divider orientation="left">Rating for past events</Divider>
+            <UserRating />
           </div>
 
           <div className='event-zone'>
-            { isSelfProfle 
-              ? (<>
-                  <Button
-                    type='primary'
-                    onClick={() => {
-                      navigate('/create');
-                    }}
-                  >
-                    Create event
-                  </Button>
-                </>) 
-              : (<></>) }
-            <Divider orientation="left">Past Events</Divider>
+            {isSelfProfle ? (
+              <>
+                <Button
+                  type='primary'
+                  onClick={() => {
+                    navigate('/create');
+                  }}
+                >
+                  Create event
+                </Button>
+              </>
+            ) : (
+              <></>
+            )}
+            <Divider orientation='left'>Past Events</Divider>
             <List
               bordered
               dataSource={pastEvent}
-              renderItem={(item) => 
+              renderItem={(item) => (
                 <List.Item>
-                  <List.Item.Meta 
-                    title={<Link to={"/event?event_id="+item.id}>{item.name}</Link>}
-                    description={"Held on " + item.startDate}
+                  <List.Item.Meta
+                    title={
+                      <Link to={'/event?event_id=' + item.id}>{item.name}</Link>
+                    }
+                    description={'Held on ' + item.startDate}
                   />
-                </List.Item>}
+                </List.Item>
+              )}
             ></List>
             <br />
-            <Divider orientation="left">Upcoming Events</Divider>
+            <Divider orientation='left'>Upcoming Events</Divider>
             <List
               bordered
               dataSource={ucEvent}
-              renderItem={(item) => 
+              renderItem={(item) => (
                 <List.Item>
                   <List.Item.Meta
-                    title={<Link to={"/event?event_id="+item.id}>{item.name}</Link>}
-                    description={"Coming on " + item.startDate}
+                    title={
+                      <Link to={'/event?event_id=' + item.id}>{item.name}</Link>
+                    }
+                    description={'Coming on ' + item.startDate}
                   />
-                </List.Item>}
+                </List.Item>
+              )}
             ></List>
           </div>
         </Content>
