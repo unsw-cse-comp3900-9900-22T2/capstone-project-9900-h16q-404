@@ -37,10 +37,10 @@ class Create(Resource):
             return {
                 "resultStatus": "SUCCESS",
                 "new_event_id": new_id,
-                "event_details": insert_data
+                "event_details": insert_data,
             }
         except:
             return {
                 "resultStatus": "ERROR",
-                "message": "failed to insert new event into events table"
+                "message": "failed to insert new event into events table",
             }

@@ -18,7 +18,7 @@ class UserDetails(Resource):
 
         # parse request
         getRequest = request.json
-        if ("token" in getRequest):
+        if "token" in getRequest:
             user_token = request.json["token"]
         else:
             return {"status": "Error", "message": "User Token was not Sent"}
@@ -29,28 +29,31 @@ class UserDetails(Resource):
 
         user_exists = token_db.check_usertoken_exists(user_token)
 
-        if (user_exists == False):
+        if user_exists == False:
             return {"status": "Error", "message": "User does not exists"}
 
         user_details_params = {}
 
-        if ("firstName" in getRequest):
+        if "firstName" in getRequest:
             user_details_params["firstName"] = request.json["firstName"]
 
-        if ("lastName" in getRequest):
+        if "lastName" in getRequest:
             user_details_params["lastName"] = request.json["lastName"]
 
-        if ("phone" in getRequest):
+        if "phone" in getRequest:
             user_details_params["phone"] = request.json["phone"]
 
         if user_details_params:
-            update_status = users_db.update_user_details(user_details_params, user_token)
+            update_status = users_db.update_user_details(
+                user_details_params, user_token
+            )
         else:
             update_status = 0
 
-        if (update_status == -1):
+        if update_status == -1:
             return {"status": "Error", "message": "Update Failed! Try Again!"}
+
         return {
             "resultStatus": "SUCCESS",
-            "message": "User Details Updated!"
+            "message": "User Details Updated!",
         }

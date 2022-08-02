@@ -33,17 +33,17 @@ class MyTickets(Resource):
         result = tickets_db.select_all_tickets(user_id)
         if len(result["result"]) > 0:
             for i in result["result"]:
-                start_date, start_time, event_name = events_db.get_event_time_date(i["event_id"])
+                start_date, start_time, event_name = events_db.get_event_time_date(
+                    i["event_id"]
+                )
                 i["start_date"] = start_date
                 i["start_time"] = start_time
                 i["event_name"] = event_name
-            return {
-                "resultStatus": "SUCCESS",
-                "result": result
-            }
+
+            return {"resultStatus": "SUCCESS", "result": result}
 
         else:
             return {
                 "resultStatus": "ERROR",
-                "message": "No tickets found for this user"
+                "message": "No tickets found for this user",
             }

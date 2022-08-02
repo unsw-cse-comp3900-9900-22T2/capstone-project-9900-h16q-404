@@ -20,7 +20,6 @@ class Event(Resource):
         # create db engine
         events_db = EventsDB()
 
-
         if event_id:
             # if event_id provided
             result = events_db.select_event_id(event_id)
@@ -28,20 +27,14 @@ class Event(Resource):
             # if neither event_id or event_name provided return error
             return {
                 "resultStatus": "Error",
-                "message": "Both event ID and event name were not supplied, please supply one"
+                "message": "Both event ID and event name were not supplied, please supply one",
             }
 
         if not result:
-            return {
-                "resultStatus": "ERROR",
-                "message": "event not found"
-            }
+            return {"resultStatus": "ERROR", "message": "event not found"}
 
         # finally return result
-        return {
-            "resultStatus": "SUCCESS",
-            "event_details": result
-        }
+        return {"resultStatus": "SUCCESS", "event_details": result}
 
     def put(self):
 
@@ -62,11 +55,11 @@ class Event(Resource):
         result = events_db.update_event(event_id, event_details, token)
         if result == True:
             return {
-            "resultStatus": "SUCCESS",
+                "resultStatus": "SUCCESS",
             }
         else:
             return {
-            "resultStatus": "ERROR",
+                "resultStatus": "ERROR",
             } 
 
     def delete(self):
@@ -84,24 +77,21 @@ class Event(Resource):
         else:
             # if neither event_id or event_name provided return error
             return {
-            "resultStatus": "Error",
-            "message": "Both event ID and event name were not supplied, please supply one"
+                "resultStatus": "Error",
+                "message": "Both event ID and event name were not supplied, please supply one",
             }
 
         if result == True:
-        # If result is True, return SUCCESS and event details
+            # If result is True, return SUCCESS and event details
             return {
                 "resultStatus": "SUCCESS",
                 "event": event_details,
-                "message": "event deleted"
+                "message": "event deleted",
             }
 
         if "Error" in result:
-        # if result != True, return ERROR and error message
-            return {
-                "resultStatus": "ERROR",
-                "message": result
-            }
+            # if result != True, return ERROR and error message
+            return {"resultStatus": "ERROR", "message": result,}
 
     def parse_get_delete(self):
         # parse the event_id and/or event_name arguments

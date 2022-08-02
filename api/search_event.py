@@ -17,30 +17,29 @@ class SearchEvent(Resource):
 
         # parse request
         getRequest = request.json
-        if ("keyWordList" in getRequest):
+        if "keyWordList" in getRequest:
             searchTerms = getRequest["keyWordList"]
         else:
             return {"status": "Error", "message": "Search Key Word List was not Sent"}
-        
+
         # create db engines
         events_db = EventsDB()
-        
+
         allEvents = events_db.select_all_events()
         result = []
-        
+
         if (len(searchTerms) > 0):
             for event in allEvents:
-                eventsStrToSearch = " ". join((event["event_name"], event["description"], event["type"]))
+                eventsStrToSearch = " ". join(
+                    (event["event_name"], event["description"], event["type"])
+                )
                 eventsStrToSearch = eventsStrToSearch.lower()
                 queryinEvent = False
                 for item in searchTerms:
                     if item in eventsStrToSearch:
                         queryinEvent = True
-                        break;
+                        break
                 if queryinEvent:
                     result.append(event)
         
-        return {
-            "resultStatus": "SUCCESS",
-            "message": result
-        }
+        return {"resultStatus": "SUCCESS", "message": result}

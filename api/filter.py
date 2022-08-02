@@ -21,21 +21,15 @@ class Filter(Resource):
 
         # assign variables
         filter_type = args["filterType"]
-        
+
         # create db engines
         filter_db = FilterDB()
-        
+
         # Get events hosted by this user
         result = filter_db.select_events_bytype(filter_type)
         
         if not result:
-            return {
-            "resultStatus": "ERROR",
-            "message": "No Events Match Filter Type"
-        }
+            return {"resultStatus": "ERROR", "message": "No Events Match Filter Type"}
 
         # finally return result
-        return {
-            "resultStatus": "SUCCESS",
-            "event_details": result
-        }
+        return {"resultStatus": "SUCCESS", "event_details": result}
