@@ -11,13 +11,15 @@ the database.
 """
 
 import datetime
+import logging
 
 import pandas as pd
 import sqlalchemy as db
 from sqlalchemy import ForeignKey, and_
 
-import logging
+
 logger = logging.getLogger(__name__)
+
 
 # InitDB class
 class InitDB:
@@ -347,9 +349,12 @@ class InitDB:
                 insert_bool = False
         return insert_bool
 
+
 class DatabaseExecutionError(Exception):
     """Raised when a query applied to a database fails"""
+
     pass
+
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
