@@ -19,6 +19,7 @@ import pandas as pd
 import datetime
 from flask import jsonify
 import json
+from datetime import date
 
 # InitDB class
 class InitDB:
@@ -85,6 +86,25 @@ class InitDB:
             db.Column('following', db.Integer(), ForeignKey('users.id'), nullable=False)
         )
         
+        self.reviews = db.Table('reviews', self.metadata,
+            db.Column('id', db.Integer(), primary_key=True),
+            db.Column('eventId', db.Integer(), ForeignKey('events.id'), nullable=False),
+            db.Column('userId', db.Integer(), ForeignKey('users.id'), nullable=False),
+            db.Column('reviewTimeStamp', db.DateTime(), nullable=False),
+            db.Column('review', db.Text(), nullable=False),
+            db.Column('rating', db.Integer(), nullable=True),
+            db.Column('replyTimeStamp', db.DateTime(), nullable=True),
+            db.Column('reply', db.Text(), nullable=True),
+            db.Column('host', db.Text(), nullable=True),
+            db.Column('eventType', db.Text(), nullable=True)
+        )
+        
+        self.broadcast = db.Table('broadcast', self.metadata,
+            db.Column('id', db.Integer(), primary_key=True),
+            db.Column('eventId', db.Integer(), ForeignKey('events.id'), nullable=False),
+            db.Column('message', db.Text(), nullable=False)
+        )
+        
         # create all objects in the metadata object
         self.metadata.create_all(self.engine, checkfirst=True)
 
@@ -92,6 +112,8 @@ class InitDB:
         # This function will read one or more CSVs and then insert the data from those CSVs into the relevant tables
         dummy_events_df = pd.read_csv("db/dummy_events.csv")
         dummy_users_df = pd.read_csv("db/dummy_users.csv")
+        dummy_tickets_df = pd.read_csv("db/dummy_tickets.csv")
+        dummy_reviews_df = pd.read_csv("db/dummy_reviews.csv")
 
         # Iterate through events pandas DF and insert each row into table using insert function
         for index, row in dummy_events_df.iterrows():
@@ -117,7 +139,7 @@ class InitDB:
                 "bronze_num": row.bronze_num,
                 "bronze_price": row.bronze_price,
             }
-            result = self.insert_events(data)
+            result = self.insert_events(data, True)
             if result == None or result == -1:
                 print(data["event_name"] + " Not Added")
             else:
@@ -138,6 +160,43 @@ class InitDB:
                 "vaccinated" : row.vac
             }
             new_id = self.insert_users(data, True)
+        
+        for index, row in dummy_tickets_df.iterrows():
+            data = {
+                "id":row.id, 
+                "event_id": row.event_id,
+                "user_id": row.user_id,
+                "seat_num": row.seat_num,
+                "tix_class" : row.tix_class,
+                "purchased" : row.purchased,
+                "card_number" : row.card_number,
+                "ticket_price" : row.ticket_price
+            }
+            result = self.insert_tickets(data)
+            if result == None or result == -1:
+                print(str(data["id"]) + " Not Added")
+            else:
+                print("Added new ticket with ID = " + str(result))
+        
+        for index, row in dummy_reviews_df.iterrows():
+            data = {
+                "id":row.id, 
+                "eventId": row.eventId,
+                "userId": row.userId,
+                "reviewTimeStamp": datetime.datetime.strptime(row.reviewTimeStamp, "%Y-%m-%d %H:%M"),
+                "review" : row.review,
+                "rating" : row.rating,
+                "replyTimeStamp" : datetime.datetime.strptime(row.replyTimeStamp, "%Y-%m-%d %H:%M"),
+                "reply" : row.reply,
+                "host" : row.host,
+                "eventType" : row.eventType
+            }
+            result = self.insert_reviews(data, True)
+            if result == None or result == -1:
+                print(str(data["id"]) + " Not Added")
+            else:
+                print("Added new review with ID = " + str(result))
+        
 
     def insert_users(self, data, dummy):
         insert_check = True
@@ -177,7 +236,7 @@ class InitDB:
             print("Item " + str(data["username"]) + " not added to user table as it failed the insert check")
 
 
-    def insert_events(self, data):
+    def insert_events(self, data, dummy):
         # This function takes a JSON object "data" and inserts the object into the DB as a new row
         # But first the function checks if a row with the same ID aleady exists
         
@@ -217,12 +276,111 @@ class InitDB:
             )
             try:
                 result = self.engine.execute(query).inserted_primary_key 
-                self.pre_fill_tickets(data)
+                if dummy == False:
+                    self.pre_fill_tickets(data)
                 return result
             except:
                 return -1
         else:
             print("Item " + str(data["event_name"]) + " not added to events table as it failed the insert check")
+
+    
+    def insert_tickets(self, data):
+        insert_check = True
+        check_query = db.select([self.tickets]).where(self.tickets.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        
+        # if no row exists with current primary key add new row
+        if insert_check == True:
+            query = db.insert(self.tickets).values(
+                id = data["id"],
+                event_id = data["event_id"],
+                user_id = data["user_id"],
+                seat_num = data["seat_num"],
+                tix_class = data['tix_class'],
+                purchased = data['purchased'],
+                card_number = data['card_number'],
+                ticket_price = data['ticket_price']
+            )
+            try:
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
+            except:
+                return -1
+        else:
+            print("Ticket " + str(data["id"]) + " not added to tickets table as it failed the insert check")
+    
+    def insert_reviews(self, data, dummy):
+        insert_check = True
+        check_query = db.select([self.reviews]).where(self.reviews.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        
+        # if no row exists with current primary key add new row
+        if insert_check == True:
+            if dummy == True:
+                query = db.insert(self.reviews).values(
+                    id = data["id"],
+                    eventId = data["eventId"],
+                    userId = data["userId"],
+                    reviewTimeStamp = data["reviewTimeStamp"],
+                    review = data['review'],
+                    rating = data['rating'],
+                    replyTimeStamp = data['replyTimeStamp'],
+                    reply = data['reply'],
+                    host = data['host'],
+                    eventType = data['eventType']
+                )
+            else:
+                query = db.insert(self.reviews).values(
+                    id = data["id"],
+                    eventId = data["eventId"],
+                    userId = data["userId"],
+                    reviewTimeStamp = data["reviewTimeStamp"],
+                    review = data['review'],
+                    rating = data['rating'],
+                    host = data['host'],
+                    eventType = data['eventType']
+                )
+            
+            try:
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
+            except:
+                return -1
+        else:
+            print("Review " + str(data["id"]) + " not added to reviews table as it failed the insert check")
+    
+    def insert_broadcast(self, data):
+        insert_check = True
+        check_query = db.select([self.broadcast]).where(self.broadcast.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        
+        # if no row exists with current primary key add new row
+        if insert_check == True:
+            query = db.insert(self.broadcast).values(
+                id = data["id"],
+                eventId = data["eventId"],
+                message = data["message"]
+            )
+            try:
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
+            except:
+                return -1
+        else:
+            print("Broadcast Message " + str(data["id"]) + " not added to broadcast table as it failed the insert check")
 
     def select_event_name(self, event_name):
         # This functions searches for events with event_name as event_name and returns a list of all events
@@ -309,7 +467,7 @@ class InitDB:
         insert_data['bronze_num'] = event_details['bronze_num']
         insert_data['bronze_price'] = event_details['bronze_price']
 
-        result = self.insert_events(insert_data), insert_data
+        result = self.insert_events(insert_data, False), insert_data
         return result
 
     def update_event(self, event_id, event_details, token):
@@ -505,7 +663,7 @@ class InitDB:
         #     'lastname': bindparam('lastname')
         # }).where(self.users.c.token == token)
         update_query = self.users.update().values(params).where(self.users.c.token == token)
-        a = self.engine.execute(update_query)
+
         
         try:
             return self.engine.execute(update_query)
@@ -623,6 +781,341 @@ class InitDB:
         start_time = str(result['result'][0]['start_time'])
         event_name = result['result'][0]['event_name']
         return start_date, start_time, event_name
+    
+    def get_reviews_by_eventId(self, eventId):
+        event_review_query = db.select([self.reviews]).where(self.reviews.c.eventId == eventId)
+        try:
+            result = self.engine.execute(event_review_query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['reviewTimeStamp'] = str(result["result"][i]['reviewTimeStamp'])
+                result["result"][i]['replyTimeStamp'] = str(result["result"][i]['replyTimeStamp'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find review for event")
+    
+    def check_user_isHost(self, userId, eventId):
+        event_host_query = db.select([self.events]).where(self.events.c.id == eventId)
+        try:
+            result = self.engine.execute(event_host_query)
+            result = ({'result': [dict(row) for row in result]})
+            event_host = result["result"][0]['host']
+            
+            return event_host == userId
+        except IntegrityError as e:
+            return (400, "could not find review for event")
+    
+    def check_user_hasTicket(self, userId, eventId):
+        user_ticket_query = db.select([self.tickets]).where(
+            and_(
+                self.tickets.c.user_id == userId,
+                self.tickets.c.event_id == eventId
+                )
+            )
+        result = self.engine.execute(user_ticket_query)
+        result = ({'result': [dict(row) for row in result]})
+        if (len(result['result']) > 0):
+            return True
+        else:
+            return False
+    
+    def check_user_hasComment(self, userId, eventId):
+        user_comment_query = db.select([self.reviews]).where(
+            and_(
+                self.reviews.c.userId == userId,
+                self.reviews.c.eventId == eventId
+                )
+            )
+        result = self.engine.execute(user_comment_query)
+        result = ({'result': [dict(row) for row in result]})
+        if (len(result['result']) > 0):
+            return True
+        else:
+            return False
+    
+    def get_event_hostname(self, event_id):
+        # This functions returns the host name of the event with wvent_id
+        query_host = db.select([self.events]).where(self.events.c.id == event_id)
+        try:
+            result = self.engine.execute(query_host)
+            result = ({'result': [dict(row) for row in result]})
+            return result["result"][0]['host_username']
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def get_username_from_id(self, id):
+        check_query = db.select([self.users]).where(self.users.c.id == id)
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        list_result = check_result['result']
+        if len(list_result) > 1:
+            return "Error - more than one user with this token"
+        else:
+            return list_result[0]['username']
+    
+    def get_new_review_id(self):
+        # returns the highest id in the user table plus 1
+        query_max_id = db.select([db.func.max(self.reviews.columns.id)])
+        max_id = self.engine.execute(query_max_id).scalar()
+        if max_id == None:
+            max_id = 0
+        return max_id + 1
+
+    
+    def post_review(self, userId, eventId, timeStamp, comment, rating, host, eventType):
+        
+        data = {
+            "id":self.get_new_review_id(), 
+            "eventId": eventId,
+            "userId": userId,
+            "reviewTimeStamp": datetime.datetime.strptime(timeStamp, "%Y-%m-%d %H:%M"),
+            "review": comment,
+            "rating": rating,
+            "host": host,
+            "eventType": eventType
+        }
+
+        try:
+            new_id = self.insert_reviews(data, False)
+            return new_id
+        except:
+            return -1
+    
+    def update_user_reviews(self, params, userId, eventId):
+        
+        update_query = self.reviews.update().values(params).where(
+            and_(
+                self.reviews.c.userId == userId,
+                self.reviews.c.eventId == eventId
+                )
+            )
+        
+        try:
+            return self.engine.execute(update_query)
+        except:
+            return -1
+    
+    def delete_user_reviews(self, userId, eventId):
+        delete_query = self.reviews.delete().where(
+            and_(
+                self.reviews.c.userId == userId,
+                self.reviews.c.eventId == eventId
+                )
+            )
+        
+        try:
+            return self.engine.execute(delete_query)
+        except:
+            return -1
+    
+    def check_eventid_exists(self, eventId):
+        event_exists = False
+        check_query = db.select([self.events]).where(self.events.c.id == eventId)
+        check_result = self.engine.execute(check_query).fetchall()
+        if len(check_result) > 0:
+            event_exists = True
+        return event_exists
+    
+    def select_event_byId(self, eventId):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.id == eventId,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def select_ratings_from_reviews(self, host, eventType):
+        review_rating_query = db.select([self.reviews]).where(
+            and_(
+                self.reviews.c.host == host,
+                self.reviews.c.eventType == eventType
+                )
+            )
+        
+        try:
+            result = self.engine.execute(review_rating_query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['reviewTimeStamp'] = str(result["result"][i]['reviewTimeStamp'])
+                result["result"][i]['replyTimeStamp'] = str(result["result"][i]['replyTimeStamp'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find review for event")
+    
+    def select_ratings_by_host(self, host):
+        rating_host_query = db.select([self.reviews]).where(self.reviews.c.host == host)
+        
+        try:
+            result = self.engine.execute(rating_host_query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['reviewTimeStamp'] = str(result["result"][i]['reviewTimeStamp'])
+                result["result"][i]['replyTimeStamp'] = str(result["result"][i]['replyTimeStamp'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find review for event")
+    
+    def get_new_broadcast_id(self):
+        # returns the highest id in the user table plus 1
+        query_max_id = db.select([db.func.max(self.broadcast.columns.id)])
+        max_id = self.engine.execute(query_max_id).scalar()
+        if max_id == None:
+            max_id = 0
+        return max_id + 1
+    
+    def post_broadcast(self, eventId, msg):
+        
+        data = {
+            "id":self.get_new_broadcast_id(), 
+            "eventId": eventId,
+            "message": msg
+        }
+
+        try:
+            new_id = self.insert_broadcast(data)
+            return new_id
+        except:
+            return -1
+    
+    def get_alluser_record(self):
+        user_query = db.select([self.users])
+        user_result = self.engine.execute(user_query).fetchall()
+        if len(user_result) > 0:
+            return user_result
+        else:
+            return -1
+    
+    def get_userid_with_tickets(self, eventId):
+        user_ticket_query = db.select([self.tickets]).where(self.tickets.c.event_id == eventId)
+        userid_with_tickets = set()
+        
+        try:
+            result = self.engine.execute(user_ticket_query)
+            result = ({'result': [dict(row) for row in result]})
+            
+            for i in range(len(result['result'])):
+                userid_with_tickets.add(result["result"][i]['user_id'])
+            
+            return userid_with_tickets
+        except IntegrityError as e:
+            return (400, "could not find review for event")
+    
+    def get_eventid_with_tickets(self, userId):
+        event_ticket_query = db.select([self.tickets]).where(self.tickets.c.user_id == userId)
+        eventid_with_tickets = set()
+        
+        try:
+            result = self.engine.execute(event_ticket_query)
+            result = ({'result': [dict(row) for row in result]})
+            
+            for i in range(len(result['result'])):
+                eventid_with_tickets.add(result["result"][i]['event_id'])
+            
+            return eventid_with_tickets
+        except IntegrityError as e:
+            return (400, "could not find review for event") 
+    
+    
+    def select_event_byIds(self, eventIds):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.id.in_([eventIds]),
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def get_recommend_event_bytype(self, eventTypes):
+        return_ids = set()
+        today = date.today();
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.type.in_(tuple(eventTypes)),
+                self.events.c.start_date > today,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                return_ids.add(result["result"][i]['id'])
+                
+            return return_ids
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def get_recommend_event_byhost(self, eventHosts):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        #datetime.datetime.strptime(row.start_date, "%d-%m-%Y").date()
+        today = date.today();
+        return_ids = set()
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.host_username.in_(tuple(eventHosts)),
+                self.events.c.start_date > today,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                return_ids.add(result["result"][i]['id'])
+                
+            return return_ids
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def get_future_events(self):
+        today = date.today();
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.start_date > today,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
 
     def get_max_watchlist_id(self):
         # returns the highest id in the tickets table plus 1

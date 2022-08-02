@@ -4,6 +4,7 @@ import { Layout, List, Space, Avatar, Radio, message } from 'antd';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
+import RecommendationButton from '../components/recommendation_button';
 
 const { Content, Footer } = Layout;
 
@@ -146,6 +147,15 @@ export default function LandingPage() {
           </div>
           <h1>Please select to filter the type of events you want to see: </h1>
           <FilterButtonGroup />
+          {
+            localStorage.getItem('token')?
+            <>
+              <h1>Or you can click here to see what we recommend for you:</h1>
+              <RecommendationButton />
+            </>
+            :
+            null
+          }
           <List
             itemLayout='vertical'
             size='large'

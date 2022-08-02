@@ -6,10 +6,19 @@ This file defines the Resources that connect the front end URLs to the backend w
 
 '''
 
-from flask_restful import Api, Resource, reqparse
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from flask_restful import Resource, reqparse
 from flask import request
 from db.init_db import InitDB
-from datetime import datetime
+from datetime import datetime, timedelta
+from collections import defaultdict
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 class Register(Resource):
     def get(self):
@@ -746,3 +755,619 @@ class WatchedEvents(Resource):
                 return_events.append(j)
 
         return return_events
+class Reviews(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='args')
+        parser.add_argument('eventId', type=int, location='args')
+        args = parser.parse_args()
+        # assign variables
+        token = args['token']
+        eventId = args['eventId']
+
+        # create db engine
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        #user_name = temp_db.get_host_username_from_token(token)
+        
+        
+        #is_host = temp_db.check_user_isHost(user_id, eventId)
+        #has_ticket = temp_db.check_user_hasTicket(user_id, eventId)
+        #has_comment = temp_db.check_user_hasComment(user_id, eventId)
+        
+        result_dict = {}
+        result_dict['hostedBy'] = temp_db.get_event_hostname(eventId)
+        
+        if user_exists:
+            user_id = temp_db.get_host_id_from_token(token)
+            result_dict['is_host'] = temp_db.check_user_isHost(user_id, eventId)
+            result_dict['has_ticket'] = temp_db.check_user_hasTicket(user_id, eventId)
+            result_dict['has_comment'] = temp_db.check_user_hasComment(user_id, eventId)
+        else:
+            result_dict['is_host'] = False
+            result_dict['has_ticket'] = False
+            result_dict['has_comment'] = False
+        
+        result_dict['reviews'] = []
+        
+        event_reviews = temp_db.get_reviews_by_eventId(eventId)
+        if (len(event_reviews) > 0):
+            review_list = []
+            for review in event_reviews:
+                review_list.append({"reviewedBy":temp_db.get_username_from_id(review['userId']),
+                                    "review":review['review'],
+                                    "reviewedOn":review['reviewTimeStamp'],
+                                    "rating":review['rating'],
+                                    "reply":review['reply'],
+                                    "repliedOn":review['replyTimeStamp']
+                                    })
+                #event_list.append([event['id']])
+            result_dict['reviews'] = review_list
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result_dict
+        }
+    
+    def post(self):
+        # parse request
+        getRequest = request.json
+        if ('token' in getRequest):
+            token = getRequest['token']
+        else:
+            return {"status": "Error", "message": "token was not Sent"}
+        
+        if ('eventId' in getRequest):
+            eventId = getRequest['eventId']
+        else:
+            return {"status": "Error", "message": "Event Id was not Sent"}
+        
+        if ('timeStamp' in getRequest):
+            timeStamp = getRequest['timeStamp']
+        else:
+            return {"status": "Error", "message": "Time Stamp was not Sent"}
+        
+        if ('comment' in getRequest):
+            comment = getRequest['comment']
+        else:
+            comment = ""
+        
+        if ('rating' in getRequest):
+            rating = getRequest['rating']
+        
+        
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        if user_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User Token does not match'
+            }
+        
+        user_id = temp_db.get_host_id_from_token(token)
+        
+        # check event exists
+        event_exists = temp_db.check_eventid_exists(eventId)
+        if event_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Event Id does not exist'
+            }
+        
+        # get event host and type by id
+        eventDetails = temp_db.select_event_byId(eventId)
+        
+        if (len(eventDetails) < 0):
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Unable to Retreive Event Details'
+            }
+        
+        host = eventDetails['host']
+        eventType = eventDetails['type']
+        
+        new_id = temp_db.post_review(user_id, eventId, timeStamp, comment, rating, host, eventType)
+        
+        if new_id == -1:
+            return {"status": "Error", "message": "Could not add review"}
+        else:
+            return {"status": "Success", "message": "Added Review Succesfully"}
+        
+    
+    def patch(self):
+        # parse request
+        getRequest = request.json
+        if ('token' in getRequest):
+            token = getRequest['token']
+        else:
+            return {"status": "Error", "message": "token was not Sent"}
+        
+        if ('eventId' in getRequest):
+            eventId = getRequest['eventId']
+        else:
+            return {"status": "Error", "message": "Event Id was not Sent"}
+        
+        user_reviews_params = {}
+        
+        if ('timeStamp' in getRequest):
+            reviewedTime = datetime.strptime(getRequest['timeStamp'], '%Y-%m-%d %H:%M')
+            user_reviews_params['reviewTimeStamp'] = reviewedTime
+        
+        if ('comment' in getRequest):
+            user_reviews_params['review'] = getRequest['comment']
+        
+        if ('rating' in getRequest):
+            user_reviews_params['rating'] = getRequest['rating']
+        
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        if user_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User Token does not match'
+            }
+        
+        user_id = temp_db.get_host_id_from_token(token)
+        
+        user_has_reviewed = temp_db.check_user_hasComment(user_id, eventId)
+        
+        if user_has_reviewed == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User has not reviewed before'
+            }
+        
+        
+        new_id = temp_db.update_user_reviews(user_reviews_params, user_id, eventId)
+        
+        if new_id == -1:
+            return {"status": "Error", "message": "Could not update review!"}
+        else:
+            return {"status": "Success", "message": "Updated Review Succesfully"}
+    
+    def delete(self):
+        # parse request
+        getRequest = request.json
+        if ('token' in getRequest):
+            token = getRequest['token']
+        else:
+            return {"status": "Error", "message": "token was not Sent"}
+        
+        if ('eventId' in getRequest):
+            eventId = getRequest['eventId']
+        else:
+            return {"status": "Error", "message": "Event Id was not Sent"}
+        
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        if user_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User Token does not match'
+            }
+        
+        user_id = temp_db.get_host_id_from_token(token)
+        
+        user_has_reviewed = temp_db.check_user_hasComment(user_id, eventId)
+        
+        if user_has_reviewed == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User has not reviewed before!'
+            }
+        
+        new_id = temp_db.delete_user_reviews(user_id, eventId)
+        
+        if new_id == -1:
+            return {"status": "Error", "message": "Could not delete review"}
+        else:
+            return {"status": "Success", "message": "Deleted Review Succesfully"}
+        
+class HostReplies(Resource):
+    def patch(self):
+        getRequest = request.json
+        if ('token' in getRequest):
+            token = getRequest['token']
+        else:
+            return {"status": "Error", "message": "token was not Sent"}
+            
+        if ('eventId' in getRequest):
+            eventId = getRequest['eventId']
+        else:
+            return {"status": "Error", "message": "Event Id was not Sent"}
+        
+        if ('targetUserId' in getRequest):
+            targetUserId = getRequest['targetUserId']
+        else:
+            return {"status": "Error", "message": "Target User Id was not Sent"}
+        
+        host_replies_params = {}
+        
+        if ('timeStamp' in getRequest):
+            repliedTime = datetime.strptime(getRequest['timeStamp'], '%Y-%m-%d %H:%M')
+            host_replies_params['replyTimeStamp'] = repliedTime
+        
+        if ('reply' in getRequest):
+            host_replies_params['reply'] = getRequest['reply']
+        
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        if user_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User Token does not match'
+            }
+        
+        user_id = temp_db.get_host_id_from_token(token)
+        
+        user_has_reviewed = temp_db.check_user_hasComment(targetUserId, eventId)
+        
+        if user_has_reviewed == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User has not reviewed before'
+            }
+        
+        new_id = temp_db.update_user_reviews(host_replies_params, targetUserId, eventId)
+        
+        if new_id == -1:
+            return {"status": "Error", "message": "Could not update reply!"}
+        else:
+            return {"status": "Success", "message": "Updated Reply Succesfully"}
+        
+    def delete(self):
+        getRequest = request.json
+        if ('token' in getRequest):
+            token = getRequest['token']
+        else:
+            return {"status": "Error", "message": "token was not Sent"}
+            
+        if ('eventId' in getRequest):
+            eventId = getRequest['eventId']
+        else:
+            return {"status": "Error", "message": "Event Id was not Sent"}
+        
+        if ('targetUserId' in getRequest):
+            targetUserId = getRequest['targetUserId']
+        else:
+            return {"status": "Error", "message": "Target User Id was not Sent"}
+        
+        host_replies_delete_params = {}
+        host_replies_delete_params['replyTimeStamp'] = None
+        host_replies_delete_params['reply'] = ""
+        
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        if user_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User Token does not match'
+            }
+        
+        user_id = temp_db.get_host_id_from_token(token)
+        
+        user_has_reviewed = temp_db.check_user_hasComment(targetUserId, eventId)
+        
+        if user_has_reviewed == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'User has not reviewed before'
+            }
+        
+        new_id = temp_db.update_user_reviews(host_replies_delete_params, targetUserId, eventId)
+        
+        if new_id == -1:
+            return {"status": "Error", "message": "Could not delete reply!"}
+        else:
+            return {"status": "Success", "message": "Deleted Reply Succesfully"}
+
+
+class EventRatings(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='args')
+        parser.add_argument('eventId', type=int, location='args')
+        args = parser.parse_args()
+        # assign variables
+        token = args['token']
+        eventId = args['eventId']
+
+        # create db engine
+        temp_db = InitDB()
+        
+        # check user exists
+        user_exists = temp_db.check_usertoken_exists(token)
+        
+        # check event exists
+        event_exists = temp_db.check_eventid_exists(eventId)
+        if event_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Event Id does not exist'
+            }
+        
+        # get event host and type by id
+        eventDetails = temp_db.select_event_byId(eventId)
+        
+        if (len(eventDetails) < 0):
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Unable to Retreive Event Details'
+            }
+        
+        host = eventDetails[0]['host']
+        eventType = eventDetails[0]['type']
+        hostName = eventDetails[0]['host_username']
+        
+        result_dict = {}
+        result_dict['Host Name'] = hostName
+        result_dict['Event Type'] = eventType
+        
+        # get ratings based on host and event type
+        eventRatings = temp_db.select_ratings_from_reviews(host, eventType)
+        numRatings = len(eventRatings)
+        
+        # Compute Average Rating
+        average_rating = 0
+        
+        if (len(eventRatings) > 0):
+            sum_ratings = 0
+            for rating in eventRatings:
+                sum_ratings += rating['rating']
+            average_rating = sum_ratings / numRatings
+        
+        result_dict['Average Rating'] = round(average_rating, 2)
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result_dict
+        }
+        
+class UserRatings(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('userId', type=int, location='args')
+        args = parser.parse_args()
+    
+        # assign variables
+        userId = args['userId']
+        
+        # create db engine
+        temp_db = InitDB()
+        
+        user_ratings = temp_db.select_ratings_by_host(userId)
+        numEvents = len(user_ratings)
+        overall_rating = 0
+        
+        result_dict = {}
+        event_type_rating_dict = defaultdict(float)
+        event_type_count_dict = defaultdict(int)
+        
+        if (numEvents > 0):
+            sum_ratings = 0
+            for rating in user_ratings:
+                sum_ratings += rating['rating']
+                event_type_rating_dict[rating['eventType']] += rating['rating']
+                event_type_count_dict[rating['eventType']] += 1
+            overall_rating = sum_ratings / numEvents
+        
+        
+        for key, val in event_type_rating_dict.items():
+            temp = event_type_rating_dict[key]
+            newVal = temp / event_type_count_dict[key]
+            event_type_rating_dict[key] = round(newVal, 2)
+
+        result_dict['Overall Rating'] = round(overall_rating, 2)
+        result_dict['Event Type Rating'] = event_type_rating_dict
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': result_dict
+        }
+
+class Broadcast(Resource):
+    def post(self):
+        getRequest = request.json
+        if ('eventId' in getRequest):
+            eventId = getRequest['eventId']
+        else:
+            return {"status": "Error", "message": "Event Id was not Sent"}
+        
+        if ('msg' in getRequest):
+            messageToBroadcast = getRequest['msg']
+        else:
+            return {"status": "Error", "message": "msg was not Sent"}
+        
+        # create db engine
+        temp_db = InitDB()
+        
+        # post message to broadcast table
+        new_id = temp_db.post_broadcast(eventId, messageToBroadcast)
+        
+        # get email of all users who have tickets to eventId
+        get_users = temp_db.get_alluser_record()
+        users_dict = {}
+        
+        if (len(get_users) > 0):
+            for user in get_users:
+                get_name = user['username'].split('@')[0].replace("."," ").title()
+                users_dict[user['id']] = (user['username'], get_name)
+        
+        # fetch all user id from tickets for eventId
+        user_has_tickets = temp_db.get_userid_with_tickets(eventId)
+        user_mail_list = []
+        
+        if (len(user_has_tickets) > 0):
+            for user in user_has_tickets:
+                user_mail_list.append(users_dict[user])
+
+        to_emails = user_mail_list
+        sender_email = os.environ.get('MAIL_DEFAULT_SENDER')
+        sender_name = os.environ.get('MAIL_SENDER_NAME')
+
+        message = Mail(
+        from_email=(sender_email, sender_name),
+        subject='Hello',
+        plain_text_content=messageToBroadcast,
+        to_emails=to_emails,
+        is_multiple=True)
+        
+        try:
+            sendgrid_client = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sendgrid_client.send(message)
+        except Exception as e:
+            return {"status": "Error", "message": "Error broadcasting message to ticket holders"}
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': "Successfully broadcasted email to all ticket holders for this event"
+        }
+        
+
+class Recommendations(Resource):    
+    
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, location='args')
+        args = parser.parse_args()
+        
+        token = args['token']
+        
+        # create db engine
+        temp_db = InitDB()
+        
+        # check user exists
+        token_exists = temp_db.check_usertoken_exists(token)
+        
+        if token_exists == False:
+            return {
+                'resultStatus': 'ERROR',
+                'message': 'Token does not exist'
+            }
+        
+        # get user id from token
+        user_id = temp_db.get_host_id_from_token(token)
+        username = temp_db.get_host_username_from_token(token)
+        
+        # get event id of from events the user had attended using tickets table
+        events_booked = temp_db.get_eventid_with_tickets(user_id)
+        
+        # Now for all event id, get event type description and host
+        attended_event_type = set()
+        attended_event_host = set()
+        attended_event_description = set()
+        
+        current_day = datetime.now()
+        
+        for event in events_booked:
+            get_event = temp_db.select_event_byId(event)[0]
+            
+            event_end_time = get_event['end_date'] + " " + get_event['end_time'];
+            event_time_stamp = datetime.strptime(event_end_time, "%Y-%m-%d %H:%M:%S")
+            
+            # get data only from past events i.e. before today
+            if (event_time_stamp < current_day):
+                attended_event_type.add(get_event['type'])
+                if (get_event['host_username'] != username):
+                    attended_event_host.add(get_event['host_username'])
+                attended_event_description.add(get_event['description'].lower())
+        
+        attended_event_description = list(attended_event_description)
+        
+        recommended_events = {}
+        recommended_eventids = set()
+        # find the recommended event in future by type
+        recommended_eventid_bytype = temp_db.get_recommend_event_bytype(attended_event_type)
+        # print(recommended_eventid_bytype)
+        
+        # find the recommended event in future by host
+        recommended_eventid_byhost = temp_db.get_recommend_event_byhost(attended_event_host)
+        # print(recommended_eventid_byhost)
+        
+        # find the recommended event by similarity in description
+        future_events = temp_db.get_future_events()
+        future_event_description = []
+        future_event_id = []
+        
+        for i in range(len(future_events)):
+            get_eventId = future_events[i]['id']
+            get_eventdesc = future_events[i]['description']
+            future_event_description.append(get_eventdesc.lower());
+            future_event_id.append(get_eventId)
+        
+        
+        stop_words = set(stopwords.words('english'))
+        
+        for event in range(len(attended_event_description)):
+            word_tokens = word_tokenize(attended_event_description[event]);
+            attended_event_description[event] = [w for w in word_tokens if not w.lower() in stop_words]
+        
+        for event in range(len(future_event_description)):
+            word_tokens = word_tokenize(future_event_description[event]);
+            future_event_description[event] = [w for w in word_tokens if not w.lower() in stop_words]
+        
+        recommended_eventid_bydesc = set()
+        
+        for attended_event in range(len(attended_event_description)):
+            for future_event in range(len(future_event_description)):
+                get_score = self.get_similarity_score(attended_event_description[attended_event],
+                                                 future_event_description[future_event])
+                # print(get_score)
+                if (get_score >= 0.4):
+                    recommended_eventid_bydesc.add(future_event_id[future_event])
+        
+        # print(recommended_eventid_bydesc)
+        
+        recommended_eventids = list(recommended_eventid_bytype | recommended_eventid_byhost | recommended_eventid_bydesc)
+        
+        recommended_events = []
+        
+        for event in range(len(future_events)):
+            get_eventId = future_events[event]['id']
+            if get_eventId in recommended_eventids:
+                recommended_events.append(future_events[event])
+                
+        
+        return {
+            'resultStatus': 'SUCCESS',
+            'message': recommended_events
+        }
+        
+
+    def get_similarity_score(self,sentence1, sentence2):
+            from sentence_transformers import SentenceTransformer
+            from scipy.spatial import distance
+            model = SentenceTransformer('distilbert-base-nli-mean-tokens')
+            
+            
+            filtered_sentence1 = " ".join(sentence1)
+            filtered_sentence2 = " ".join(sentence2)
+            sentences = [filtered_sentence1, filtered_sentence2]
+            sentence_embeddings = model.encode(sentences)
+
+            # for sentence, embedding in zip(sentences, sentence_embeddings):
+                # print("Sentence:", sentence)
+                #print("Embedding:", embedding)
+                #print("")
+            
+            
+            return (1 - distance.cosine(sentence_embeddings[0], sentence_embeddings[1]))
+    
