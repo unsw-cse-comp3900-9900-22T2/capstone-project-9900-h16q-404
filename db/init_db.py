@@ -19,6 +19,7 @@ import pandas as pd
 import datetime
 from flask import jsonify
 import json
+from datetime import date
 
 # InitDB class
 class InitDB:
@@ -1008,6 +1009,107 @@ class InitDB:
             return userid_with_tickets
         except IntegrityError as e:
             return (400, "could not find review for event")
+    
+    def get_eventid_with_tickets(self, userId):
+        event_ticket_query = db.select([self.tickets]).where(self.tickets.c.user_id == userId)
+        eventid_with_tickets = set()
+        
+        try:
+            result = self.engine.execute(event_ticket_query)
+            result = ({'result': [dict(row) for row in result]})
+            
+            for i in range(len(result['result'])):
+                eventid_with_tickets.add(result["result"][i]['event_id'])
+            
+            return eventid_with_tickets
+        except IntegrityError as e:
+            return (400, "could not find review for event") 
+    
+    
+    def select_event_byIds(self, eventIds):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.id.in_([eventIds]),
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def get_recommend_event_bytype(self, eventTypes):
+        return_ids = set()
+        today = date.today();
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.type.in_(tuple(eventTypes)),
+                self.events.c.start_date > today,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                return_ids.add(result["result"][i]['id'])
+                
+            return return_ids
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def get_recommend_event_byhost(self, eventHosts):
+        # This functions searches for events with event_name as event_name and returns a list of all events
+        #datetime.datetime.strptime(row.start_date, "%d-%m-%Y").date()
+        today = date.today();
+        return_ids = set()
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.host_username.in_(tuple(eventHosts)),
+                self.events.c.start_date > today,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                return_ids.add(result["result"][i]['id'])
+                
+            return return_ids
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
+    def get_future_events(self):
+        today = date.today();
+        query = db.select([self.events]).where(
+            and_(
+                self.events.c.start_date > today,
+                self.events.c.deleted == False
+                )
+            )
+        try:
+            result = self.engine.execute(query)
+            result = ({'result': [dict(row) for row in result]})
+            for i in range(len(result['result'])):
+                result["result"][i]['start_date'] = str(result["result"][i]['start_date'])
+                result["result"][i]['start_time'] = str(result["result"][i]['start_time'])
+                result["result"][i]['end_date'] = str(result["result"][i]['end_date'])
+                result["result"][i]['end_time'] = str(result["result"][i]['end_time'])
+                
+            return result["result"]
+        except IntegrityError as e:
+            return (400, "could not find event")
+    
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
