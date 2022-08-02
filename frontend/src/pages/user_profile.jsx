@@ -4,9 +4,9 @@ import PageHeader from '../components/page_header';
 import FollowButton from '../components/follow_button';
 import './user_profile.css';
 import { UserOutlined } from '@ant-design/icons';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import UserRating from '../components/user_rating';
 
 const { Content, Footer } = Layout;
 
@@ -104,11 +104,8 @@ export default function UserProfilePage() {
             </div>
           </div>
           <div className='rating-zone'>
-            <h3>
-              {' '}
-              Music: <Rate disabled allowHalf value={3.5} />
-            </h3>
-            <h3> Party: No enough past events</h3>
+            <Divider orientation="left">Rating for past events</Divider>
+            <UserRating />
           </div>
 
           <div className='event-zone'>
