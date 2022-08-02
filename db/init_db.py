@@ -78,6 +78,12 @@ class InitDB:
             db.Column('card_number', db.Integer(), nullable=True),
             db.Column('ticket_price', db.String(16), nullable=False)
         )
+
+        self.watchlist = db.Table('watchlist', self.metadata,
+            db.Column('id', db.Integer(), primary_key=True),
+            db.Column('follower', db.Integer(), ForeignKey('users.id'), nullable=False),
+            db.Column('following', db.Integer(), ForeignKey('users.id'), nullable=False)
+        )
         
         self.reviews = db.Table('reviews', self.metadata,
             db.Column('id', db.Integer(), primary_key=True),
@@ -473,7 +479,7 @@ class InitDB:
 
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
-        query = db.select([self.events])
+        query = db.select([self.events]).where(self.events.c.deleted == False)
         try:
             result = self.engine.execute(query)
             result = ({'result': [dict(row) for row in result]})
@@ -930,6 +936,70 @@ class InitDB:
             return result["result"]
         except IntegrityError as e:
             return (400, "could not find review for event")
+
+    def get_max_watchlist_id(self):
+        # returns the highest id in the tickets table plus 1
+        query_max_id = db.select([db.func.max(self.watchlist.columns.id)])
+        max_id = self.engine.execute(query_max_id).scalar()
+        if max_id == None:
+            max_id = 0
+        return max_id + 1
+
+    def check_follower(self, follower_id, following_id):
+        
+        check_follower_query = db.select([self.watchlist]).where(
+            and_(
+                self.watchlist.c.follower == follower_id,
+                self.watchlist.c.following == following_id
+                )
+            )
+        result = self.engine.execute(check_follower_query)
+        result = ({'result': [dict(row) for row in result]})
+
+        if len(result['result']) > 0:
+            return True
+        else:
+            return False
+
+    def add_follower(self, follower_id, following_id):
+
+        if self.check_follower(follower_id, following_id) == False:
+            try:
+                query = db.insert(self.watchlist).values(
+                        id = self.get_max_watchlist_id(),
+                        follower = follower_id,
+                        following = following_id
+                    )
+                result = self.engine.execute(query).inserted_primary_key 
+                return "Success: Added to watchlist"
+            except:
+                return "ERROR: Could not add to watchlist"
+        else:
+            return "ERROR: Already a follower"
+
+    def delete_follower(self, follower_id, following_id):
+
+        if self.check_follower(follower_id, following_id) == True:
+            try:
+                delete_follower_query = db.delete(self.watchlist).where(
+                    and_(
+                        self.watchlist.c.follower == follower_id,
+                        self.watchlist.c.following == following_id
+                    )
+                )
+                result = self.engine.execute(delete_follower_query)
+                return "Success"
+            except:
+                return "ERROR: Could not remove from watchlist"
+        else:
+            return "ERROR: You do not follow this user"
+
+    def get_all_following_user_ids(self, user_id):
+
+        check_follower_query = db.select([self.watchlist]).where(self.watchlist.c.follower == user_id)
+        result = self.engine.execute(check_follower_query)
+        result = ({'result': [dict(row) for row in result]}) 
+        return result['result']
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():

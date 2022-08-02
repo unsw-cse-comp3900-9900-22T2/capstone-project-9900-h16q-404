@@ -47,6 +47,7 @@ const formItemLayoutWithOutLabel = {
     },
   },
 };
+
 export default function BuyTicket() {
   const params = useParams();
   const eventid = params.eventid;

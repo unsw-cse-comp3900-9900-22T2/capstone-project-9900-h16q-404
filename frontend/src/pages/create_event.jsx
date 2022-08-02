@@ -228,7 +228,7 @@ export default function CreateEvent() {
   };
 
   return (
-    <>
+    <div>
       <Layout>
         <PageHeader />
         <Content
@@ -433,7 +433,7 @@ export default function CreateEvent() {
           9900-H16Q-404
         </Footer>
       </Layout>
-    </>
+    </div>
   );
 }
 

@@ -43,7 +43,7 @@ export default function MyTicket () {
 
 	let today = new Date();
 	let sevenDaysBefore = new Date();
-	sevenDaysBefore.setDate(today.getDate() - 7);
+	sevenDaysBefore.setDate(today.getDate() + 7);
 	//console.log(sevenDaysBefore);
 	//console.log(today);
 
@@ -70,6 +70,8 @@ export default function MyTicket () {
 						console.log(JSON.stringify(data));
 						if(data.resultStatus === 'SUCCESS'){
 							//console.log("Refund succeed");
+							message.info("Refund seccessed.")
+							window.location.reload()
 						}
 					})
 				}
