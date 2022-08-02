@@ -28,9 +28,9 @@ class SearchEvent(Resource):
         allEvents = events_db.select_all_events()
         result = []
 
-        if (len(searchTerms) > 0):
+        if len(searchTerms) > 0:
             for event in allEvents:
-                eventsStrToSearch = " ". join(
+                eventsStrToSearch = " ".join(
                     (event["event_name"], event["description"], event["type"])
                 )
                 eventsStrToSearch = eventsStrToSearch.lower()
@@ -41,5 +41,5 @@ class SearchEvent(Resource):
                         break
                 if queryinEvent:
                     result.append(event)
-        
+
         return {"resultStatus": "SUCCESS", "message": result}

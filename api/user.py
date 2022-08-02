@@ -28,7 +28,7 @@ class User(Resource):
 
         user_exists = user_db.check_userid_exists(request_userId)
 
-        if (user_exists is False):
+        if user_exists is False:
             return {"status": "Error", "message": "User does not exists"}
 
         user_record = user_db.get_user_record(request_userId)
@@ -59,9 +59,9 @@ class User(Resource):
                     {
                         "id":event["id"],
                         "name":event["event_name"],
-                        "startDate":event["start_date"]
+                        "startDate":event["start_date"],
                     }
                 )
             result_dict["events"] = event_list
-        
+
         return {"resultStatus": "SUCCESS", "message": result_dict}

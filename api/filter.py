@@ -27,7 +27,7 @@ class Filter(Resource):
 
         # Get events hosted by this user
         result = filter_db.select_events_bytype(filter_type)
-        
+
         if not result:
             return {"resultStatus": "ERROR", "message": "No Events Match Filter Type"}
 

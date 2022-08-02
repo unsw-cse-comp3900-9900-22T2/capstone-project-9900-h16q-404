@@ -38,10 +38,10 @@ class UserSensitiveDetails(Resource):
         if "dateOfBirth" in getRequest:
             dob = datetime.strptime(request.json["dateOfBirth"], "%Y-%m-%d")
             user_details_params["dateOfBirth"] = dob
-        
+
         if "gender" in getRequest:
             user_details_params["gender"] = request.json["gender"]
-        
+
         if "vaccinated" in getRequest:
             user_details_params["vaccinated"] = request.json["vaccinated"]
 
@@ -53,5 +53,4 @@ class UserSensitiveDetails(Resource):
         if update_status == -1:
             return {"status": "Error", "message": "Update Failed! Try Again!"}
 
-        return {
-            "resultStatus": "SUCCESS", "message": "Sensitive Details Updated!"}
+        return {"resultStatus": "SUCCESS", "message": "Sensitive Details Updated!"}

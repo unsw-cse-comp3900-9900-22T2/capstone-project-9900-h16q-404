@@ -29,10 +29,10 @@ class UserChangePassword(Resource):
 
         user_exists = token_db.check_usertoken_exists(user_token)
         
-        if (user_exists == False):
+        if user_exists == False:
             return {"status": "Error", "message": "User does not exists"}
 
-        if ("old_password" in getRequest):
+        if "old_password" in getRequest:
             old_password = request.json["old_password"]
         else:
             return {"status": "Error", "message": "User Old Password was not Sent"}
@@ -50,7 +50,9 @@ class UserChangePassword(Resource):
             user_details_params["password"] = request.json["new_password"]
 
         if user_details_params:
-            update_status = users_db.update_user_details(user_details_params, user_token)
+            update_status = users_db.update_user_details(
+                user_details_params, user_token
+            )
         else:
             update_status = 0
 

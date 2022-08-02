@@ -60,7 +60,7 @@ class Event(Resource):
         else:
             return {
                 "resultStatus": "ERROR",
-            } 
+            }
 
     def delete(self):
 
@@ -91,7 +91,10 @@ class Event(Resource):
 
         if "Error" in result:
             # if result != True, return ERROR and error message
-            return {"resultStatus": "ERROR", "message": result,}
+            return {
+                "resultStatus": "ERROR",
+                "message": result,
+            }
 
     def parse_get_delete(self):
         # parse the event_id and/or event_name arguments
