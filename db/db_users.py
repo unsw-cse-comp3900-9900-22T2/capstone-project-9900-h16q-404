@@ -54,9 +54,9 @@ class UsersDB:
     # Functions for inserting into the Users table
 
     def register_new_user(self, username, password):
-        
+
         data = {
-            "id": self.get_new_user_id(), 
+            "id": self.get_new_user_id(),
             "username": username,
             "password": password,
             "token": username,
@@ -64,9 +64,9 @@ class UsersDB:
         }
 
         try:
-            new_id = self.insert_users(data, False)    
+            new_id = self.insert_users(data, False)
             return new_id
-        except:
+        except BaseException:
             return -1
 
     def insert_users(self, data, dummy):
@@ -75,22 +75,22 @@ class UsersDB:
 
         if insert_check == False:
             query = db.insert(self.temp_db.users).values(
-                id = data["id"],
-                username = data["username"],
-                password = data["password"],
-                token = data["token"],
-                email = data["email"],
+                id=data["id"],
+                username=data["username"],
+                password=data["password"],
+                token=data["token"],
+                email=data["email"],
             )
 
             try:
-                return self.temp_db.engine.execute(query).inserted_primary_key 
-            
-            except:
+                return self.temp_db.engine.execute(query).inserted_primary_key
+
+            except BaseException:
                 return -1
         else:
             print(
-                "Item " 
-                + str(data["username"]) 
+                "Item "
+                + str(data["username"])
                 + " not added to user table as it failed the insert check")
 
     # Functions for updating rows in the Users table
@@ -104,10 +104,10 @@ class UsersDB:
 
         try:
             return self.temp_db.engine.execute(update_query)
-        except:
+        except BaseException:
             return -1
 
-    # Helper functions 
+    # Helper functions
 
     def check_user_exists(self, username):
         user_exists = False
@@ -126,8 +126,8 @@ class UsersDB:
             and_(
                 self.temp_db.users.c.username == username,
                 self.temp_db.users.c.password == password,
-                )
             )
+        )
         check_result = self.temp_db.engine.execute(check_query).fetchall()
 
         if len(check_result) > 0:
@@ -137,7 +137,8 @@ class UsersDB:
 
     def check_userid_exists(self, userid):
         user_exists = False
-        check_query = db.select([self.temp_db.users]).where(self.temp_db.users.c.id == userid)
+        check_query = db.select([self.temp_db.users]).where(
+            self.temp_db.users.c.id == userid)
         check_result = self.temp_db.engine.execute(check_query).fetchall()
 
         if len(check_result) > 0:

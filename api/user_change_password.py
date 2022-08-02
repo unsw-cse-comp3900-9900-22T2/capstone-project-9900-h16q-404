@@ -28,7 +28,7 @@ class UserChangePassword(Resource):
         users_db = UsersDB()
 
         user_exists = token_db.check_usertoken_exists(user_token)
-        
+
         if user_exists == False:
             return {"status": "Error", "message": "User does not exists"}
 

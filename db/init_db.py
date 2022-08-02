@@ -26,7 +26,8 @@ class InitDB:
     def __init__(self):
         # create engine and connect to databse in the db folder
         self.engine = db.create_engine("sqlite:///db/group_404")
-        # Metadata is a container object that kees together many of the different features fo a db
+        # Metadata is a container object that kees together many of the
+        # different features fo a db
         self.metadata = db.MetaData()
 
         # Define the events tables
@@ -79,7 +80,11 @@ class InitDB:
             db.Column(
                 "event_id", db.Integer(), ForeignKey("events.id"), nullable=False
             ),
-            db.Column("user_id", db.Integer(), ForeignKey("users.id"), nullable=True),
+            db.Column(
+                "user_id",
+                db.Integer(),
+                ForeignKey("users.id"),
+                nullable=True),
             db.Column("seat_num", db.Integer(), nullable=False),
             db.Column("tix_class", db.String(10), nullable=False),
             db.Column("purchased", db.Boolean(), nullable=False),
@@ -91,7 +96,11 @@ class InitDB:
             "watchlist",
             self.metadata,
             db.Column("id", db.Integer(), primary_key=True),
-            db.Column("follower", db.Integer(), ForeignKey("users.id"), nullable=False),
+            db.Column(
+                "follower",
+                db.Integer(),
+                ForeignKey("users.id"),
+                nullable=False),
             db.Column(
                 "following", db.Integer(), ForeignKey("users.id"), nullable=False
             ),
@@ -101,13 +110,15 @@ class InitDB:
         self.metadata.create_all(self.engine, checkfirst=True)
 
     def fill_dummy_data(self):
-        # This function will read one or more CSVs and then insert the data from those CSVs into the relevant tables
+        # This function will read one or more CSVs and then insert the data
+        # from those CSVs into the relevant tables
 
         # read in dummy data from CSVs
         dummy_events_df = pd.read_csv("db/dummy_events.csv")
         dummy_users_df = pd.read_csv("db/dummy_users.csv")
 
-        # Iterate through events pandas DF and insert each row into table using insert function
+        # Iterate through events pandas DF and insert each row into table using
+        # insert function
         for index, row in dummy_events_df.iterrows():
             data = {
                 "id": row.id,
@@ -224,9 +235,21 @@ class InitDB:
             )
 
     def pre_fill_tickets(self, data):
-        self.insert_tix(data["gold_num"], "gold", data["id"], data["gold_price"])
-        self.insert_tix(data["silver_num"], "silver", data["id"], data["silver_price"])
-        self.insert_tix(data["bronze_num"], "bronze", data["id"], data["bronze_price"])
+        self.insert_tix(
+            data["gold_num"],
+            "gold",
+            data["id"],
+            data["gold_price"])
+        self.insert_tix(
+            data["silver_num"],
+            "silver",
+            data["id"],
+            data["silver_price"])
+        self.insert_tix(
+            data["bronze_num"],
+            "bronze",
+            data["id"],
+            data["bronze_price"])
 
     def insert_tix(self, num_tix, tix_class, event_ID, price):
         for i in range(num_tix):
@@ -253,14 +276,17 @@ class InitDB:
 
     def select_all_tickets(self, user_id):
         user_tickets_query = db.select([self.tickets]).where(
-            and_(self.tickets.c.user_id == user_id, self.tickets.c.purchased is True)
+            and_(
+                self.tickets.c.user_id == user_id,
+                self.tickets.c.purchased is True)
         )
         result = self.engine.execute(user_tickets_query)
         result = {"result": [dict(row) for row in result]}
         return result
 
     def get_event_time_date(self, event_id):
-        event_start_query = db.select([self.events]).where(self.events.c.id == event_id)
+        event_start_query = db.select([self.events]).where(
+            self.events.c.id == event_id)
         result = self.engine.execute(event_start_query)
         result = {"result": [dict(row) for row in result]}
         start_date = str(result["result"][0]["start_date"])
@@ -338,7 +364,8 @@ class InitDB:
 
     def insert_check(self, data):
 
-        check_query = db.select([self.users]).where(self.users.c.id == data["id"])
+        check_query = db.select([self.users]).where(
+            self.users.c.id == data["id"])
         check_result = self.engine.execute(check_query)
         check_result = {"result": [dict(row) for row in check_result]}
 
@@ -355,7 +382,8 @@ class DatabaseExecutionError(Exception):
     pass
 
 
-# The main function creates an InitDB class and then calls the fill_with_dummy_data method
+# The main function creates an InitDB class and then calls the
+# fill_with_dummy_data method
 def db_main():
     db = InitDB()
     db.fill_dummy_data()

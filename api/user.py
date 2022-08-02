@@ -57,9 +57,9 @@ class User(Resource):
             for event in user_events:
                 event_list.append(
                     {
-                        "id":event["id"],
-                        "name":event["event_name"],
-                        "startDate":event["start_date"],
+                        "id": event["id"],
+                        "name": event["event_name"],
+                        "startDate": event["start_date"],
                     }
                 )
             result_dict["events"] = event_list

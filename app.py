@@ -1,4 +1,4 @@
-'''
+"""
 Written by: Group 404
 For COMP9900 Project 7 Event Management System
 
@@ -16,8 +16,9 @@ This file performs the below in order:
 To run the applicaiton:
 $ flask run
 
-'''
-# import third part libraries 
+"""
+
+# import third party libraries 
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
@@ -54,7 +55,7 @@ from api.my_tickets import MyTickets
 databaseTables = db_main()
 
 # Create a Flask object and define api as the main entry point for the application
-app = Flask(__name__, static_url_path='', static_folder='frontend/build')
+app = Flask(__name__, static_url_path="", static_folder="frontend/build")
 
 # Since we are not deploying we need to have CORS
 CORS(app, supports_credentials=True)
@@ -63,19 +64,19 @@ CORS(app, supports_credentials=True)
 api = Api(app)
 
 # Matches URLs to resources defined in api folder
-api.add_resource(Register, '/register')
-api.add_resource(Login, '/login')
-api.add_resource(Events, '/events')
-api.add_resource(Event, '/event')
-api.add_resource(Create, '/create')
-api.add_resource(User, '/user', endpoint='user')
-api.add_resource(UserDetails, '/user/details')
-api.add_resource(UserSensitiveDetails, '/user/sensitive_details')
-api.add_resource(UserChangePassword, '/user/login_credentials')
-api.add_resource(BuyTickets, '/buytickets')
-api.add_resource(MyTickets, '/mytickets')
-api.add_resource(Filter, '/filter')
-api.add_resource(SearchEvent, '/event/search')
-# api.add_resource(Follow, '/follow')
-# api.add_resource(WatchedEvents, '/watchedevents')
-# api.add_resource(MyWatchlist, '/mywatchlist')
+api.add_resource(Register, "/register")
+api.add_resource(Login, "/login")
+api.add_resource(Events, "/events")
+api.add_resource(Event, "/event")
+api.add_resource(Create, "/create")
+api.add_resource(User, "/user", endpoint="user")
+api.add_resource(UserDetails, "/user/details")
+api.add_resource(UserSensitiveDetails, "/user/sensitive_details")
+api.add_resource(UserChangePassword, "/user/login_credentials")
+api.add_resource(BuyTickets, "/buytickets")
+api.add_resource(MyTickets, "/mytickets")
+api.add_resource(Filter, "/filter")
+api.add_resource(SearchEvent, "/event/search")
+# api.add_resource(Follow, "/follow")
+# api.add_resource(WatchedEvents, "/watchedevents")
+# api.add_resource(MyWatchlist, "/mywatchlist")

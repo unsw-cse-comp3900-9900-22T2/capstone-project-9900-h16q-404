@@ -12,7 +12,7 @@ from db.db_users import UsersDB
 
 
 class Register(Resource):
-    def post(self): 
+    def post(self):
 
         # parse request
         parser = reqparse.RequestParser()
@@ -42,7 +42,7 @@ class Register(Resource):
         else:
             final_ret = {
                 "status": "Success", 
-                "message": "new user registerd with id = " +str(new_id)
+                "message": "new user registerd with id = " + str(new_id)
             }
 
         return final_ret

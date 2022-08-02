@@ -32,7 +32,7 @@ class BuyTickets(Resource):
         if len(result["result"]) == 0:
             return {
                 "resultStatus": "ERROR",
-                "message": "no tickets for this event exist"
+                "message": "no tickets for this event exist",
             }
 
         return {"resultStatus": "SUCCESS", "message": result}
@@ -80,7 +80,7 @@ class BuyTickets(Resource):
         else:
             return {
                 "resultStatus": "SUCCESS",
-                "message": "Tickets successfully unreserved"
+                "message": "Tickets successfully unreserved",
             }
 
     def parse_request(self):
