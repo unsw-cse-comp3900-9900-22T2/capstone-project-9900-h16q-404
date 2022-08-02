@@ -32,7 +32,7 @@ class TicketsDB:
         tickets_query = db.select([self.temp_db.tickets]).where(
             and_(
                 self.temp_db.tickets.c.event_id == event_id,
-                self.temp_db.tickets.c.purchased is False,
+                self.temp_db.tickets.c.purchased == False,
             )
         )
         result = self.temp_db.engine.execute(tickets_query)
@@ -43,7 +43,7 @@ class TicketsDB:
         user_tickets_query = db.select([self.temp_db.tickets]).where(
             and_(
                 self.temp_db.tickets.c.user_id == user_id,
-                self.temp_db.tickets.c.purchased is True,
+                self.temp_db.tickets.c.purchased == True,
             )
         )
         result = self.temp_db.engine.execute(user_tickets_query)

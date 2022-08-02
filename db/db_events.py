@@ -67,13 +67,15 @@ class EventsDB:
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events
         # table
+
         query = db.select([self.temp_db.events]).where(
-            self.temp_db.events.c.deleted is False
+            self.temp_db.events.c.deleted == False
         )
 
         try:
             result = self.temp_db.engine.execute(query)
             result = {"result": [dict(row) for row in result]}
+            
             for i in range(len(result["result"])):
                 result["result"][i]["start_date"] = str(
                     result["result"][i]["start_date"]

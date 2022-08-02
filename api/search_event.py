@@ -26,6 +26,8 @@ class SearchEvent(Resource):
         events_db = EventsDB()
 
         allEvents = events_db.select_all_events()
+        print(allEvents)
+        print('******')
         result = []
 
         if len(searchTerms) > 0:

@@ -29,7 +29,7 @@ class FilterDB:
         query = db.select([self.temp_db.events]).where(
             and_(
                 self.temp_db.events.c.type == type,
-                self.temp_db.events.c.deleted is False,
+                self.temp_db.events.c.deleted == False,
             )
         )
         try:

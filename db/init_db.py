@@ -163,7 +163,7 @@ class InitDB:
     def insert_users(self, data, dummy):
 
         # check for row with existing primary key
-        insert_bool = self.insert_check(data)
+        insert_bool = self.insert_check_users(data)
 
         # if no row exists with current primary key add new row
         if insert_bool is True:
@@ -186,7 +186,7 @@ class InitDB:
         # But first the function checks if a row with the same ID aleady exists
 
         # check for row with existing primary key
-        insert_bool = self.insert_check(data)
+        insert_bool = self.insert_check_events(data)
 
         # if no row exists with current primary key add new row
         if insert_bool is True:
@@ -339,9 +339,21 @@ class InitDB:
         result = {"result": [dict(row) for row in result]}
         return result["result"]
 
-    def insert_check(self, data):
+    def insert_check_users(self, data):
 
         check_query = db.select([self.users]).where(self.users.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = {"result": [dict(row) for row in check_result]}
+
+        insert_bool = True
+        for i in range(len(check_result["result"])):
+            if data["id"] == (check_result["result"][i]["id"]):
+                insert_bool = False
+        return insert_bool
+
+    def insert_check_events(self, data):
+
+        check_query = db.select([self.events]).where(self.events.c.id == data["id"])
         check_result = self.engine.execute(check_query)
         check_result = {"result": [dict(row) for row in check_result]}
 

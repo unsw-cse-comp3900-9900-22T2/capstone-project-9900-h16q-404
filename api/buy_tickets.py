@@ -10,7 +10,7 @@ import logging
 # import custom classes used to interact with the DB
 from db.db_tickets import TicketsDB
 from db.db_token_handler import TokenHandlerDB
-from exceptions import DatabaseExecutionError
+from api.exceptions import DatabaseExecutionError
 
 # import third party libaries
 from flask_restful import Resource, reqparse
