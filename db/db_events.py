@@ -43,14 +43,8 @@ class EventsDB:
         # This functions searches for events with id as event_id and returns a list of all events
         query = db.select([self.temp_db.events]).where(self.temp_db.events.c.id == event_id)
         
-        try:
-            result = self.temp_db.engine.execute(query)
-            result = ({'result': [dict(row) for row in result]})
-            result = self.convert_date_time_to_string(result)
-            return result["result"]
-
-        except IntegrityError as e:
-            return (400, "could not find event")
+        result = self.run_query(query)
+        return result
 
     def select_events_hostid(self, host_id):
         # This functions searches for events with event_name as event_name and returns a list of all events
@@ -61,14 +55,8 @@ class EventsDB:
                 )
             )
         
-        try:
-            result = self.temp_db.engine.execute(query)
-            result = ({'result': [dict(row) for row in result]})
-            result = self.convert_date_time_to_string(result)
-            return result["result"]
-        
-        except IntegrityError as e:
-            return (400, "could not find event")
+        result = self.run_query(query)
+        return result 
 
     def select_all_events(self):
         # This funtion currently returns a list of all the rows of the events table
@@ -239,6 +227,16 @@ class EventsDB:
             return ("Error finding event " + event_name + " in events table")
 
 # Helper functions
+
+    def run_query(self, query):
+        try:
+            result = self.temp_db.engine.execute(query)
+            result = {'result': [dict(row) for row in result]}
+            result = self.convert_date_time_to_string(result)
+            return result["result"]
+
+        except IntegrityError as e:
+            return (400, "could not find event")
 
     def get_new_event_id(self):
         # returns the highest id in the user table plus 1

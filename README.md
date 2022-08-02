@@ -1,8 +1,6 @@
 # capstone-project-9900-h16q-404
 capstone-project-9900-h16q-404 created by GitHub Classroom
 
-# Event Management System
-
 ## Group Name: 9900-H16Q-404
 
 Group Members:
@@ -18,7 +16,7 @@ Ganashram Jayaraman (z3228822, z3228822@ad.unsw.edu.au)
 
 // TODO: Add the installation of python, nodejs, pip, etc
 
-# How to run application:
+## How to run application
 
 Clone Repo:
 
