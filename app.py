@@ -53,6 +53,7 @@ from api.watched_events import WatchedEvents
 
 # import the reviews-based classes
 from api.reviews import Reviews
+from api.host_replies import HostReplies
 
 # import third party libraries
 from flask import Flask
@@ -90,3 +91,4 @@ api.add_resource(Follow, "/follow")
 api.add_resource(MyWatchlist, "/mywatchlist")
 api.add_resource(WatchedEvents, "/watchedevents")
 api.add_resource(Reviews, '/reviews')
+api.add_resource(HostReplies, '/hostreplies')

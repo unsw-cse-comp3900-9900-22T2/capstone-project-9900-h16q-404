@@ -212,3 +212,17 @@ class ReviewsDB:
             return result["result"]
         except IntegrityError as e:
             return (400, "could not find event")
+
+    def update_user_reviews(self, params, userId, eventId):
+        
+        update_query = self.temp_db.reviews.update().values(params).where(
+            and_(
+                self.temp_db.reviews.c.userId == userId,
+                self.temp_db.reviews.c.eventId == eventId
+                )
+            )
+        
+        try:
+            return self.temp_db.engine.execute(update_query)
+        except:
+            return -1
