@@ -32,7 +32,7 @@ const InputModal = () => {
           if (response.data.status != 'Error') {
             message.success("Broadcast sent.")
           } else {
-            message.error("Email sending failed from server...")
+            message.error("Email sending failed from server...")   
           }
         })
         .catch((error) => {
