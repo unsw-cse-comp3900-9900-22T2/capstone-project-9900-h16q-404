@@ -2,25 +2,22 @@
 Written by: Group 404
 For COMP9900 Project 7 Event Management System
 
-This file defines the InitDB class which currently contains all of the DB initialisation and 
+This file defines the InitDB class which currently contains all of the DB initialisation and
 querying functions
 
-This file also has a main function, which when called creates an InitDB class and runs the 
-fill_with_dummy_data function. This function reads dummy data from a csv and inserts it into 
+This file also has a main function, which when called creates an InitDB class and runs the
+fill_with_dummy_data function. This function reads dummy data from a csv and inserts it into
 the database.
 """
 
 import datetime
-import json
-from asyncio import events
 
 import pandas as pd
 import sqlalchemy as db
-from flask import jsonify
-from requests import delete
-from sqlalchemy import ForeignKey, and_, func, null, select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import ForeignKey, and_
 
+import logging
+logger = logging.getLogger(__name__)
 
 # InitDB class
 class InitDB:
@@ -138,7 +135,7 @@ class InitDB:
                 "bronze_price": row.bronze_price,
             }
             result = self.insert_events(data)
-            if result == None or result == -1:
+            if result is None or result == -1:
                 print(data["event_name"] + " Not Added")
             else:
                 print("Added new event with ID = " + str(result))
@@ -157,7 +154,7 @@ class InitDB:
                 "phone": "",
                 "vaccinated": row.vac,
             }
-            new_id = self.insert_users(data, True)
+            self.insert_users(data, True)
 
     def insert_users(self, data, dummy):
 
@@ -165,12 +162,13 @@ class InitDB:
         insert_bool = self.insert_check(data)
 
         # if no row exists with current primary key add new row
-        if insert_bool == True:
-            if dummy == True:
+        if insert_bool is True:
+            if dummy is True:
                 query = db.insert(self.users).values([data])
             try:
                 return self.engine.execute(query).inserted_primary_key
-            except:
+            except DatabaseExecutionError as e:
+                logger.exception(e)
                 return -1
         else:
             print(
@@ -187,7 +185,7 @@ class InitDB:
         insert_bool = self.insert_check(data)
 
         # if no row exists with current primary key add new row
-        if insert_bool == True:
+        if insert_bool is True:
             query = db.insert(self.events).values(
                 id=data["id"],
                 event_name=data["event_name"],
@@ -214,7 +212,8 @@ class InitDB:
                 result = self.engine.execute(query).inserted_primary_key
                 self.pre_fill_tickets(data)
                 return result
-            except:
+            except DatabaseExecutionError as e:
+                logger.exception(e)
                 return -1
         else:
             print(
@@ -238,19 +237,22 @@ class InitDB:
                 purchased=False,
                 ticket_price=price,
             )
-            result = self.engine.execute(query).inserted_primary_key
+            try:
+                self.engine.execute(query).inserted_primary_key
+            except DatabaseExecutionError as e:
+                logger.exception(e)
 
     def get_max_ticket_id(self):
         # returns the highest id in the tickets table plus 1
         query_max_id = db.select([db.func.max(self.tickets.columns.id)])
         max_id = self.engine.execute(query_max_id).scalar()
-        if max_id == None:
+        if max_id is None:
             max_id = 0
         return max_id + 1
 
     def select_all_tickets(self, user_id):
         user_tickets_query = db.select([self.tickets]).where(
-            and_(self.tickets.c.user_id == user_id, self.tickets.c.purchased == True)
+            and_(self.tickets.c.user_id == user_id, self.tickets.c.purchased is True)
         )
         result = self.engine.execute(user_tickets_query)
         result = {"result": [dict(row) for row in result]}
@@ -269,7 +271,7 @@ class InitDB:
         # returns the highest id in the tickets table plus 1
         query_max_id = db.select([db.func.max(self.watchlist.columns.id)])
         max_id = self.engine.execute(query_max_id).scalar()
-        if max_id == None:
+        if max_id is None:
             max_id = 0
         return max_id + 1
 
@@ -291,7 +293,7 @@ class InitDB:
 
     def add_follower(self, follower_id, following_id):
 
-        if self.check_follower(follower_id, following_id) == False:
+        if self.check_follower(follower_id, following_id) is False:
             try:
                 query = db.insert(self.watchlist).values(
                     id=self.get_max_watchlist_id(),
@@ -300,14 +302,15 @@ class InitDB:
                 )
                 self.engine.execute(query).inserted_primary_key
                 return "Success: Added to watchlist"
-            except:
+            except DatabaseExecutionError as e:
+                logger.exception(e)
                 return "ERROR: Could not add to watchlist"
         else:
             return "ERROR: Already a follower"
 
     def delete_follower(self, follower_id, following_id):
 
-        if self.check_follower(follower_id, following_id) == True:
+        if self.check_follower(follower_id, following_id) is True:
             try:
                 delete_follower_query = db.delete(self.watchlist).where(
                     and_(
@@ -315,9 +318,10 @@ class InitDB:
                         self.watchlist.c.following == following_id,
                     )
                 )
-                result = self.engine.execute(delete_follower_query)
+                self.engine.execute(delete_follower_query)
                 return "Success"
-            except:
+            except DatabaseExecutionError as e:
+                logger.exception(e)
                 return "ERROR: Could not remove from watchlist"
         else:
             return "ERROR: You do not follow this user"
@@ -343,6 +347,9 @@ class InitDB:
                 insert_bool = False
         return insert_bool
 
+class DatabaseExecutionError(Exception):
+    """Raised when a query applied to a database fails"""
+    pass
 
 # The main function creates an InitDB class and then calls the fill_with_dummy_data method
 def db_main():
