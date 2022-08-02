@@ -30,7 +30,10 @@ class BuyTickets(Resource):
         result = temp_db.select_tickets_event_id(event_id)
 
         if len(result["result"]) == 0:
-            return {"resultStatus": "ERROR", "message": "no tickets for this event exist"}
+            return {
+                "resultStatus": "ERROR",
+                "message": "no tickets for this event exist"
+            }
 
         return {"resultStatus": "SUCCESS", "message": result}
 
@@ -51,7 +54,7 @@ class BuyTickets(Resource):
             except:
                 failed.append(i)
         if len(failed) > 0:
-            return{"resultStatus": "ERROR", "message": failed}
+            return {"resultStatus": "ERROR", "message": failed}
         else:
             return {"resultStatus": "SUCCESS", "message": "Tickets successfully booked"}
 
@@ -73,9 +76,12 @@ class BuyTickets(Resource):
                 failed.append(i)
 
         if len(failed) > 0:
-            return{"resultStatus": "ERROR", "message": failed}
+            return {"resultStatus": "ERROR", "message": failed}
         else:
-            return {"resultStatus": "SUCCESS","message": "Tickets successfully unreserved"}
+            return {
+                "resultStatus": "SUCCESS",
+                "message": "Tickets successfully unreserved"
+            }
 
     def parse_request(self):
 
