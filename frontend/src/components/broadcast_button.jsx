@@ -28,7 +28,7 @@ const InputModal = () => {
             msg : word }
         )
         .then((response) => {
-          console.log("broadcast success.\n");
+          console.log(response.data);
           if (response.data.status != 'Error') {
             message.success("Broadcast sent.")
           } else {
