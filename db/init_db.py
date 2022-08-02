@@ -114,6 +114,13 @@ class InitDB:
             db.Column('eventType', db.Text(), nullable=True)
         )
 
+        # define the broadcast table
+        self.broadcast = db.Table('broadcast', self.metadata,
+            db.Column('id', db.Integer(), primary_key=True),
+            db.Column('eventId', db.Integer(), ForeignKey('events.id'), nullable=False),
+            db.Column('message', db.Text(), nullable=False)
+        )
+
         # create all objects in the metadata object
         self.metadata.create_all(self.engine, checkfirst=True)
 

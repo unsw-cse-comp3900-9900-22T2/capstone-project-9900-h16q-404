@@ -59,6 +59,9 @@ from api.host_replies import HostReplies
 from api.event_ratings import EventRatings
 from api.user_ratings import UserRatings
 
+# import the broadcast class
+from api.broadcast import Broadcast
+
 # import third party libraries
 from flask import Flask
 from flask_restful import Api
@@ -98,3 +101,4 @@ api.add_resource(Reviews, '/reviews')
 api.add_resource(HostReplies, '/hostreplies')
 api.add_resource(EventRatings, '/eventratings')
 api.add_resource(UserRatings, '/userratings')
+api.add_resource(Broadcast, '/broadcast')
