@@ -57,7 +57,7 @@ class EventsDB:
         query = db.select([self.temp_db.events]).where(
             and_(
                 self.temp_db.events.c.host == host_id,
-                self.temp_db.events.c.deleted is False,
+                self.temp_db.events.c.deleted == False,
             )
         )
 
