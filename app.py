@@ -44,6 +44,9 @@ from api.search_event import SearchEvent
 from api.buy_tickets import BuyTickets
 from api.my_tickets import MyTickets
 
+# import the follow-based classes
+from api.follow import Follow
+
 # import third party libraries
 from flask import Flask
 from flask_restful import Api
@@ -76,6 +79,6 @@ api.add_resource(BuyTickets, "/buytickets")
 api.add_resource(MyTickets, "/mytickets")
 api.add_resource(Filter, "/filter")
 api.add_resource(SearchEvent, "/event/search")
-# api.add_resource(Follow, "/follow")
+api.add_resource(Follow, "/follow")
 # api.add_resource(WatchedEvents, "/watchedevents")
 # api.add_resource(MyWatchlist, "/mywatchlist")
