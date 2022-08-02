@@ -42,6 +42,9 @@ class UserDetails(Resource):
 
         if "phone" in getRequest:
             user_details_params["phone"] = request.json["phone"]
+        
+        if "image" in getRequest:
+            user_details_params["image"] = request.json["image"]
 
         if user_details_params:
             update_status = users_db.update_user_details(

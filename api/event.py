@@ -40,7 +40,7 @@ class Event(Resource):
 
         # parse request
         parser = reqparse.RequestParser()
-        parser.add_argument("token", type=str)
+        parser.add_argument("token", type=str, location='headers')
         parser.add_argument("detail", type=dict)
         parser.add_argument("event_id", type=str)
         args = parser.parse_args()

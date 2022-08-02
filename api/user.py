@@ -47,6 +47,7 @@ class User(Resource):
         result_dict["gender"] = user_record[0][8]
         result_dict["phone"] = user_record[0][9]
         result_dict["vac"] = user_record[0][10]
+        result_dict["image"] = user_record[0][11]
 
         # Get events hosted by this user
         result_dict["events"] = []
