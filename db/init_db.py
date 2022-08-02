@@ -18,7 +18,7 @@ import pandas as pd
 import sqlalchemy as db
 from flask import jsonify
 from requests import delete
-from sqlalchemy import ForeignKey, null, select, and_, func
+from sqlalchemy import ForeignKey, and_, func, null, select
 from sqlalchemy.exc import IntegrityError
 
 
