@@ -9,10 +9,10 @@ Functions:
 """
 
 # import third party libaries
+import logging
 import sqlalchemy as db
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
-import logging
 
 logger = logging.getLogger(__name__)
 

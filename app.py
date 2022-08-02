@@ -18,11 +18,6 @@ $ flask run
 
 """
 
-# import third party libraries
-from flask import Flask
-from flask_restful import Api
-from flask_cors import CORS
-
 # import database class
 from db.init_db import db_main
 
@@ -48,6 +43,11 @@ from api.search_event import SearchEvent
 # import the tickets-based classes
 from api.buy_tickets import BuyTickets
 from api.my_tickets import MyTickets
+
+# import third party libraries
+from flask import Flask
+from flask_restful import Api
+from flask_cors import CORS
 
 
 # Run db_main() in the init_db.py file to create the DB and fill it with data

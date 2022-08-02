@@ -18,7 +18,9 @@ Functions:
 - select_events_hostid
 - flatten_details
 """
-
+# import custom classes used to interact with the DB
+from db.db_tickets import TicketsDB
+from db.db_token_handler import TokenHandlerDB
 
 # import third party libraries
 import sqlalchemy as db
@@ -28,12 +30,8 @@ from sqlalchemy.exc import IntegrityError
 import pandas as pd
 import logging
 
-# import custom classes used to interact with the DB
-from db.db_tickets import TicketsDB
-from db.db_token_handler import TokenHandlerDB
-
-
 logger = logging.getLogger(__name__)
+
 
 class EventsDB:
     def __init__(self):

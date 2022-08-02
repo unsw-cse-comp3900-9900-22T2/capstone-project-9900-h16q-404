@@ -4,8 +4,7 @@ Written by: Group 404
 This file handles the API requests for getting ticket information, reserving tickets and unreserving tickets
 
 """
-# import third party libaries
-from flask_restful import Resource, reqparse
+
 import logging
 
 # import custom classes used to interact with the DB
@@ -13,7 +12,11 @@ from db.db_tickets import TicketsDB
 from db.db_token_handler import TokenHandlerDB
 from exceptions import DatabaseExecutionError
 
+# import third party libaries
+from flask_restful import Resource, reqparse
+
 logger = logging.getLogger(__name__)
+
 
 class BuyTickets(Resource):
     def get(self):

@@ -15,9 +15,9 @@ Functions:
 """
 
 # import third party libaries
+import json
 import sqlalchemy as db
 from sqlalchemy import and_
-import json
 
 
 class TicketsDB:

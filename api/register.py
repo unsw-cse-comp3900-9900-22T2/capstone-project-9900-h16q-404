@@ -4,11 +4,12 @@ Written by: Group 404
 This file handles all API requests for registering a user
 
 """
-# import third party libaries
-from flask_restful import Resource, reqparse
 
 # import custom classes used to interact with the DB
 from db.db_users import UsersDB
+
+# import third party libaries
+from flask_restful import Resource, reqparse
 
 
 class Register(Resource):
