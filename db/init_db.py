@@ -17,7 +17,6 @@ import pandas as pd
 import sqlalchemy as db
 from sqlalchemy import ForeignKey, and_
 
-
 logger = logging.getLogger(__name__)
 
 
