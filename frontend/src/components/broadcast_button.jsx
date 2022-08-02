@@ -27,9 +27,13 @@ const InputModal = () => {
           { eventId: params.get("event_id"), 
             msg : word }
         )
-        .then(() => {
+        .then((response) => {
           console.log("broadcast success.\n");
-          message.success("Broadcast sent.");
+          if (response.data.status != 'Error') {
+            message.success("Broadcast sent.")
+          } else {
+            message.error("Email sending failed from server...")
+          }
         })
         .catch((error) => {
           console.log(error);
