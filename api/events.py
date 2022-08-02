@@ -1,9 +1,9 @@
-'''
+"""
 Written by: Group 404
 
 This file handles the API requests for returning all events 
 
-'''
+"""
 # import third party libraries
 from flask_restful import Resource
 
@@ -19,6 +19,6 @@ class Events(Resource):
         result = events_db.select_all_events()
 
         return {
-            'resultStatus': 'SUCCESS',
-            'message': result
+            "resultStatus": "SUCCESS",
+            "message": result
         }

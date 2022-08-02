@@ -1,9 +1,9 @@
-'''
+"""
 Written by: Group 404
 
 This file handles the API requests for editing user login information
 
-'''
+"""
 # import third party libraries
 from flask_restful import Resource
 from flask import request
@@ -18,8 +18,8 @@ class UserChangePassword(Resource):
 
         # parse request
         getRequest = request.json
-        if ('token' in getRequest):
-            user_token = request.json['token']
+        if ("token" in getRequest):
+            user_token = request.json["token"]
         else:
             return {"status": "Error", "message": "User Token was not Sent"}
 
@@ -33,8 +33,8 @@ class UserChangePassword(Resource):
             return {"status": "Error", "message": "User does not exists"}
 
         # Yunran: Please include check old password here
-        if ('old_password' in getRequest):
-            old_password = request.json['old_password']
+        if ("old_password" in getRequest):
+            old_password = request.json["old_password"]
         else:
             return {"status": "Error", "message": "User Old Password was not Sent"}
         
@@ -45,11 +45,11 @@ class UserChangePassword(Resource):
         
         user_details_params = {}
         
-        if ('new_email' in getRequest):
-            user_details_params['email'] = request.json['new_email']
+        if ("new_email" in getRequest):
+            user_details_params["email"] = request.json["new_email"]
         
-        if ('new_password' in getRequest):
-            user_details_params['password'] = request.json['new_password']
+        if ("new_password" in getRequest):
+            user_details_params["password"] = request.json["new_password"]
         
         if user_details_params:
             update_status = users_db.update_user_details(user_details_params, user_token)
@@ -60,6 +60,6 @@ class UserChangePassword(Resource):
             return {"status": "Error", "message": "Update Failed! Try Again!"}
         
         return {
-            'resultStatus': 'SUCCESS',
-            'message': "User Password Successfully Reset!"
+            "resultStatus": "SUCCESS",
+            "message": "User Password Successfully Reset!"
         }

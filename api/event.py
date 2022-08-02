@@ -1,9 +1,9 @@
-'''
+"""
 Written by: Group 404
 
 This file handles the API requests for getting, editing and deleting event information
 
-'''
+"""
 # import third party libraries
 from flask_restful import Resource, reqparse
 
@@ -27,34 +27,34 @@ class Event(Resource):
         else:
             # if neither event_id or event_name provided return error
             return {
-            'resultStatus': 'Error',
-            'message': 'Both event ID and event name were not supplied, please supply one'
+                "resultStatus": "Error",
+                "message": "Both event ID and event name were not supplied, please supply one"
             }
 
         if not result:
             return {
-            'resultStatus': 'ERROR',
-            'message': 'event not found'
-        }
+                "resultStatus": "ERROR",
+                "message": "event not found"
+            }
 
         # finally return result
         return {
-            'resultStatus': 'SUCCESS',
-            'event_details': result
+            "resultStatus": "SUCCESS",
+            "event_details": result
         }
 
     def put(self):
 
         # parse request
         parser = reqparse.RequestParser()
-        parser.add_argument('token', type=str)
-        parser.add_argument('detail', type=dict)
-        parser.add_argument('event_id', type=str)
+        parser.add_argument("token", type=str)
+        parser.add_argument("detail", type=dict)
+        parser.add_argument("event_id", type=str)
         args = parser.parse_args()
 
-        token = args['token']
-        event_details = args['detail']
-        event_id = args['event_id']
+        token = args["token"]
+        event_details = args["detail"]
+        event_id = args["event_id"]
 
         # create db engine
         events_db = EventsDB()
@@ -62,11 +62,11 @@ class Event(Resource):
         result = events_db.update_event(event_id, event_details, token)
         if result == True:
             return {
-            'resultStatus': 'SUCCESS',
+            "resultStatus": "SUCCESS",
             }
         else:
             return {
-            'resultStatus': 'ERROR',
+            "resultStatus": "ERROR",
             } 
 
     def delete(self):
@@ -84,32 +84,32 @@ class Event(Resource):
         else:
             # if neither event_id or event_name provided return error
             return {
-            'resultStatus': 'Error',
-            'message': 'Both event ID and event name were not supplied, please supply one'
+            "resultStatus": "Error",
+            "message": "Both event ID and event name were not supplied, please supply one"
             }
 
         if result == True:
         # If result is True, return SUCCESS and event details
             return {
-                'resultStatus': 'SUCCESS',
-                'event': event_details,
-                'message': 'event deleted'
+                "resultStatus": "SUCCESS",
+                "event": event_details,
+                "message": "event deleted"
             }
 
         if "Error" in result:
         # if result != True, return ERROR and error message
             return {
-                'resultStatus': 'ERROR',
-                'message': result
+                "resultStatus": "ERROR",
+                "message": result
             }
 
     def parse_get_delete(self):
         # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
-        parser.add_argument('event_id', type=int, location="args")
+        parser.add_argument("event_id", type=int, location="args")
         args = parser.parse_args()
 
         # assign variables
-        event_id = args['event_id']
+        event_id = args["event_id"]
 
         return event_id

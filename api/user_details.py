@@ -1,9 +1,9 @@
-'''
+"""
 Written by: Group 404
 
 This file handles the API requests for editing user details
 
-'''
+"""
 # import third party libraries
 from flask_restful import Resource
 from flask import request
@@ -18,8 +18,8 @@ class UserDetails(Resource):
 
         # parse request
         getRequest = request.json
-        if ('token' in getRequest):
-            user_token = request.json['token']
+        if ("token" in getRequest):
+            user_token = request.json["token"]
         else:
             return {"status": "Error", "message": "User Token was not Sent"}
 
@@ -34,14 +34,14 @@ class UserDetails(Resource):
 
         user_details_params = {}
 
-        if ('firstName' in getRequest):
-            user_details_params['firstName'] = request.json['firstName']
+        if ("firstName" in getRequest):
+            user_details_params["firstName"] = request.json["firstName"]
 
-        if ('lastName' in getRequest):
-            user_details_params['lastName'] = request.json['lastName']
+        if ("lastName" in getRequest):
+            user_details_params["lastName"] = request.json["lastName"]
 
-        if ('phone' in getRequest):
-            user_details_params['phone'] = request.json['phone']
+        if ("phone" in getRequest):
+            user_details_params["phone"] = request.json["phone"]
 
         if user_details_params:
             update_status = users_db.update_user_details(user_details_params, user_token)
@@ -51,6 +51,6 @@ class UserDetails(Resource):
         if (update_status == -1):
             return {"status": "Error", "message": "Update Failed! Try Again!"}
         return {
-            'resultStatus': 'SUCCESS',
-            'message': "User Details Updated!"
+            "resultStatus": "SUCCESS",
+            "message": "User Details Updated!"
         }

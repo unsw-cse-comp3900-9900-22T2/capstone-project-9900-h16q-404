@@ -1,9 +1,9 @@
-'''
+"""
 Written by: Group 404
 
 This file handles the API requests for editing sensitive user details
 
-'''
+"""
 # import third party libraries
 from flask_restful import Resource
 from flask import request
@@ -19,8 +19,8 @@ class UserSensitiveDetails(Resource):
 
         # parse request
         getRequest = request.json
-        if ('token' in getRequest):
-            user_token = request.json['token']
+        if ("token" in getRequest):
+            user_token = request.json["token"]
         else:
             return {"status": "Error", "message": "User Token was not Sent"}
 
@@ -35,15 +35,15 @@ class UserSensitiveDetails(Resource):
         
         user_details_params = {}
         
-        if ('dateOfBirth' in getRequest):
-            dob = datetime.strptime(request.json['dateOfBirth'], '%Y-%m-%d')
-            user_details_params['dateOfBirth'] = dob
+        if ("dateOfBirth" in getRequest):
+            dob = datetime.strptime(request.json["dateOfBirth"], "%Y-%m-%d")
+            user_details_params["dateOfBirth"] = dob
         
-        if ('gender' in getRequest):
-            user_details_params['gender'] = request.json['gender']
+        if ("gender" in getRequest):
+            user_details_params["gender"] = request.json["gender"]
         
-        if ('vaccinated' in getRequest):
-            user_details_params['vaccinated'] = request.json['vaccinated']
+        if ("vaccinated" in getRequest):
+            user_details_params["vaccinated"] = request.json["vaccinated"]
         
         if user_details_params:
             update_status = user_db.update_user_details(user_details_params, user_token)
@@ -54,6 +54,6 @@ class UserSensitiveDetails(Resource):
             return {"status": "Error", "message": "Update Failed! Try Again!"}
         
         return {
-            'resultStatus': 'SUCCESS',
-            'message': "Sensitive Details Updated!"
+            "resultStatus": "SUCCESS",
+            "message": "Sensitive Details Updated!"
         }
