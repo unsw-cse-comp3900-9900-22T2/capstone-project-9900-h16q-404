@@ -51,6 +51,9 @@ from api.follow import Follow
 from api.my_watchlist import MyWatchlist
 from api.watched_events import WatchedEvents
 
+# import the reviews-based classes
+from api.reviews import Reviews
+
 # import third party libraries
 from flask import Flask
 from flask_restful import Api
@@ -86,3 +89,4 @@ api.add_resource(SearchEvent, "/event/search")
 api.add_resource(Follow, "/follow")
 api.add_resource(MyWatchlist, "/mywatchlist")
 api.add_resource(WatchedEvents, "/watchedevents")
+api.add_resource(Reviews, '/reviews')

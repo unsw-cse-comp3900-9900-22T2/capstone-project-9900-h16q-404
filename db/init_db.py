@@ -73,6 +73,7 @@ class InitDB:
             db.Column("vaccinated", db.Boolean(), nullable=True),
         )
 
+        # define the tickets table
         self.tickets = db.Table(
             "tickets",
             self.metadata,
@@ -88,6 +89,7 @@ class InitDB:
             db.Column("ticket_price", db.String(16), nullable=False),
         )
 
+        # define the watchlist table
         self.watchlist = db.Table(
             "watchlist",
             self.metadata,
@@ -96,6 +98,20 @@ class InitDB:
             db.Column(
                 "following", db.Integer(), ForeignKey("users.id"), nullable=False
             ),
+        )
+
+        # define the reviews table
+        self.reviews = db.Table('reviews', self.metadata,
+            db.Column('id', db.Integer(), primary_key=True),
+            db.Column('eventId', db.Integer(), ForeignKey('events.id'), nullable=False),
+            db.Column('userId', db.Integer(), ForeignKey('users.id'), nullable=False),
+            db.Column('reviewTimeStamp', db.DateTime(), nullable=False),
+            db.Column('review', db.Text(), nullable=False),
+            db.Column('rating', db.Integer(), nullable=True),
+            db.Column('replyTimeStamp', db.DateTime(), nullable=True),
+            db.Column('reply', db.Text(), nullable=True),
+            db.Column('host', db.Text(), nullable=True),
+            db.Column('eventType', db.Text(), nullable=True)
         )
 
         # create all objects in the metadata object
