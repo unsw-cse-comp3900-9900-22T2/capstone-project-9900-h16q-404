@@ -42,7 +42,7 @@ const LoginForm = () => {
         else{
           //console.log(JSON.stringify(res.data))
           localStorage.setItem('username', info.email);
-          localStorage.setItem('token', info.email);
+          localStorage.setItem('token', info.token);
           localStorage.setItem('userId', info.userId);
           message.success("Login Successful!",2)
             .then(navigate('/'));

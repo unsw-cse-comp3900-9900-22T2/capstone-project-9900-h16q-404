@@ -120,6 +120,7 @@ class Login(Resource):
         user_record = temp_db.get_user_record_byname(request_username)
         result_dict = {}
         result_dict['userId'] = user_record[0][0]
+        result_dict['token'] = user_record[0][3]
         result_dict['email'] = user_record[0][4]
         result_dict['firstname'] = user_record[0][5]
         result_dict['lastname'] = user_record[0][6]
