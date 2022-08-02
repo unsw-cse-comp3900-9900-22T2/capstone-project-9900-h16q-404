@@ -1000,9 +1000,10 @@ class InitDB:
         
         try:
             result = self.engine.execute(user_ticket_query)
-            result = ({'result': [dict(row) for row in result]})
+            result = ({'result': [dict(row) for row in result if row["user_id"] != None]})
             
             for i in range(len(result['result'])):
+                
                 userid_with_tickets.add(result["result"][i]['user_id'])
             
             return userid_with_tickets
