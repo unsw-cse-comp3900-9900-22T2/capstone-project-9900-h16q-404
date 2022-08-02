@@ -5,6 +5,7 @@ import { Col, Row, Statistic, Button, Divider, message } from 'antd';
 import axios from 'axios'
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import BroadCast from '../components/broadcast_button';
 import ReviewList from '../components/review_list';
 import PastEventBuyTicketMask from '../components/past_event_buy_ticket_mask';
 import moment from 'moment'
@@ -209,14 +210,18 @@ export default function EventPage () {
 
 					{eventFinished ? <PastEventBuyTicketMask/> :<TicketBar/>}
 					
-					{ eventInfo.host === parseInt(localStorage.getItem("userId")) ? <>
-					<Divider orientation='left'>Actions</Divider>
-					<Button>Send Message</Button>
-					<Button href={'/editevent/'+ searchParams.get("event_id")}>Edit Event</Button>
-					<Button onClick={deleteConfirm}>
-						Delete
-					</Button>
- 					</> : null}
+					{ 
+					eventInfo.host === parseInt(localStorage.getItem("userId")) ? 
+						<>
+							<Divider orientation='left'>Actions</Divider>
+							<BroadCast />
+							<Button href={'/editevent/'+ searchParams.get("event_id")}>Edit Event</Button>
+							<Button onClick={deleteConfirm}>
+								Delete
+							</Button>
+						</> 
+					: null
+					}
 
 				{
 					eventFinished ? <ReviewList eventId={eventInfo.id} isEventHost={(eventInfo.host === parseInt(localStorage.getItem("userId")) ? true : false)} /> : null 

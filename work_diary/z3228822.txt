@@ -9,3 +9,26 @@ I worked on the system architecture diagram for the proposal; choosing the funct
 
 Week4:
 I developed the relational model for the project. The result was a set of ER diagrams and a SQL schema for the data model.
+
+Week5:
+I implemented the backend code for updating user profile pages: update user details, update sensitive details and update login credentials.
+
+Week6:
+I had two interviews in the week so couldn't any work until thursday. Then, over the weekend I worked on the backend for user profile page to return the list of
+events the user had hosted whenever the user loads his profile page.
+
+Week7:
+I implemented the backend code for search event and filter events functionality.
+
+Week8:
+I worked on the backend for user reviews and host replies feature. I created the reviews table, filled with dummy tables and then implemented get, post, patch and '
+delete requests for user reviews and patch for host replies. Also generated flags such as isHost, hasTicket for the front end to check state.
+
+Week9:
+I worked on the backend for broadcast email and user ratings feature. I explored the Sendgrid API, setup account, created API and added it to .env file. Then implemented
+the backend code to get the email addresses of users who had ticket to a event and then sent them email through sendgrid api. Further, implemented the backend for
+user ratings feature to generate the overall ratings for the events that the user had hosted and also ratings by event type.
+
+Week10:
+I worked on the backend for recommendations feature. I did some search online to better estimate the similariy between sentences and injected the necessary
+packages and implemented the functionality for recommendations. Also, I worked with Ben on Monday for a shortwhile to assist in the backend code refactor.
