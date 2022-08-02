@@ -41,8 +41,8 @@ class Register(Resource):
             return {"status": "Error", "message": "could not register new user"}
         else:
             final_ret = {
-                "status": "Success", 
-                "message": "new user registerd with id = " + str(new_id)
+                "status": "Success",
+                "message": "new user registerd with id = " + str(new_id),
             }
 
         return final_ret

@@ -91,7 +91,8 @@ class UsersDB:
             print(
                 "Item "
                 + str(data["username"])
-                + " not added to user table as it failed the insert check")
+                + " not added to user table as it failed the insert check"
+            )
 
     # Functions for updating rows in the Users table
 
@@ -138,7 +139,8 @@ class UsersDB:
     def check_userid_exists(self, userid):
         user_exists = False
         check_query = db.select([self.temp_db.users]).where(
-            self.temp_db.users.c.id == userid)
+            self.temp_db.users.c.id == userid
+        )
         check_result = self.temp_db.engine.execute(check_query).fetchall()
 
         if len(check_result) > 0:

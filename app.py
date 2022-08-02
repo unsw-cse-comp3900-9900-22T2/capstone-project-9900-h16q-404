@@ -18,13 +18,12 @@ $ flask run
 
 """
 
-# import third party libraries 
+# import third party libraries
 from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
 
 # import database class
-# from api.apihandler import Test, Register, Events, Login, User, UserDetails, UserSensitiveDetails, UserChangePassword, Event, Create, BuyTickets, MyTickets, SearchEvent, Filter, Follow, WatchedEvents, MyWatchlist
 from db.init_db import db_main
 
 # import login and register classes

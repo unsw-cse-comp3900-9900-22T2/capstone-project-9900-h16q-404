@@ -72,21 +72,21 @@ class EventsDB:
 
         try:
             result = self.temp_db.engine.execute(query)
-            result = ({"result": [dict(row) for row in result]})
+            result = {"result": [dict(row) for row in result]}
             for i in range(len(result["result"])):
                 result["result"][i]["start_date"] = str(
-                    result["result"][i]["start_date"])
+                    result["result"][i]["start_date"]
+                )
                 result["result"][i]["start_time"] = str(
-                    result["result"][i]["start_time"])
-                result["result"][i]["end_date"] = str(
-                    result["result"][i]["end_date"])
-                result["result"][i]["end_time"] = str(
-                    result["result"][i]["end_time"])
+                    result["result"][i]["start_time"]
+                )
+                result["result"][i]["end_date"] = str(result["result"][i]["end_date"])
+                result["result"][i]["end_time"] = str(result["result"][i]["end_time"])
             return result["result"]
         except IntegrityError as e:
             return (400, "Could not select from table")
 
-# Functions for creating/inserting events into table
+    # Functions for creating/inserting events into table
 
     def create_event(self, token, event_details):
         # This function takes a token and a nested dictionary of event details, it flattens
@@ -114,13 +114,17 @@ class EventsDB:
         insert_data["adult_only"] = event_details["cond_adult"]
         insert_data["vax_only"] = event_details["cond_vax"]
         insert_data["start_date"] = datetime.datetime.strptime(
-            event_details["startdate"], "%Y-%m-%d").date()
+            event_details["startdate"], "%Y-%m-%d"
+        ).date()
         insert_data["start_time"] = datetime.datetime.strptime(
-            event_details["starttime"], "%H:%M").time()
+            event_details["starttime"], "%H:%M"
+        ).time()
         insert_data["end_date"] = datetime.datetime.strptime(
-            event_details["enddate"], "%Y-%m-%d").date()
+            event_details["enddate"], "%Y-%m-%d"
+        ).date()
         insert_data["end_time"] = datetime.datetime.strptime(
-            event_details["endtime"], "%H:%M").time()
+            event_details["endtime"], "%H:%M"
+        ).time()
         insert_data["gold_num"] = event_details["gold_num"]
         insert_data["gold_price"] = event_details["gold_price"]
         insert_data["silver_num"] = event_details["silver_num"]
@@ -139,9 +143,10 @@ class EventsDB:
         # check for row with existing primary key
         insert_check = True
         check_query = db.select([self.temp_db.events]).where(
-            self.temp_db.events.c.id == data["id"])
+            self.temp_db.events.c.id == data["id"]
+        )
         check_result = self.temp_db.engine.execute(check_query)
-        check_result = ({"result": [dict(row) for row in check_result]})
+        check_result = {"result": [dict(row) for row in check_result]}
 
         for i in range(len(check_result["result"])):
             if data["id"] == (check_result["result"][i]["id"]):
@@ -171,21 +176,22 @@ class EventsDB:
                 silver_num=data["silver_num"],
                 silver_price=data["silver_price"],
                 bronze_num=data["bronze_num"],
-                bronze_price=data["bronze_price"]
+                bronze_price=data["bronze_price"],
             )
             try:
-                result = self.temp_db.engine.execute(
-                    query).inserted_primary_key
+                result = self.temp_db.engine.execute(query).inserted_primary_key
                 tickets_db.pre_fill_tickets(data)
                 return result
             except BaseException:
                 return -1
         else:
-            print("Item " +
-                  str(data["event_name"]) +
-                  " not added to events table as it failed the insert check")
+            print(
+                "Item "
+                  + str(data["event_name"])
+                  + " not added to events table as it failed the insert check"
+            )
 
-# Functions for updating events
+    # Functions for updating events
 
     def update_event(self, event_id, event_details, token):
 
@@ -206,13 +212,17 @@ class EventsDB:
         update_data["adult_only"] = event_details["cond_adult"]
         update_data["vax_only"] = event_details["cond_vax"]
         update_data["start_date"] = datetime.datetime.strptime(
-            event_details["startdate"], "%Y-%m-%d").date()
+            event_details["startdate"], "%Y-%m-%d"
+        ).date()
         update_data["start_time"] = datetime.datetime.strptime(
-            event_details["starttime"], "%H:%M").time()
+            event_details["starttime"], "%H:%M"
+        ).time()
         update_data["end_date"] = datetime.datetime.strptime(
-            event_details["enddate"], "%Y-%m-%d").date()
+            event_details["enddate"], "%Y-%m-%d"
+        ).date()
         update_data["end_time"] = datetime.datetime.strptime(
-            event_details["endtime"], "%H:%M").time()
+            event_details["endtime"], "%H:%M"
+        ).time()
         update_data["gold_num"] = event_details["gold_num"]
         update_data["gold_price"] = event_details["gold_price"]
         update_data["silver_num"] = event_details["silver_num"]
@@ -221,42 +231,49 @@ class EventsDB:
         update_data["bronze_price"] = event_details["bronze_price"]
 
         try:
-            update_query = self.temp_db.events.update().values(
-                update_data).where(self.temp_db.events.c.id == event_id)
+            update_query = (
+                self.temp_db.events.update()
+                .values(update_data)
+                .where(self.temp_db.events.c.id == event_id)
+            )
             result = self.temp_db.engine.execute(update_query)
             return True
         except BaseException:
             return False
 
-# Functions for deleting events
+    # Functions for deleting events
 
     def delete_event_id(self, event_id):
         if self.check_event_exists(event_id, "id"):
             try:
-                query = self.temp_db.events.update().values(
-                    deleted=True).where(
-                    self.temp_db.events.c.id == event_id)
+                query = (
+                    self.temp_db.events.update()
+                    .values(deleted=True)
+                    .where(self.temp_db.events.c.id == event_id)
+                )
                 result = self.temp_db.engine.execute(query)
                 if result:
-                    return (True)
+                    return True
             except IntegrityError as e:
                 return ("Error updating delete column for " + event_id)
 
     def delete_event_name(self, event_name):
         if self.check_event_exists(event_name, "event_name"):
             try:
-                query = self.temp_db.events.update().values(
-                    deleted=True).where(
-                    self.temp_db.events.c.event_name == event_name)
+                query = (
+                    self.temp_db.events.update()
+                    .values(deleted=True)
+                    .where(self.temp_db.events.c.event_name == event_name)
+                )
                 result = self.temp_db.engine.execute(query)
                 if result:
-                    return (True)
+                    return True
             except IntegrityError as e:
                 return (400, "Error updating delete column for " + event_name)
         else:
             return ("Error finding event " + event_name + " in events table")
 
-# Helper functions
+    # Helper functions
 
     def run_query(self, query):
         try:
@@ -279,10 +296,12 @@ class EventsDB:
 
         if event_col == "id":
             check_query = db.select([self.temp_db.events]).where(
-                self.temp_db.events.c.id == event_detail)
+                self.temp_db.events.c.id == event_detail
+            )
         else:
             check_query = db.select([self.temp_db.events]).where(
-                self.temp_db.events.c.event_name == event_detail)
+                self.temp_db.events.c.event_name == event_detail
+            )
 
         check_result = self.temp_db.engine.execute(check_query).fetchall()
         if len(check_result) > 0:
@@ -291,9 +310,10 @@ class EventsDB:
 
     def get_event_time_date(self, event_id):
         event_start_query = db.select([self.temp_db.events]).where(
-            self.temp_db.events.c.id == event_id)
+            self.temp_db.events.c.id == event_id
+        )
         result = self.temp_db.engine.execute(event_start_query)
-        result = ({"result": [dict(row) for row in result]})
+        result = {"result": [dict(row) for row in result]}
         start_date = str(result["result"][0]["start_date"])
         start_time = str(result["result"][0]["start_time"])
         event_name = result["result"][0]["event_name"]
@@ -302,13 +322,17 @@ class EventsDB:
     def convert_date_time_to_string(self, dictionary):
         for i in range(len(dictionary["result"])):
             dictionary["result"][i]["start_date"] = str(
-                dictionary["result"][i]["start_date"])
+                dictionary["result"][i]["start_date"]
+            )
             dictionary["result"][i]["start_time"] = str(
-                dictionary["result"][i]["start_time"])[:-3]
+                dictionary["result"][i]["start_time"]
+            )[:-3]
             dictionary["result"][i]["end_date"] = str(
-                dictionary["result"][i]["end_date"])
+                dictionary["result"][i]["end_date"]
+            )
             dictionary["result"][i]["end_time"] = str(
-                dictionary["result"][i]["end_time"])[:-3]
+                dictionary["result"][i]["end_time"]
+            )[:-3]
 
         return dictionary
 
