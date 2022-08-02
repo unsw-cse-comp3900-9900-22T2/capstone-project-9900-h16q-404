@@ -22,7 +22,10 @@ export default function UserProfilePage() {
     // compare the userId in params with userId in localStorage
     if (searchParams.get('userId') === localStorage.getItem('userId')) {
       setSelfProfile(true);
-    } else if ( searchParams.get('userId') || searchParams.get('userId') !== localStorage.getItem('userId')) {
+    } else if (
+      searchParams.get('userId') ||
+      searchParams.get('userId') !== localStorage.getItem('userId')
+    ) {
       // not logged in or not self profile
       setSelfProfile(false);
     } else {
@@ -39,18 +42,16 @@ export default function UserProfilePage() {
       })
       .then((res) => res.data.message)
       .then((data) => {
-        //console.log(data.events);
         setDetails(data);
         let dataPastEvent = [];
         let dataUCEvent = [];
-        for (const event of data.events){
+        for (const event of data.events) {
           //console.log(event);
           const today = new Date();
           const eventDay = Date.parse(event.startDate);
           if (today <= eventDay) {
             dataUCEvent.push(event);
-          }
-          else {
+          } else {
             dataPastEvent.push(event);
           }
         }
@@ -95,11 +96,19 @@ export default function UserProfilePage() {
               </h3>
             </div>
             <div className='picture-zone'>
-              <Avatar
-                size={128}
-                icon={<UserOutlined />}
-                style={{ marginTop: '20px' }}
-              />
+              {details.image === 'default' || details.image === '' ? (
+                <Avatar
+                  size={128}
+                  icon={<UserOutlined />}
+                  style={{ marginTop: '20px' }}
+                />
+              ) : (
+                <Avatar
+                  size={128}
+                  src={details.image}
+                  style={{ marginTop: '20px' }}
+                />
+              )}
               {FollowButton(searchParams.get('userId'))}
             </div>
           </div>

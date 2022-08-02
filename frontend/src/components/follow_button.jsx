@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
 import { Button, message, Spin } from 'antd';
 import axios from 'axios';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -45,7 +44,7 @@ export default function FollowButton(userId) {
           message.error(err.data);
         });
     }
-  }, [userId]);
+  }, [token]);
   if (
     localStorage.getItem('userId') === undefined ||
     localStorage.getItem('userId') === null
@@ -55,8 +54,7 @@ export default function FollowButton(userId) {
         <Button
           type='primary'
           onClick={() => {
-            console.log('Please login to do this');
-            message.warning('Please login to do this');
+            message.error('Please login to do this');
           }}
         >
           Follow
@@ -67,10 +65,7 @@ export default function FollowButton(userId) {
     return (
       <>
         {selfId === userId ? (
-          <Button
-            style={{ width: 100 }}
-            href={'/watchlist'}
-          >
+          <Button style={{ width: 100 }} href={'/watchlist'}>
             Watchlist
           </Button>
         ) : load ? (

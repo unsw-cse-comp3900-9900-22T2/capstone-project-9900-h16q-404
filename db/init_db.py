@@ -54,6 +54,7 @@ class InitDB:
             db.Column("silver_price", db.Float(), nullable=True),
             db.Column("bronze_num", db.Integer(), nullable=True),
             db.Column("bronze_price", db.Float(), nullable=True),
+            db.Column("image", db.TEXT(), nullable=True),
         )
 
         # define the users tables
@@ -71,6 +72,7 @@ class InitDB:
             db.Column("gender", db.String(255), nullable=True),
             db.Column("phone", db.String(255), nullable=True),
             db.Column("vaccinated", db.Boolean(), nullable=True),
+            db.Column("image", db.TEXT(), nullable=True),
         )
 
         self.tickets = db.Table(
@@ -137,6 +139,7 @@ class InitDB:
                 "silver_price": row.silver_price,
                 "bronze_num": row.bronze_num,
                 "bronze_price": row.bronze_price,
+                "image": row.image,
             }
             result = self.insert_events(data)
             if result is None or result == -1:
@@ -157,6 +160,7 @@ class InitDB:
                 "gender": "",
                 "phone": "",
                 "vaccinated": row.vac,
+                "image": row.image,
             }
             self.insert_users(data, True)
 
@@ -211,6 +215,7 @@ class InitDB:
                 silver_price=data["silver_price"],
                 bronze_num=data["bronze_num"],
                 bronze_price=data["bronze_price"],
+                image=data["image"],
             )
             try:
                 result = self.engine.execute(query).inserted_primary_key

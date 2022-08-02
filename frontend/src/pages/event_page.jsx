@@ -31,7 +31,7 @@ export default function EventPage() {
       .get(requestURL)
       .then((res) => res.data.event_details)
       .then((data) => {
-        console.log(data);
+        console.log(data[0].image);
         setEventInfo(data[0]);
         console.log('get event: ' + eventInfo.event_name);
         console.log(eventInfo);
@@ -215,7 +215,22 @@ export default function EventPage() {
 
           <Divider />
 
-          <p>{eventInfo.description}</p>
+          <div>
+            <p>Event descirption:</p>
+            {eventInfo.description}
+          </div>
+          <br />
+          {eventInfo.image !== 'default' && eventInfo.image !== null ? (
+            <p>
+              <img
+                src={eventInfo.image}
+                alt={eventInfo.image}
+                style={{ maxWidth: '100%' }}
+              />
+            </p>
+          ) : (
+            <></>
+          )}
 
           {eventInfo.host == localStorage.getItem('userId') ? (
             <>

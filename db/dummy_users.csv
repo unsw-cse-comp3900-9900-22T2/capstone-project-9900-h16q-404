@@ -1,4 +1,4 @@
-id,username,password,token,vac,dob
-1,ben_mccoy@gmail.com,123456,ben_mccoy@gmail.com,true,1993-11-16
-2,john_wayne@hotmail.com,abcdef,john_wayne@hotmail.com,true,2005-07-01
-3,yunran@gmail.com,1234,yunran@gmail.com,true,1800-01-01
+id,username,password,token,vac,dob,image
+1,ben_mccoy@gmail.com,123456,ben_mccoy@gmail.com,true,1993-11-16,default
+2,john_wayne@hotmail.com,abcdef,john_wayne@hotmail.com,true,2005-07-01,default
+3,yunran@gmail.com,1234,yunran@gmail.com,true,1800-01-01,default

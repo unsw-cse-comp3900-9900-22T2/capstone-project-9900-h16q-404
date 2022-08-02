@@ -10,14 +10,14 @@ import {
   message,
   Col,
   Row,
-  InputNumber,
 } from 'antd';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
 import moment from 'moment';
 import './create_event.css';
-import { InputComp } from './create_event';
+import { InputComp } from '../components/InputComp';
 import { useParams, useNavigate } from 'react-router-dom';
+import { uploadImg } from '../components/image';
 
 const { Content, Footer } = Layout;
 const { TextArea } = Input;
@@ -30,8 +30,8 @@ Start Time
 End time
 Location
 Description
-Pictures (optional - if we have time and its easy)
-No tickets yet
+Pictures (optional)
+Tickets
 */
 
 // /editevent/eventid
@@ -58,9 +58,6 @@ export default function EditEvent() {
   const [bronzeprice, setBronzeprice] = useState();
 
   const [image, setImage] = useState();
-
-  const dateFormat = 'YYYY-MM-DD';
-  const timeFormat = 'HH:mm';
 
   const [adultEvent, setAdult] = useState(false);
   const [vaxReq, setVax] = useState(false);
@@ -99,6 +96,7 @@ export default function EditEvent() {
         setSilverprice(data.silver_price);
         setBronzenum(data.bronze_num);
         setBronzeprice(data.bronze_price);
+        setImage(data.image);
       }, []);
   }, []);
 
@@ -155,8 +153,11 @@ export default function EditEvent() {
       adult: adultEvent,
       vax: vaxReq,
     };
-    let requestbody = {
+    let headers = {
       token: token,
+    };
+
+    let requestbody = {
       event_id: eventid,
       detail: {
         title: title,
@@ -174,20 +175,25 @@ export default function EditEvent() {
         bronze_num: bronzenum,
         bronze_price: bronzeprice,
         desc: desc,
+        image: image,
       },
     };
     console.log(requestbody);
-    axios.put('http://127.0.0.1:5000/event', requestbody).then((res) => {
-      console.log(res.data);
-      let status = res.data.resultStatus;
-      if (status !== 'ERROR') {
-        console.log(status);
-        message.success(`Successfully edit event ${title} with id ${eventid}`);
-        navigate(`/event?event_id=${eventid}`);
-      } else {
-        message.error(`Cannot edit the event.\nMessage: ${res.data.message}`);
-      }
-    });
+    axios
+      .put('http://127.0.0.1:5000/event', requestbody, { headers })
+      .then((res) => {
+        console.log(res.data);
+        let status = res.data.resultStatus;
+        if (status !== 'ERROR') {
+          console.log(status);
+          message.success(
+            `Successfully edit event ${title} with id ${eventid}`
+          );
+          navigate(`/event?event_id=${eventid}`);
+        } else {
+          message.error(`Cannot edit the event.\nMessage: ${res.data.message}`);
+        }
+      });
   };
 
   const back = () => {
@@ -203,7 +209,7 @@ export default function EditEvent() {
       <Layout>
         <PageHeader />
         <Content
-          className='create_content'
+          className='site-layout'
           style={{ padding: '0 50px', marginTop: 64 }}
         >
           <div className='new_event'>
@@ -329,7 +335,29 @@ export default function EditEvent() {
                 setDesc(e.target.value);
               }}
             />
-            <div className='ButtonSet'>
+            <div className={'InputComp'}>
+              {uploadImg(
+                setImage,
+                '(Optional) Upload an image for your event:'
+              )}
+              {image !== null && image !== 'default' ? (
+                <div>
+                  <img src={image} style={{ maxWidth: 800, maxHeight: 600 }} />
+                </div>
+              ) : (
+                <></>
+              )}
+              <Button
+                style={{ margin: 4 }}
+                onClick={() => {
+                  setImage('default');
+                }}
+              >
+                Clear
+              </Button>
+            </div>
+
+            <div className='ButtonSet' style={{ marginBottom: 6 }}>
               <Button
                 onClick={confirmEdit}
                 type='primary'

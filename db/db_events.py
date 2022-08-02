@@ -135,6 +135,7 @@ class EventsDB:
         insert_data["silver_price"] = event_details["silver_price"]
         insert_data["bronze_num"] = event_details["bronze_num"]
         insert_data["bronze_price"] = event_details["bronze_price"]
+        insert_data["image"] = event_details["image"]
 
         result = self.insert_events(insert_data), insert_data
 
@@ -181,6 +182,7 @@ class EventsDB:
                 silver_price=data["silver_price"],
                 bronze_num=data["bronze_num"],
                 bronze_price=data["bronze_price"],
+                image=data["image"],
             )
             try:
                 result = self.temp_db.engine.execute(query).inserted_primary_key
@@ -233,6 +235,7 @@ class EventsDB:
         update_data["silver_price"] = event_details["silver_price"]
         update_data["bronze_num"] = event_details["bronze_num"]
         update_data["bronze_price"] = event_details["bronze_price"]
+        update_data["image"] = event_details["image"]
 
         try:
             update_query = (
