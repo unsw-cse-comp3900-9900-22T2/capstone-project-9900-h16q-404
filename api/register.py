@@ -31,7 +31,7 @@ class Register(Resource):
         user_exists = user_db.check_user_exists(request_email)
 
         # if user does not exists return error
-        if user_exists == True:
+        if user_exists is True:
             return {"status": "Error", "message": "User already exists"}
 
         # if user does not exists, store password and username

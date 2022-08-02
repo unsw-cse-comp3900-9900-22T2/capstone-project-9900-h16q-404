@@ -26,11 +26,14 @@ from sqlalchemy import and_
 import datetime
 from sqlalchemy.exc import IntegrityError
 import pandas as pd
+import logging
 
 # import custom classes used to interact with the DB
 from db.db_tickets import TicketsDB
 from db.db_token_handler import TokenHandlerDB
 
+
+logger = logging.getLogger(__name__)
 
 class EventsDB:
     def __init__(self):
@@ -56,7 +59,7 @@ class EventsDB:
         query = db.select([self.temp_db.events]).where(
             and_(
                 self.temp_db.events.c.host == host_id,
-                self.temp_db.events.c.deleted == False,
+                self.temp_db.events.c.deleted is False,
             )
         )
 
@@ -67,7 +70,7 @@ class EventsDB:
         # This funtion currently returns a list of all the rows of the events
         # table
         query = db.select([self.temp_db.events]).where(
-            self.temp_db.events.c.deleted == False
+            self.temp_db.events.c.deleted is False
         )
 
         try:
@@ -84,6 +87,7 @@ class EventsDB:
                 result["result"][i]["end_time"] = str(result["result"][i]["end_time"])
             return result["result"]
         except IntegrityError as e:
+            logger.exception(e)
             return (400, "Could not select from table")
 
     # Functions for creating/inserting events into table
@@ -155,7 +159,7 @@ class EventsDB:
         tickets_db = TicketsDB()
 
         # if no row exists with current primary key add new row
-        if insert_check == True:
+        if insert_check is True:
             query = db.insert(self.temp_db.events).values(
                 id=data["id"],
                 event_name=data["event_name"],
@@ -187,8 +191,8 @@ class EventsDB:
         else:
             print(
                 "Item "
-                  + str(data["event_name"])
-                  + " not added to events table as it failed the insert check"
+                + str(data["event_name"])
+                + " not added to events table as it failed the insert check"
             )
 
     # Functions for updating events
@@ -236,7 +240,7 @@ class EventsDB:
                 .values(update_data)
                 .where(self.temp_db.events.c.id == event_id)
             )
-            result = self.temp_db.engine.execute(update_query)
+            self.temp_db.engine.execute(update_query)
             return True
         except BaseException:
             return False
@@ -255,7 +259,8 @@ class EventsDB:
                 if result:
                     return True
             except IntegrityError as e:
-                return ("Error updating delete column for " + event_id)
+                logger.exception(e)
+                return "Error updating delete column for " + event_id
 
     def delete_event_name(self, event_name):
         if self.check_event_exists(event_name, "event_name"):
@@ -269,9 +274,10 @@ class EventsDB:
                 if result:
                     return True
             except IntegrityError as e:
+                logger.exception(e)
                 return (400, "Error updating delete column for " + event_name)
         else:
-            return ("Error finding event " + event_name + " in events table")
+            return "Error finding event " + event_name + " in events table"
 
     # Helper functions
 
@@ -283,6 +289,7 @@ class EventsDB:
             return result["result"]
 
         except IntegrityError as e:
+            logger.exception(e)
             return (400, "could not find event")
 
     def get_new_event_id(self):

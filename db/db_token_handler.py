@@ -46,7 +46,8 @@ class TokenHandlerDB:
     def select_user_from_token(self, token):
 
         check_query = db.select([self.temp_db.users]).where(
-            self.temp_db.users.c.token == token)
+            self.temp_db.users.c.token == token
+        )
         check_result = self.temp_db.engine.execute(check_query)
         check_result = {"result": [dict(row) for row in check_result]}
 

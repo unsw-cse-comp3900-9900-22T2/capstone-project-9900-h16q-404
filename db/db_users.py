@@ -73,7 +73,7 @@ class UsersDB:
 
         insert_check = self.check_userid_exists(data["id"])
 
-        if insert_check == False:
+        if insert_check is False:
             query = db.insert(self.temp_db.users).values(
                 id=data["id"],
                 username=data["username"],

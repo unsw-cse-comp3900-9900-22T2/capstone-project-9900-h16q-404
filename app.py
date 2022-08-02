@@ -10,7 +10,7 @@ This file performs the below in order:
     This will create a DB if it does not exist and load it full of data
 3. Initialise a Flask instance and start it running
     This will be where the front end sends requests for data to
-4. Define a number of resources which are located in apihandler.py 
+4. Define a number of resources which are located in apihandler.py
     These resources can make queries on the database and return the data to the front end
 
 To run the applicaiton:

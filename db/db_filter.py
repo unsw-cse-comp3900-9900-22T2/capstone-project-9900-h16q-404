@@ -12,6 +12,9 @@ Functions:
 import sqlalchemy as db
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class FilterDB:
@@ -26,7 +29,7 @@ class FilterDB:
         query = db.select([self.temp_db.events]).where(
             and_(
                 self.temp_db.events.c.type == type,
-                self.temp_db.events.c.deleted == False,
+                self.temp_db.events.c.deleted is False,
             )
         )
         try:
@@ -44,4 +47,5 @@ class FilterDB:
 
             return result["result"]
         except IntegrityError as e:
+            logger.exception(e)
             return (400, "could not find event")

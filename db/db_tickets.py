@@ -32,7 +32,7 @@ class TicketsDB:
         tickets_query = db.select([self.temp_db.tickets]).where(
             and_(
                 self.temp_db.tickets.c.event_id == event_id,
-                self.temp_db.tickets.c.purchased == False,
+                self.temp_db.tickets.c.purchased is False,
             )
         )
         result = self.temp_db.engine.execute(tickets_query)
@@ -43,7 +43,7 @@ class TicketsDB:
         user_tickets_query = db.select([self.temp_db.tickets]).where(
             and_(
                 self.temp_db.tickets.c.user_id == user_id,
-                self.temp_db.tickets.c.purchased == True,
+                self.temp_db.tickets.c.purchased is True,
             )
         )
         result = self.temp_db.engine.execute(user_tickets_query)
@@ -62,7 +62,7 @@ class TicketsDB:
                 purchased=False,
                 ticket_price=price,
             )
-            result = self.temp_db.engine.execute(query).inserted_primary_key
+            self.temp_db.engine.execute(query).inserted_primary_key
 
     def reserve_tickets(self, data, user_id):
         data = json.loads(data.replace("'", '"'))
@@ -93,14 +93,14 @@ class TicketsDB:
                     self.temp_db.tickets.c.user_id == user_id,
                     self.temp_db.tickets.c.event_id == data["event_id"],
                     self.temp_db.tickets.c.seat_num == data["seat_num"],
-                    self.temp_db.tickets.c.tix_class == data["tix_class"]
+                    self.temp_db.tickets.c.tix_class == data["tix_class"],
                 )
             )
         )
         result = self.temp_db.engine.execute(update_query)
         return result
 
-# Helper functions
+    # Helper functions
 
     def pre_fill_tickets(self, data):
         self.insert_tix(data["gold_num"], "gold", data["id"], data["gold_price"])
