@@ -7,6 +7,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import ReviewList from '../components/review_list';
 import PastEventBuyTicketMask from '../components/past_event_buy_ticket_mask';
+import moment from 'moment'
 
 const { confirm } = Modal;
 
@@ -31,9 +32,9 @@ export default function EventPage () {
 			.then(data => {
 				setEventInfo(data[0]);
 				// set eventFinished based on event start date
-				const today = new Date()
-				const endDate = new Date(data[0].end_date); 
-				if ( endDate < today ){
+				const today = moment()
+				const endDate = moment(data[0].end_date + ' ' + data[0].end_time)
+				if (endDate.isBefore(today)) {
 					setEventFinished(true);
 				}
 				else {

@@ -46,7 +46,7 @@ export default function WriteReview (props) {
       "rating":rateValue
     }
 
-    props.handleSumbit(body);
+    props.handleSubmit(body);
   }
 
   return (

@@ -112,8 +112,8 @@ export default function CreateEvent() {
     setDesc('testdesc');
   };
   useEffect(() => {
-    if (localStorage.getItem('username')) {
-      setToken(localStorage.getItem('username'));
+    if (localStorage.getItem('token')) {
+      setToken(localStorage.getItem('token'));
     } else {
       // Yunran: no username means not logged in, should redirect to landing page
       message.error('You have not logged in!', 2);

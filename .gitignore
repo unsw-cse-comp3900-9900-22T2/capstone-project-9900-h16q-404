@@ -4,3 +4,4 @@
 /db/__pycache__
 db/group_404
 .DS_Store
+.vscode/*

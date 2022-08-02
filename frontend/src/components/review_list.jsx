@@ -188,7 +188,7 @@ export default function ReviewList (props) {
       }
       else {
         return(
-          <WriteReview handleSumbit={handleReviewSubmit} />
+          <WriteReview handleSubmit={handleReviewSubmit} />
         )
       }
     }
@@ -197,7 +197,7 @@ export default function ReviewList (props) {
   return (
     <>
     <Divider orientation="left">Write Review</Divider>
-    <WriteReviewSection handleSumbit={handleReviewSubmit} />
+    <WriteReviewSection handleSubmit={handleReviewSubmit} />
     <Divider orientation="left">Review List</Divider>
     <List
       className="comment-list"

@@ -68,8 +68,8 @@ export default function EditEvent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('username')) {
-      setToken(localStorage.getItem('username'));
+    if (localStorage.getItem('token')) {
+      setToken(localStorage.getItem('token'));
     } else {
       message.error('You must log in to do this!');
       back();
