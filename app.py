@@ -57,6 +57,7 @@ from api.host_replies import HostReplies
 
 # import the ratings-based classes
 from api.event_ratings import EventRatings
+from api.user_ratings import UserRatings
 
 # import third party libraries
 from flask import Flask
@@ -96,3 +97,4 @@ api.add_resource(WatchedEvents, "/watchedevents")
 api.add_resource(Reviews, '/reviews')
 api.add_resource(HostReplies, '/hostreplies')
 api.add_resource(EventRatings, '/eventratings')
+api.add_resource(UserRatings, '/userratings')
