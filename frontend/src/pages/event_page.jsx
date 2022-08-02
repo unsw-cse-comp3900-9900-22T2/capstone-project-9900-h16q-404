@@ -211,7 +211,7 @@ export default function EventPage () {
 					{eventFinished ? <PastEventBuyTicketMask/> :<TicketBar/>}
 					
 					{ 
-					eventInfo.host == localStorage.getItem("userId") ? 
+					eventInfo.host === parseInt(localStorage.getItem("userId")) ? 
 						<>
 							<Divider orientation='left'>Actions</Divider>
 							<BroadCast />

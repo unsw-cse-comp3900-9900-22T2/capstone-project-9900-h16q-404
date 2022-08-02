@@ -48,6 +48,7 @@ class Broadcast(Resource):
                 user_mail_list.append(users_dict[user])
 
         to_emails = user_mail_list
+        #to_emails = "g.jayaraman@student.unsw.edu.au"
         sender_email = os.environ.get('MAIL_DEFAULT_SENDER')
         sender_name = os.environ.get('MAIL_SENDER_NAME')
 
@@ -58,13 +59,19 @@ class Broadcast(Resource):
         to_emails=to_emails,
         is_multiple=True)
         
-        try:
-            sendgrid_client = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-            response = sendgrid_client.send(message)
-        except Exception as e:
-            return {"status": "Error", "message": "Error broadcasting message to ticket holders"}
-        
-        return {
-            'resultStatus': 'SUCCESS',
-            'message': "Successfully broadcasted email to all ticket holders for this event"
-        }
+        if (len(to_emails) > 0):
+            try:
+                sendgrid_client = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+                response = sendgrid_client.send(message)
+            except Exception as e:
+                return {"status": "Error", "message": "Error broadcasting message to ticket holders"}
+            
+            return {
+                'resultStatus': 'SUCCESS',
+                'message': "Successfully broadcasted email to all ticket holders for this event"
+            }
+        else:
+            return {
+                'status': 'Error',
+                'message': "No email sent as no one has bought tickets for this event"
+            }
