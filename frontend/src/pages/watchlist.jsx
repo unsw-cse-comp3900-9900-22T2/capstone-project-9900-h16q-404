@@ -115,7 +115,6 @@ export default function Watchlist() {
                       <Avatar
                         size={64}
                         icon={<UserOutlined />}
-                        style={{ marginTop: '20px' }}
                       />
                     ) : (
                       <Avatar size={64} src={item.image} />
