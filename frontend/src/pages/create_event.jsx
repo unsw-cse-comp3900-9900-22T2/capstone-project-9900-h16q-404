@@ -72,39 +72,6 @@ export default function CreateEvent() {
 
   const navigate = useNavigate();
 
-  const ticketRow_ = (classString, type) => {
-    // reserved for later use
-    return (
-      <Row className='ticket-row' gutter={gutter} style={{ marginTop: 6 }}>
-        <Col span={2}>{classString}</Col>
-        <Col span={span}>
-          <Input addonBefore={'Name'} />
-        </Col>
-        <Col span={span}>
-          <InputNumber
-            min={0}
-            addonBefore={'Amount'}
-            defaultValue={0}
-            onChange={(value) => {
-              type.number = value;
-            }}
-          />
-        </Col>
-        <Col span={span}>
-          <InputNumber
-            min={0}
-            addonBefore={'Price'}
-            addonAfter={'$'}
-            defaultValue={0}
-            onChange={(value) => {
-              type.price = value;
-            }}
-          />
-        </Col>
-      </Row>
-    );
-  };
-
   const ticketRow = (classString, type) => {
     return (
       <Row className='ticket-row' gutter={gutter} style={{ marginTop: 6 }}>
