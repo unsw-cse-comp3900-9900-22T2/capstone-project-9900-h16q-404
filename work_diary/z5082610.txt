@@ -37,7 +37,7 @@ Week 5
 Sprint 1 completed.
 Planned Sprint 2 works
 I am assigned the frontend of profile page and update profile page.
-progressive demo 1 completed.
+progressive demo A completed.
 Started the sprint 2.
 
 Week 6
@@ -55,3 +55,20 @@ The event page and profile page works,
 The new event, edit event and edit edit profile works.
 Found some bugs, aim to fix them all in this sprints.
 I am assigned on filter front-end, and events-on-profile-page front-end.
+
+Week 8
+Sprint 3 works completed.
+Met on Tuesday, Thursday and Sunday.
+The filter, events on profile page are done.
+Progressive Demo B completed.
+In new sprint I am assigned Review / Rating functions frontend work.
+
+Week 9
+One of our group member got COVID, so we have to adjust our progress.
+Sprint 4 works completed.
+Planning for the final sprint, project report and final progressive demo.
+Met on Wedensday, Thursday and Sunday.
+
+Week 10
+Met on Tuesday, Wedensday and Thursday.
+Finishing up all coding works by Wedensday.
