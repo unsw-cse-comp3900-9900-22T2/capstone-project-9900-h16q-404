@@ -1,16 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
-import { Layout, List, Space, Avatar, Radio, message } from 'antd';
+import { Layout, List, Avatar, Radio, message, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
+import moment from 'moment'
 
 const { Content, Footer } = Layout;
 
 export default function LandingPage() {
   // hook
-  const [eventList, setEventList] = useState();
+  const [eventList, setEventList] = useState([]);
   const [filter, setFilter] = useState('All');
+
+  // recommended button
+  const RecommendButton = () => {
+    const [loadings, setLoadings] = useState(false);
+
+    const handleClick = () => {
+      setLoadings(true)
+      const url = "http://127.0.0.1:5000/recommend?token=" + localStorage.getItem('token');
+      axios.get(url)
+        .then(response => response.data)
+        .then(data => {
+          if (data.resultStatus === "SUCCESS") {
+            setLoadings(false);
+            setEventList(data.message);
+            message.success("Recommendations Updated!")
+          }
+          else {
+            setLoadings(false);
+            message.warning(data.message)
+          }
+        })
+    }
+
+    return (
+      <Button
+        type="primary"
+        loading={loadings}
+        onClick={handleClick}
+        size='large'
+      >
+        Recommended for me
+      </Button>
+    )
+  }
 
   const onFilterButtonChange = (e) => {
     setFilter(e.target.value);
@@ -74,7 +108,18 @@ export default function LandingPage() {
         .then((response) => response.data)
         .then((data) => {
           if (data.resultStatus === 'SUCCESS') {
-            setEventList(data.message);
+            const wholeList = data.message
+            let futureList = []
+            const curTime = moment()
+            wholeList.forEach(
+              i => {
+                const iFinishTime = moment(i.end_date + ' ' + i.end_time)
+                if (iFinishTime.isAfter(curTime)){
+                  futureList.push(i)
+                }
+              }
+            )
+            setEventList(futureList);
           }
         });
     } else if (
@@ -89,7 +134,18 @@ export default function LandingPage() {
         .then((response) => response.data)
         .then((data) => {
           if (data.resultStatus === 'SUCCESS') {
-            setEventList(data.event_details);
+            const wholeList = data.event_details
+            let futureList = []
+            const curTime = moment()
+            wholeList.forEach(
+              i => {
+                const iFinishTime = moment(i.end_date + ' ' + i.end_time)
+                if (iFinishTime.isAfter(curTime)){
+                  futureList.push(i)
+                }
+              }
+            )
+            setEventList(futureList);
           } else {
             message.warning(data.message);
             setEventList([]);
@@ -106,8 +162,19 @@ export default function LandingPage() {
         })
         .then((response) => response.data)
         .then((data) => {
-          if (data.length !== 0) {
-            setEventList(data);
+          if (data.length !==0) {
+            const wholeList = data
+            let futureList = []
+            const curTime = moment()
+            wholeList.forEach(
+              i => {
+                const iFinishTime = moment(i.end_date + ' ' + i.end_time)
+                if (iFinishTime.isAfter(curTime)){
+                  futureList.push(i)
+                }
+              }
+            )
+            setEventList(futureList);
           } else {
             message.warning('No event from watched users!');
             setEventList([]);
@@ -117,13 +184,6 @@ export default function LandingPage() {
       message.warning('Filter type not available yet!');
     }
   }, [filter]);
-
-  const IconText = ({ icon, text }) => (
-    <Space>
-      {React.createElement(icon)}
-      {text}
-    </Space>
-  );
 
   return (
     <div>
@@ -146,6 +206,15 @@ export default function LandingPage() {
           </div>
           <h1>Please select to filter the type of events you want to see: </h1>
           <FilterButtonGroup />
+          {
+            localStorage.getItem('token')?
+            <>
+              <h1>Or you can click here to see what we recommend for you:</h1>
+              <RecommendButton />
+            </>
+            :
+            null
+          }
           <List
             itemLayout='vertical'
             size='large'
@@ -153,23 +222,6 @@ export default function LandingPage() {
             renderItem={(item) => (
               <List.Item
                 key={item.id}
-                actions={[
-                  <IconText
-                    icon={StarOutlined}
-                    text='114'
-                    key='list-vertical-star-o'
-                  />,
-                  <IconText
-                    icon={LikeOutlined}
-                    text='514'
-                    key='list-vertical-like-o'
-                  />,
-                  <IconText
-                    icon={MessageOutlined}
-                    text='1919'
-                    key='list-vertical-message'
-                  />,
-                ]}
                 extra={
                   item.image === 'default' ? (
                     <img

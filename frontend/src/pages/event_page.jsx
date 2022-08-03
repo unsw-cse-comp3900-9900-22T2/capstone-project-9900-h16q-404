@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Descriptions, Rate, Collapse, Modal } from 'antd';
 import PageHeader from '../components/page_header';
-import { Col, Row, Statistic, Button, Divider, message } from 'antd';
-import axios from 'axios';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Col, Row, Button, Divider, message } from 'antd';
+import axios from 'axios'
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import BroadCast from '../components/broadcast_button';
 import ReviewList from '../components/review_list';
@@ -164,61 +164,56 @@ export default function EventPage() {
 		years old.
 	`;
 
-  const SpecialConsiderationBar = () => {
-    const onChange = (key) => {};
+	const SpecialConsiderationBar = () => {
+		const onChange = (key) => {
 
-    return (
-      <Collapse onChange={onChange}>
-        {eventInfo.vax_only ? (
-          <Panel header='Vaccination Required' key='1'>
-            <p>{VacReq}</p>
-          </Panel>
-        ) : null}
-        {eventInfo.adult_only ? (
-          <Panel header='Age 18 Required' key='2'>
-            <p>{AdultReq}</p>
-          </Panel>
-        ) : null}
-      </Collapse>
-    );
-  };
+		};
 
-  // Component of button buying tickets and remaing statistics
-  const TicketBar = () => (
-    <Row gutter={16}>
-      <Col span={12}>
-        <Button
-          style={{ marginTop: 16 }}
-          type='primary'
-          disabled={
-            (usrInfo.vac !== true && eventInfo.vax_only) ||
-            (usrIsNotAdult() && eventInfo.adult_only)
-          }
-          href={'/buyticket/' + eventInfo.id}
-        >
-          Buy A Ticket
-        </Button>
-      </Col>
-    </Row>
-  );
+		return (
+			<Collapse onChange={onChange}>
+				{ eventInfo.vax_only ? <Panel header="Vaccination Required" key="1">
+					<p>{VacReq}</p>
+				</Panel> : null}
+				{ eventInfo.adult_only ? <Panel header="Age 18 Required" key="2">
+					<p>{AdultReq}</p>
+				</Panel> : null}
+			</Collapse>
+		);
+	};
 
-  return (
-    <div>
-      <Layout>
-        <PageHeader />
-        <Content
-          className='site-layout'
-          style={{ padding: '0 50px', marginTop: 64 }}
-        >
-          <EventInfoBlock />
+	// Component of button buying tickets and remaing statistics
+	const TicketBar = () => (
+		<Row gutter={16}>
+			<Col span={12}>
+				<Button 
+				style={{ marginTop: 16 }} 
+				type="primary"
+				disabled={
+					(usrInfo.vac !== true && eventInfo.vax_only) ||
+					(usrIsNotAdult() && eventInfo.adult_only)
+				}
+				href={'/buyticket/' + eventInfo.id}>
+					Buy A Ticket
+				</Button>
+			</Col>
+		</Row>
+	);
 
-          <Divider orientation='left'>Attendance Condition</Divider>
+	return (
+		<div>
+			<Layout>
+				<PageHeader/>
+				<Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
 
-          <SpecialConsiderationBar />
+					<EventInfoBlock/>
 
-          <Divider orientation='left'>Event Description</Divider>
+					<Divider orientation='left'>Attendance Condition</Divider>
 
-          <div>
+					<SpecialConsiderationBar/>
+
+					<Divider orientation='left' >Event Description</Divider>
+
+					<div>
             <p>{eventInfo.description}</p>
             {eventInfo.image !== 'default' && eventInfo.image !== null ? (
               <p>
@@ -233,34 +228,31 @@ export default function EventPage() {
             )}
           </div>
 
-          <Divider orientation='left'>Buy Ticket</Divider>
+					<Divider orientation='left'>Buy Ticket</Divider>
 
-          {eventFinished ? <PastEventBuyTicketMask /> : <TicketBar />}
+					{eventFinished ? <PastEventBuyTicketMask/> :<TicketBar/>}
+					
+					{ 
+					eventInfo.host === parseInt(localStorage.getItem("userId")) ? 
+						<>
+							<Divider orientation='left'>Actions</Divider>
+							<BroadCast />
+							<Button href={'/editevent/'+ searchParams.get("event_id")}>Edit Event</Button>
+							<Button onClick={deleteConfirm}>
+								Delete
+							</Button>
+						</> 
+					: null
+					}
 
-          {eventInfo.host === parseInt(localStorage.getItem('userId')) ? (
-            <>
-              <Divider orientation='left'>Actions</Divider>
-              <BroadCast />
-              <Button href={'/editevent/' + searchParams.get('event_id')}>
-                Edit Event
-              </Button>
-              <Button onClick={deleteConfirm}>Delete</Button>
-            </>
-          ) : null}
-
-          {eventFinished ? (
-            <ReviewList
-              eventId={eventInfo.id}
-              isEventHost={
-                eventInfo.host === parseInt(localStorage.getItem('userId'))
-                  ? true
-                  : false
-              }
-            />
-          ) : null}
-        </Content>
-        <Footer style={{ textAlign: 'center' }}>9900-H16Q-404</Footer>
-      </Layout>
-    </div>
-  );
+				{
+					eventFinished ? <ReviewList eventId={eventInfo.id} isEventHost={(eventInfo.host === parseInt(localStorage.getItem("userId")) ? true : false)} /> : null 
+				}
+				</Content>
+				<Footer style={{textAlign:'center'}}>
+          9900-H16Q-404
+        </Footer>
+			</Layout>
+		</div>
+	)
 }

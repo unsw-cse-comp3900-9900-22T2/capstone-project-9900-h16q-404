@@ -1,0 +1,25 @@
+id,event_name,host,host_username,type,start_date,start_time,end_date,end_time,deleted,location,adult_only,vax_only,description,gold_num,gold_price,silver_num,silver_price,bronze_num,bronze_price
+1,Gang of Youths,1,benjamin.mccoy@student.unsw.edu.au,Music,08-07-2022,18:00,08-07-2022,21:00,false,Hordern Pavillion,true,true,A late night musical event,10,100,10,50,10,25
+2,Diwali,1,benjamin.mccoy@student.unsw.edu.au,Festival,18-02-2022,12:00,19-02-2022,20:00,false,India,false,false,A traditional Indian festival,10,150,10,50,10,25
+3,Christmas,1,benjamin.mccoy@student.unsw.edu.au,Holiday,25-12-2022,09:00,25-12-2022,23:59,false,The Beach,false,false,A christian holiday,10,200,10,50,10,25
+4,Idul Fitri,2,john_wayne@hotmail.com,Festival,08-08-2021,18:00,10-08-2021,21:00,false,Indonesia,true,false,A muslim holiday,10,10,5,4,2,2
+5,Chinese New Year,2,john_wayne@hotmail.com,Holiday,08-03-2022,08:00,08-03-2022,23:59,false,China,false,true,A chinese holiday,10,110,10,50,10,25
+6,Operation Pyrite,3,yunran.chen@student.unsw.edu.au,Music,03-07-2022,08:00,03-07-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
+7,Operation Blade,3,yunran.chen@student.unsw.edu.au,Music,05-07-2022,08:00,05-07-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
+8,Operation Cinder,3,yunran.chen@student.unsw.edu.au,Music,08-07-2022,08:00,08-07-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
+9,Operation Lead Seal,3,yunran.chen@student.unsw.edu.au,Music,10-07-2022,08:00,10-07-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
+10,Operation Spectrum,3,yunran.chen@student.unsw.edu.au,Music,12-07-2022,08:00,12-07-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
+11,Vivid,3,yunran.chen@student.unsw.edu.au,Party,12-07-2022,08:00,12-07-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A light music show,10,100,10,75,10,50
+12,Sydney Film Festival,3,yunran.chen@student.unsw.edu.au,Film,13-08-2022,08:00,13-08-2022,22:00,false,UNSW Quadrangle Lawn,false,false,An Annual film festival,10,100,10,75,10,50
+13,Salsa Fest,3,yunran.chen@student.unsw.edu.au,Music,14-08-2022,08:00,13-08-2022,22:00,false,Surry Hills,false,false,A Latin Fiesta,10,100,10,75,10,50
+14,All you can Eat Pizza,1,benjamin.mccoy@student.unsw.edu.au,Food & Drink,14-08-2022,08:00,13-08-2022,22:00,false,Rodizio Waterloo,false,false,An unlimited pizza buffet,10,100,10,75,10,50
+15,Ping Pong Club,2,john_wayne@hotmail.com,Sport,14-08-2022,08:00,13-08-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A club for table tennis players,10,100,10,75,10,50
+16,Great Gatsby Boat Party,3,yunran.chen@student.unsw.edu.au,Party,14-08-2022,08:00,13-08-2022,22:00,false,King Street Wharf,false,false,A themed Boat Party,10,100,10,75,10,50
+17,Fintech22,3,yunran.chen@student.unsw.edu.au,Business,14-08-2022,08:00,13-08-2022,22:00,false,Bayswater Rd,false,false,An exhibition of Australia's major fintech emerging technologies,10,100,10,75,10,50
+18,UNSW Orchestra Concert Hire,4,g.jayaraman@student.unsw.edu.au,Other,14-08-2022,08:00,13-08-2022,22:00,false,Sir John Clancy Auditorium,false,false,A Classical Music Concert,10,100,10,75,10,50
+19,Sydney Luxury Cruise,4,g.jayaraman@student.unsw.edu.au,Party,14-08-2022,08:00,13-08-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A cruise holiday,10,100,10,75,10,50
+20,Beyond Meditations,4,g.jayaraman@student.unsw.edu.au,Other,14-08-2022,08:00,13-08-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A breathwork and guided meditations,10,100,10,75,10,50
+21,Operation Wild Scales,3,yunran.chen@student.unsw.edu.au,Music,03-09-2022,08:00,03-09-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
+22,Operation Pine Soot,3,yunran.chen@student.unsw.edu.au,Music,05-09-2022,08:00,05-09-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
+23,Operation Dawnseeker,3,yunran.chen@student.unsw.edu.au,Music,08-10-2022,08:00,08-10-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
+24,Operation Deepness,3,yunran.chen@student.unsw.edu.au,Music,10-10-2022,08:00,10-10-2022,22:00,false,UNSW Quadrangle Lawn,false,false,A music festival,10,100,10,75,10,50
