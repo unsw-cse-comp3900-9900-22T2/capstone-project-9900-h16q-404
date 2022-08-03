@@ -8,7 +8,6 @@ Functions:
 - register_new_user
 # update
 - update_user_details
-- update_user_token
 # delete
 # helper
 - get_new_user_id
@@ -102,18 +101,6 @@ class UsersDB:
             self.temp_db.users.update()
             .values(params)
             .where(self.temp_db.users.c.token == token)
-        )
-
-        try:
-            return self.temp_db.engine.execute(update_query)
-        except BaseException:
-            return -1
-    
-    def update_user_token(self, params, username):
-        update_query = (
-            self.temp_db.users.update()
-            .values(params)
-            .where(self.temp_db.users.c.username == username)
         )
 
         try:
