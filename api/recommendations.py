@@ -54,7 +54,7 @@ class Recommendations(Resource):
             get_event = reviews_db.select_event_byId(event)[0]
             
             event_end_time = get_event['end_date'] + " " + get_event['end_time'];
-            event_time_stamp = datetime.strptime(event_end_time, "%Y-%m-%d %H:%M:%S")
+            event_time_stamp = datetime.datetime.strptime(event_end_time, "%Y-%m-%d %H:%M:%S")
             
             # get data only from past events i.e. before today
             if (event_time_stamp < current_day):
