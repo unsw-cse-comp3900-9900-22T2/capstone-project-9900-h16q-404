@@ -9,6 +9,7 @@ import BroadCast from '../components/broadcast_button';
 import ReviewList from '../components/review_list';
 import PastEventBuyTicketMask from '../components/past_event_buy_ticket_mask';
 import moment from 'moment';
+import FollowButton from '../components/follow_button';
 
 const { confirm } = Modal;
 
@@ -139,6 +140,7 @@ export default function EventPage() {
           <Button type='link' href={'user?userId=' + eventInfo.host}>
             {eventInfo.host_username}
           </Button>
+          {FollowButton(eventInfo.host)}
         </Descriptions.Item>
         <Descriptions.Item label='location'>
           {eventInfo.location}
