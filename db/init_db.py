@@ -206,6 +206,25 @@ class InitDB:
             else:
                 print("Added new ticket with ID = " + str(result))
 
+        for index, row in dummy_reviews_df.iterrows():
+            data = {
+                "id":row.id, 
+                "eventId": row.eventId,
+                "userId": row.userId,
+                "reviewTimeStamp": datetime.datetime.strptime(row.reviewTimeStamp, "%Y-%m-%d %H:%M"),
+                "review" : row.review,
+                "rating" : row.rating,
+                "replyTimeStamp" : datetime.datetime.strptime(row.replyTimeStamp, "%Y-%m-%d %H:%M"),
+                "reply" : row.reply,
+                "host" : row.host,
+                "eventType" : row.eventType
+            }
+            result = self.insert_reviews(data, True)
+            if result == None or result == -1:
+                print(str(data["id"]) + " Not Added")
+            else:
+                print("Added new review with ID = " + str(result))
+
     def insert_users(self, data, dummy):
 
         # check for row with existing primary key
@@ -423,6 +442,50 @@ class InitDB:
             if data["id"] == (check_result["result"][i]["id"]):
                 insert_bool = False
         return insert_bool
+
+    def insert_reviews(self, data, dummy):
+        insert_check = True
+        check_query = db.select([self.reviews]).where(self.reviews.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        
+        # if no row exists with current primary key add new row
+        if insert_check == True:
+            if dummy == True:
+                query = db.insert(self.reviews).values(
+                    id = data["id"],
+                    eventId = data["eventId"],
+                    userId = data["userId"],
+                    reviewTimeStamp = data["reviewTimeStamp"],
+                    review = data['review'],
+                    rating = data['rating'],
+                    replyTimeStamp = data['replyTimeStamp'],
+                    reply = data['reply'],
+                    host = data['host'],
+                    eventType = data['eventType']
+                )
+            else:
+                query = db.insert(self.reviews).values(
+                    id = data["id"],
+                    eventId = data["eventId"],
+                    userId = data["userId"],
+                    reviewTimeStamp = data["reviewTimeStamp"],
+                    review = data['review'],
+                    rating = data['rating'],
+                    host = data['host'],
+                    eventType = data['eventType']
+                )
+            
+            try:
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
+            except:
+                return -1
+        else:
+            print("Review " + str(data["id"]) + " not added to reviews table as it failed the insert check")
 
 
 class DatabaseExecutionError(Exception):
