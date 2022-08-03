@@ -18,7 +18,12 @@ $ flask run
 
 """
 
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+
 # import database class
+from api.recommendations import Recommendations
 from db.init_db import db_main
 
 # import login and register classes
@@ -62,6 +67,9 @@ from api.user_ratings import UserRatings
 # import the broadcast class
 from api.broadcast import Broadcast
 
+# import the recommendations class
+from api.recommendations import Recommendations
+
 # import third party libraries
 from flask import Flask
 from flask_restful import Api
@@ -102,3 +110,4 @@ api.add_resource(HostReplies, '/hostreplies')
 api.add_resource(EventRatings, '/eventratings')
 api.add_resource(UserRatings, '/userratings')
 api.add_resource(Broadcast, '/broadcast')
+api.add_resource(Recommendations, '/recommend')

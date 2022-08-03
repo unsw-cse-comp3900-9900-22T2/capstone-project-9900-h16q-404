@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, List, Descriptions, Card, message} from 'antd';
-import { Link, useNavigate} from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import PageHeader from '../components/page_header';
 import axios from 'axios'
-import { ExclamationCircleOutlined, StarOutlined, } from '@ant-design/icons';
-import { Button, Modal, Space } from 'antd';
+import { ExclamationCircleOutlined, MoreOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Modal, Space } from 'antd';
 import DescriptionsItem from 'antd/lib/descriptions/Item';
 
 const { Content, Footer } = Layout;
@@ -25,10 +25,7 @@ export default function MyTicket () {
     })
       .then(response => response.data)
       .then(data => {
-        //console.log(JSON.stringify(data));
         if(data.resultStatus === 'SUCCESS'){
-          console.log("Getting data succeed");
-          console.log(data.result.result);
           setTicketsList(data.result.result);
         }
       })
@@ -44,8 +41,6 @@ export default function MyTicket () {
 	let today = new Date();
 	let sevenDaysBefore = new Date();
 	sevenDaysBefore.setDate(today.getDate() + 7);
-	//console.log(sevenDaysBefore);
-	//console.log(today);
 
 	const refundConfirm = (item) => {
 		confirm({
@@ -54,7 +49,6 @@ export default function MyTicket () {
 			content: 'Are you sure you want to refund?',
 			onOk() {
 				let eventStartDate = new Date(item.start_date);
-				//console.log(eventStartDate);
 				if (eventStartDate.getTime() > sevenDaysBefore.getTime()) {
 				// axios
 				axios.put('http://127.0.0.1:5000/buytickets', {
@@ -106,8 +100,8 @@ export default function MyTicket () {
 								style={{width:230,}}
 								hoverable
 								actions={[
-									<ExclamationCircleOutlined title='refund' onClick={refundConfirm.bind(this, item)}></ExclamationCircleOutlined>,
-									<StarOutlined title='Rate this event'></StarOutlined>
+									<DeleteOutlined title='Refund your ticket' onClick={refundConfirm.bind(this, item)}></DeleteOutlined>,
+									<MoreOutlined title='Go to this event' onClick={()=>{navigate(("/event?event_id="+item.event_id))}}></MoreOutlined>
 								]}
 								>
 									<Descriptions column={1}>
