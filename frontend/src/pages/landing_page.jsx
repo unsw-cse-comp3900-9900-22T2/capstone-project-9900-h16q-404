@@ -1,17 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, List, Avatar, Radio, message } from 'antd';
+import { Layout, List, Avatar, Radio, message, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
-import RecommendationButton from '../components/recommendation_button';
 import moment from 'moment'
 
 const { Content, Footer } = Layout;
 
 export default function LandingPage() {
   // hook
-  const [eventList, setEventList] = useState();
+  const [eventList, setEventList] = useState([]);
   const [filter, setFilter] = useState('All');
+
+  // recommended button
+  const RecommendButton = () => {
+    const [loadings, setLoadings] = useState(false);
+
+    const handleClick = () => {
+      setLoadings(true)
+      const url = "http://127.0.0.1:5000/recommend?token=" + localStorage.getItem('token');
+      axios.get(url)
+        .then(response => response.data)
+        .then(data => {
+          if (data.resultStatus === "SUCCESS") {
+            setLoadings(false);
+            setEventList(data.message);
+            message.success("Recommendations Updated!")
+          }
+          else {
+            setLoadings(false);
+            message.warning(data.message)
+          }
+        })
+    }
+
+    return (
+      <Button
+        type="primary"
+        loading={loadings}
+        onClick={handleClick}
+        size='large'
+      >
+        Recommended for me
+      </Button>
+    )
+  }
 
   const onFilterButtonChange = (e) => {
     setFilter(e.target.value);
@@ -177,7 +210,7 @@ export default function LandingPage() {
             localStorage.getItem('token')?
             <>
               <h1>Or you can click here to see what we recommend for you:</h1>
-              <RecommendationButton />
+              <RecommendButton />
             </>
             :
             null
