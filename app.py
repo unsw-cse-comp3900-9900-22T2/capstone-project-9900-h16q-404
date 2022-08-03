@@ -18,6 +18,10 @@ $ flask run
 
 """
 
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+
 # import database class
 from api.recommendations import Recommendations
 from db.init_db import db_main

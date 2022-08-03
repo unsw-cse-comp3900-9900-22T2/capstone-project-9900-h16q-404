@@ -12,8 +12,10 @@ the database.
 
 import datetime
 import logging
+import json
 
 import pandas as pd
+from psycopg2 import IntegrityError
 import sqlalchemy as db
 from sqlalchemy import ForeignKey, and_
 
@@ -129,8 +131,10 @@ class InitDB:
         # from those CSVs into the relevant tables
 
         # read in dummy data from CSVs
-        dummy_events_df = pd.read_csv("db/dummy_events.csv")
-        dummy_users_df = pd.read_csv("db/dummy_users.csv")
+        dummy_events_df = pd.read_csv("db/dummy_data/dummy_events.csv")
+        dummy_users_df = pd.read_csv("db/dummy_data/dummy_users.csv")
+        dummy_tickets_df = pd.read_csv("db/dummy_data/dummy_tickets.csv")
+        dummy_reviews_df = pd.read_csv("db/dummy_data/dummy_reviews.csv")
 
         # Iterate through events pandas DF and insert each row into table using
         # insert function
@@ -183,6 +187,44 @@ class InitDB:
             }
             self.insert_users(data, True)
 
+        # insert dummy tickets
+        for index, row in dummy_tickets_df.iterrows():
+            user_id = row.user_id
+            data = {
+                "id":row.id, 
+                "event_id": row.event_id,
+                "user_id": row.user_id,
+                "seat_num": row.seat_num,
+                "tix_class" : row.tix_class,
+                "purchased" : row.purchased,
+                "card_number" : row.card_number,
+                "ticket_price" : row.ticket_price
+            }
+            result = self.reserve_tickets(data, user_id)
+            if result == None or result == -1:
+                print(str(data["id"]) + " Not Added")
+            else:
+                print("Added new ticket with ID = " + str(result))
+
+        for index, row in dummy_reviews_df.iterrows():
+            data = {
+                "id":row.id, 
+                "eventId": row.eventId,
+                "userId": row.userId,
+                "reviewTimeStamp": datetime.datetime.strptime(row.reviewTimeStamp, "%Y-%m-%d %H:%M"),
+                "review" : row.review,
+                "rating" : row.rating,
+                "replyTimeStamp" : datetime.datetime.strptime(row.replyTimeStamp, "%Y-%m-%d %H:%M"),
+                "reply" : row.reply,
+                "host" : row.host,
+                "eventType" : row.eventType
+            }
+            result = self.insert_reviews(data, True)
+            if result == None or result == -1:
+                print(str(data["id"]) + " Not Added")
+            else:
+                print("Added new review with ID = " + str(result))
+
     def insert_users(self, data, dummy):
 
         # check for row with existing primary key
@@ -194,8 +236,7 @@ class InitDB:
                 query = db.insert(self.users).values([data])
             try:
                 return self.engine.execute(query).inserted_primary_key
-            except DatabaseExecutionError as e:
-                logger.exception(e)
+            except IntegrityError:
                 return -1
         else:
             print(
@@ -239,8 +280,7 @@ class InitDB:
                 result = self.engine.execute(query).inserted_primary_key
                 self.pre_fill_tickets(data)
                 return result
-            except DatabaseExecutionError as e:
-                logger.exception(e)
+            except IntegrityError:
                 return -1
         else:
             print(
@@ -266,8 +306,25 @@ class InitDB:
             )
             try:
                 self.engine.execute(query).inserted_primary_key
-            except DatabaseExecutionError as e:
-                logger.exception(e)
+            except IntegrityError:
+                print("Error inserting ticket for", str(event_ID))
+
+
+    def reserve_tickets(self, data, user_id):
+        card_number = data["card_number"]
+        update_query = (
+            self.tickets.update()
+            .values(purchased=True, user_id=user_id, card_number=card_number)
+            .where(
+                and_(
+                    self.tickets.c.event_id == data["event_id"],
+                    self.tickets.c.seat_num == data["seat_num"],
+                    self.tickets.c.tix_class == data["tix_class"],
+                )
+            )
+        )
+        result = self.engine.execute(update_query)
+        return result
 
     def get_max_ticket_id(self):
         # returns the highest id in the tickets table plus 1
@@ -385,6 +442,50 @@ class InitDB:
             if data["id"] == (check_result["result"][i]["id"]):
                 insert_bool = False
         return insert_bool
+
+    def insert_reviews(self, data, dummy):
+        insert_check = True
+        check_query = db.select([self.reviews]).where(self.reviews.c.id == data["id"])
+        check_result = self.engine.execute(check_query)
+        check_result = ({'result': [dict(row) for row in check_result]})
+        for i in range(len(check_result['result'])):
+             if data["id"] == (check_result["result"][i]['id']):
+                insert_check = False
+        
+        # if no row exists with current primary key add new row
+        if insert_check == True:
+            if dummy == True:
+                query = db.insert(self.reviews).values(
+                    id = data["id"],
+                    eventId = data["eventId"],
+                    userId = data["userId"],
+                    reviewTimeStamp = data["reviewTimeStamp"],
+                    review = data['review'],
+                    rating = data['rating'],
+                    replyTimeStamp = data['replyTimeStamp'],
+                    reply = data['reply'],
+                    host = data['host'],
+                    eventType = data['eventType']
+                )
+            else:
+                query = db.insert(self.reviews).values(
+                    id = data["id"],
+                    eventId = data["eventId"],
+                    userId = data["userId"],
+                    reviewTimeStamp = data["reviewTimeStamp"],
+                    review = data['review'],
+                    rating = data['rating'],
+                    host = data['host'],
+                    eventType = data['eventType']
+                )
+            
+            try:
+                result = self.engine.execute(query).inserted_primary_key 
+                return result 
+            except:
+                return -1
+        else:
+            print("Review " + str(data["id"]) + " not added to reviews table as it failed the insert check")
 
 
 class DatabaseExecutionError(Exception):
