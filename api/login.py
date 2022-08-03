@@ -10,6 +10,9 @@ from flask_restful import Resource, reqparse
 # import custom classes used to interact with the DB
 from db.db_users import UsersDB
 
+# import the secrets to generate tokens
+from secrets import token_urlsafe
+
 
 class Login(Resource):
     def post(self):
@@ -39,6 +42,14 @@ class Login(Resource):
 
         if passwords_match == False:
             return {"status": "Error", "message": "Password is incorrect"}
+
+        user_details_params = { "token" : token_urlsafe(16)}
+        
+        update_status =  users_db.update_user_token(
+            user_details_params, request_username
+        )
+        if update_status == -1:
+            return {"status": "Error", "message": "Cannot update the token, please try again"}
 
         user_record = users_db.get_user_record_byname(request_username)
         result_dict = {}
