@@ -196,9 +196,6 @@ export default function EventPage() {
 					Buy A Ticket
 				</Button>
 			</Col>
-			<Col span={12}>
-				<Statistic title="Unmerged" value={93} suffix="/ 100" />
-			</Col>
 		</Row>
 	);
 

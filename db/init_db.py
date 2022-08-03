@@ -131,8 +131,8 @@ class InitDB:
         # from those CSVs into the relevant tables
 
         # read in dummy data from CSVs
-        dummy_events_df = pd.read_csv("db/dummy_events.csv")
-        dummy_users_df = pd.read_csv("db/dummy_users.csv")
+        dummy_events_df = pd.read_csv("db/dummy_events.csv", delimiter="|")
+        dummy_users_df = pd.read_csv("db/dummy_users.csv", delimiter="|")
 
         # Iterate through events pandas DF and insert each row into table using
         # insert function
