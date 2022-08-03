@@ -1,4 +1,4 @@
-import React, { useEffect, useState, } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Layout,
   Button,
@@ -203,15 +203,12 @@ export default function CreateEvent() {
         image: image,
       },
     };
-    console.log(requestbody);
     axios
       .post('http://127.0.0.1:5000/create', requestbody, { headers })
       .then((res) => {
-        console.log(res.data);
         let status = res.data.status;
         let id = res.data.new_event_id[0];
         if (status !== 'ERROR') {
-          console.log(id);
           message.success(`Successfully create event ${title} with id ${id}`);
           navigate(`/event?event_id=${id}`);
         } else {
@@ -374,9 +371,7 @@ export default function CreateEvent() {
             </div>
           </div>
         </Content>
-        <Footer style={{textAlign:'center'}}>
-          9900-H16Q-404
-        </Footer>
+        <Footer style={{ textAlign: 'center' }}>9900-H16Q-404</Footer>
       </Layout>
     </div>
   );

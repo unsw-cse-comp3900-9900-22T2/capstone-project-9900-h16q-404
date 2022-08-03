@@ -78,7 +78,6 @@ export default function EditEvent() {
         },
       })
       .then((res) => {
-        console.log(res.data);
         let data = res.data.event_details[0];
         setTitle(data.event_name);
         setType(data.type);
@@ -178,14 +177,11 @@ export default function EditEvent() {
         image: image,
       },
     };
-    console.log(requestbody);
     axios
       .put('http://127.0.0.1:5000/event', requestbody, { headers })
       .then((res) => {
-        console.log(res.data);
         let status = res.data.resultStatus;
         if (status !== 'ERROR') {
-          console.log(status);
           message.success(
             `Successfully edit event ${title} with id ${eventid}`
           );
@@ -267,7 +263,6 @@ export default function EditEvent() {
                 placeholder={'2023-01-22 01:00'}
                 onChange={(date, dateString) => {
                   let datearr = dateString.split(' ');
-                  console.log(datearr);
                   setEndDate(datearr[0]);
                   setEndTime(datearr[1]);
                 }}

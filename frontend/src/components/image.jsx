@@ -6,7 +6,6 @@ function fileToDataURL(setImage, file) {
   reader.readAsDataURL(file);
   reader.onload = function () {
     setImage(reader.result);
-    console.log(reader.result);
   };
   reader.onerror = function (error) {
     message.warning(`Invalid image type. Please try again. Error: ${error}`);

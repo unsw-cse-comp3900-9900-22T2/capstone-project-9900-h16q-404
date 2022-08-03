@@ -83,7 +83,6 @@ export default function BuyTicket() {
       })
       .then((res) => {
         if (res.data.resultStatus === 'SUCCESS') {
-          // console.log(res.data.message);
           const newdata = {};
           for (const value of res.data.message.result) {
             const combine = [
@@ -138,7 +137,6 @@ export default function BuyTicket() {
         }
       }
     }
-    // console.log(tickets);
     return tickets;
   }
 

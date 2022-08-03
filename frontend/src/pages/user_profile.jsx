@@ -46,7 +46,6 @@ export default function UserProfilePage() {
         let dataPastEvent = [];
         let dataUCEvent = [];
         for (const event of data.events) {
-          //console.log(event);
           const today = new Date();
           const eventDay = Date.parse(event.startDate);
           if (today <= eventDay) {
@@ -61,7 +60,10 @@ export default function UserProfilePage() {
   }, [searchParams]);
 
   let fullname = '';
-  if (details.firstname === null && details.lastname === null) {
+  if (
+    (details.firstname === null && details.lastname === null) ||
+    (details.firstname === '' && details.lastname === '')
+  ) {
     fullname = 'Anonymous user';
   } else {
     fullname = details.firstname + ' ' + details.lastname;
@@ -96,7 +98,7 @@ export default function UserProfilePage() {
               </h3>
             </div>
             <div className='picture-zone'>
-              {details.image === 'default' || details.image === '' ? (
+              {details.image === 'default' || details.image === null ? (
                 <Avatar
                   size={128}
                   icon={<UserOutlined />}
@@ -113,7 +115,7 @@ export default function UserProfilePage() {
             </div>
           </div>
           <div className='rating-zone'>
-            <Divider orientation="left">Rating for past events</Divider>
+            <Divider orientation='left'>Rating for past events</Divider>
             <UserRating />
           </div>
 

@@ -54,6 +54,7 @@ export default function EditProfile() {
         const info = data.message;
         if (resultStatus === 'SUCCESS') {
           message.success(info);
+          localStorage.setItem('userIcon', image);
           const detailsLocation =
             '/user?userId=' + localStorage.getItem('userId');
           navigate(detailsLocation);

@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-export default function PastEventBuyTicketMask () {
+export default function PastEventBuyTicketMask() {
   return (
     <>
       <h2>
@@ -9,5 +9,5 @@ export default function PastEventBuyTicketMask () {
         But you can still buy tickets for other events...
       </h2>
     </>
-  )
+  );
 }

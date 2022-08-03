@@ -47,12 +47,12 @@ export default function Watchlist() {
         },
       })
       .then((res) => {
-        console.log(res.data);
         for (const item of res.data) {
           tempdata.push({
             key: count,
             user_name: item.user_name,
             user_id: item.user_id,
+            image: item.image,
           });
           count++;
           tempfollow.push(true);
@@ -74,22 +74,52 @@ export default function Watchlist() {
         >
           <h1>My Watchlist</h1>
           <List
-            grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 4 }}
+            grid={{
+              gutter: 16,
+              xs: 1,
+              sm: 2,
+              md: 2,
+              lg: 3,
+              xl: 4,
+              xxl: 4,
+            }}
             locale={{ emptyText: "You haven't followed anyone yet!" }}
             split={true}
             itemLayout='vertical'
             dataSource={data}
             renderItem={(item) => (
-              <List.Item>
+              <List.Item
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
                 <Card
                   style={{
                     marginTop: 10,
                     marginBottom: 10,
                     borderColor: 'grey',
                   }}
+                  hoverable={true}
+                  size={'small'}
                 >
-                  <Space size={'large'}>
-                    <Avatar size={32} icon={<UserOutlined />} />
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {item.image === 'default' || item.image === null ? (
+                      <Avatar
+                        size={64}
+                        icon={<UserOutlined />}
+                        style={{ marginTop: '20px' }}
+                      />
+                    ) : (
+                      <Avatar size={64} src={item.image} />
+                    )}
                     <Link
                       to={`/user?userId=${item.user_id}`}
                       className='username'
@@ -108,7 +138,6 @@ export default function Watchlist() {
                         type='primary'
                         onClick={() => {
                           setLoadArray(item.key, true);
-                          console.log(`Unfollow ${item.user_name}`);
                           let headers = {
                             'Content-Type': 'application/json',
                             token: usertoken,
@@ -136,7 +165,6 @@ export default function Watchlist() {
                         onClick={() => {
                           setLoadArray(item.key, true);
                           setFollowArray(item.key, true);
-                          console.log(`Follow ${item.user_name}`);
                           let headers = {
                             'Content-Type': 'application/json',
                             token: usertoken,
@@ -162,7 +190,7 @@ export default function Watchlist() {
                         Follow
                       </Button>
                     )}
-                  </Space>
+                  </div>
                 </Card>
               </List.Item>
             )}

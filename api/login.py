@@ -47,6 +47,8 @@ class Login(Resource):
         result_dict["email"] = user_record[0][4]
         result_dict["firstname"] = user_record[0][5]
         result_dict["lastname"] = user_record[0][6]
+        result_dict["image"] = user_record[0][11]
+
 
         # check dob not none then convert to string
         dob = user_record[0][7]

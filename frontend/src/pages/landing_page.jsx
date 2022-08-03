@@ -106,7 +106,7 @@ export default function LandingPage() {
         })
         .then((response) => response.data)
         .then((data) => {
-          if (data.length !==0) {
+          if (data.length !== 0) {
             setEventList(data);
           } else {
             message.warning('No event from watched users!');
@@ -171,11 +171,19 @@ export default function LandingPage() {
                   />,
                 ]}
                 extra={
-                  <img
-                    width={272}
-                    alt='logo'
-                    src='https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png'
-                  />
+                  item.image === 'default' ? (
+                    <img
+                      width={272}
+                      alt='placeholder'
+                      src='https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png'
+                    />
+                  ) : (
+                    <img
+                      style={{ maxWidth: 272, maxHeight: 168 }}
+                      alt='event image'
+                      src={item.image}
+                    />
+                  )
                 }
               >
                 <List.Item.Meta

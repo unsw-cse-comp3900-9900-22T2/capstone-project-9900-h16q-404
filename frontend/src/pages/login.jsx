@@ -24,14 +24,12 @@ const { Content, Footer } = Layout;
 const LoginForm = () => {
   let navigate = useNavigate();
   const onFinish = (values) => {
-    // console.log('Input:', values);
     axios
       .post('http://127.0.0.1:5000/login', {
         username: values.username,
         password: values.password,
       })
       .then((res) => {
-        //console.log(res.data);
         let status = res.data.status;
         // changed var name to use message function
         let info = res.data.message;
@@ -39,17 +37,16 @@ const LoginForm = () => {
           // change alert to antd message
           message.error(info);
         } else {
-          //console.log(JSON.stringify(res.data))
           localStorage.setItem('username', info.email);
           localStorage.setItem('token', info.token);
           localStorage.setItem('userId', info.userId);
+          localStorage.setItem('userIcon', info.image);
           message.success('Login Successful!', 2).then(navigate('/'));
         }
       }, []);
   };
 
   const onFinishFailed = (errorInfo) => {
-    //console.log('Failed:', errorInfo);
     message.error(errorInfo);
   };
 

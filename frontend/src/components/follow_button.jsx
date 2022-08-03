@@ -27,7 +27,6 @@ export default function FollowButton(userId) {
     ) {
       setFollow(false);
     } else {
-      console.log(localStorage.getItem('token'));
       axios
         .get('http://127.0.0.1:5000/follow', {
           headers: {
@@ -37,7 +36,6 @@ export default function FollowButton(userId) {
           params: { target_id: userId },
         })
         .then((res) => {
-          // console.log(res.data);
           setFollow(res.data);
         })
         .catch((err) => {
@@ -85,13 +83,11 @@ export default function FollowButton(userId) {
               axios
                 .put('http://127.0.0.1:5000/follow', data, { headers })
                 .then((res) => {
-                  // console.log(res);
                   message.success('Successfully unfollow the user');
                   setFollow(false);
                   setLoad(false);
                 })
                 .catch((err) => {
-                  // console.log(err);
                   message.error(err.data);
                 });
             }}

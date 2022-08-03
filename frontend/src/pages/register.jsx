@@ -1,10 +1,4 @@
-import {
-  Form,
-  Input,
-  Button,
-  message,
-  Layout
-} from 'antd';
+import { Form, Input, Button, message, Layout } from 'antd';
 import axios from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +19,7 @@ const RegisterBox = styled.div`
   border-radius: 5px;
   align-items: center;
   justify-content: center;
-`
+`;
 
 const formItemLayout = {
   labelCol: {
@@ -64,59 +58,71 @@ const RegisterForm = () => {
   const navigate = useNavigate();
 
   const onFinish = (values) => {
-    //console.log('Received values of form: ', values);
-    axios.post('http://127.0.0.1:5000/register',values)
-    .then(response => response.data)
-    .then(
-      data => {
-        if(data.status === "Success"){
-          message.success("Register successful! Redirecting to login page...", 2);
-          navigate("/login");
+    axios
+      .post('http://127.0.0.1:5000/register', values)
+      .then((response) => response.data)
+      .then((data) => {
+        if (data.status === 'Success') {
+          message.success(
+            'Register successful! Redirecting to login page...',
+            2
+          );
+          navigate('/login');
+        } else {
+          message.error(data.message, 2);
         }
-        else{
-          message.error(data.message,2);
-        }
-      }
-    )
-    .catch(function(error){
-      //console.log(error)
-      message.error("Something wrong when registering...",2);
-    });
+      })
+      .catch(function (error) {
+        message.error('Something wrong when registering...', 2);
+      });
   };
 
   return (
     <div>
       <Layout>
         <PageHeader />
-        <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64, display: 'flex', alignItems:'center', flexDirection:'column' }}>
+        <Content
+          className='site-layout'
+          style={{
+            padding: '0 50px',
+            marginTop: 64,
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
           <RegisterBox>
-            <img src={logo} alt="logo" style={{width:'100px', height:'100px', marginBottom:'20px'}}></img>
+            <img
+              src={logo}
+              alt='logo'
+              style={{ width: '100px', height: '100px', marginBottom: '20px' }}
+            ></img>
             <Form
               {...formItemLayout}
               form={form}
-              name="register"
+              name='register'
               onFinish={onFinish}
             >
               <Form.Item
-                  name="email"
-                  label="E-mail"
-                  rules={[
-                    {
-                      type: 'email',
-                      message: 'The input is not valid E-mail!',
-                    },
-                    {
-                      required: true,
-                      message: 'Please input your E-mail!',
-                    },
-                  ]}
-                >
-                  <Input />
+                name='email'
+                label='E-mail'
+                rules={[
+                  {
+                    type: 'email',
+                    message: 'The input is not valid E-mail!',
+                  },
+                  {
+                    required: true,
+                    message: 'Please input your E-mail!',
+                  },
+                ]}
+              >
+                <Input />
               </Form.Item>
 
               <Form.Item
-                name="password"
-                label="Password"
+                name='password'
+                label='Password'
                 rules={[
                   {
                     required: true,
@@ -129,8 +135,8 @@ const RegisterForm = () => {
               </Form.Item>
 
               <Form.Item
-                name="confirm"
-                label="Confirm Password"
+                name='confirm'
+                label='Confirm Password'
                 dependencies={['password']}
                 hasFeedback
                 rules={[
@@ -144,7 +150,11 @@ const RegisterForm = () => {
                         return Promise.resolve();
                       }
 
-                      return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                      return Promise.reject(
+                        new Error(
+                          'The two passwords that you entered do not match!'
+                        )
+                      );
                     },
                   }),
                 ]}
@@ -153,25 +163,22 @@ const RegisterForm = () => {
               </Form.Item>
 
               <Form.Item {...tailFormItemLayout}>
-                <Button type="primary" htmlType="submit">
+                <Button type='primary' htmlType='submit'>
                   Register
                 </Button>
                 <br />
-                Already have an account? <br /> <a href='login'>Click here to Log In!</a>
+                Already have an account? <br />{' '}
+                <a href='login'>Click here to Log In!</a>
               </Form.Item>
             </Form>
           </RegisterBox>
         </Content>
-        <Footer style={{textAlign:'center'}}>
-          9900-H16Q-404
-        </Footer>
+        <Footer style={{ textAlign: 'center' }}>9900-H16Q-404</Footer>
       </Layout>
     </div>
-  )
-}
+  );
+};
 
-export default function RegisterPage () {
-  return (
-    <RegisterForm />
-  )
+export default function RegisterPage() {
+  return <RegisterForm />;
 }
