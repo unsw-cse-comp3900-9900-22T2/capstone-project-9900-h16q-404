@@ -22,6 +22,9 @@ import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
 
+from sentence_transformers import SentenceTransformer
+sentence_model = SentenceTransformer('distilbert-base-nli-mean-tokens')
+
 # import database class
 from api.recommendations import Recommendations
 from db.init_db import db_main

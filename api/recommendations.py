@@ -8,10 +8,13 @@ from db.db_token_handler import TokenHandlerDB
 from db.db_recommendations import RecommendationsDB
 from db.db_reviews import ReviewsDB
 
+from scipy.spatial import distance
+from app import sentence_model
 
 class Recommendations(Resource):    
     
     def get(self):
+        
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str, location='args')
         args = parser.parse_args()
@@ -108,6 +111,7 @@ class Recommendations(Resource):
                     recommended_eventid_bydesc.add(future_event_id[future_event])
         
         recommended_eventids = list(recommended_eventid_bytype | recommended_eventid_byhost | recommended_eventid_bydesc)
+        print(recommended_eventid_bydesc)
         
         recommended_events = []
         
@@ -124,20 +128,10 @@ class Recommendations(Resource):
         
 
     def get_similarity_score(self,sentence1, sentence2):
-            from sentence_transformers import SentenceTransformer
-            from scipy.spatial import distance
-            model = SentenceTransformer('distilbert-base-nli-mean-tokens')
-            
-            
-            filtered_sentence1 = " ".join(sentence1)
-            filtered_sentence2 = " ".join(sentence2)
-            sentences = [filtered_sentence1, filtered_sentence2]
-            sentence_embeddings = model.encode(sentences)
+        
+        filtered_sentence1 = " ".join(sentence1)
+        filtered_sentence2 = " ".join(sentence2)
+        sentences = [filtered_sentence1, filtered_sentence2]
+        sentence_embeddings = sentence_model.encode(sentences)
 
-            # for sentence, embedding in zip(sentences, sentence_embeddings):
-                # print("Sentence:", sentence)
-                #print("Embedding:", embedding)
-                #print("")
-            
-            
-            return (1 - distance.cosine(sentence_embeddings[0], sentence_embeddings[1]))
+        return (1 - distance.cosine(sentence_embeddings[0], sentence_embeddings[1]))

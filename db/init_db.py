@@ -15,7 +15,7 @@ import logging
 import json
 
 import pandas as pd
-from psycopg2 import IntegrityError
+from sqlalchemy.exc import IntegrityError
 import sqlalchemy as db
 from sqlalchemy import ForeignKey, and_
 
