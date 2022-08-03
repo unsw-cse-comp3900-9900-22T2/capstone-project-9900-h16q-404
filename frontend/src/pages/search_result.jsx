@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Layout, message, List, Avatar, Space } from "antd";
+import { Layout, message, List, Avatar,} from "antd";
 import PageHeader from "../components/page_header";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
 import { Link }from 'react-router-dom';
+import moment from 'moment'
 
 const { Content, Footer } = Layout;
 
 export default function SearchResult () {
   const [searchParams] = useSearchParams();
   const [searchResult, setSearchResult] = useState([]);
-
-  const IconText = ({ icon, text }) => (
-    <Space>
-      {React.createElement(icon)}
-      {text}
-    </Space>
-  );
 
   useEffect(()=>{
     const value = decodeURIComponent(searchParams.get("keyword"));
@@ -32,7 +25,19 @@ export default function SearchResult () {
       .then(response => response.data)
       .then(data => {
         if(data.resultStatus === "SUCCESS") {
-          setSearchResult(data.message)
+          //setSearchResult(data.message)
+          const wholeList = data.message
+            let futureList = []
+            const curTime = moment()
+            wholeList.forEach(
+              i => {
+                const iFinishTime = moment(i.end_date + ' ' + i.end_time)
+                if (iFinishTime.isAfter(curTime)){
+                  futureList.push(i)
+                }
+              }
+            )
+            setSearchResult(futureList);
         }
         else{
           message.error(data.message)
@@ -56,11 +61,6 @@ export default function SearchResult () {
           renderItem={(item) => (
             <List.Item
               key={item.id}
-              actions={[
-                <IconText icon={StarOutlined} text="114" key="list-vertical-star-o" />,
-                <IconText icon={LikeOutlined} text="514" key="list-vertical-like-o" />,
-                <IconText icon={MessageOutlined} text="1919" key="list-vertical-message" />,
-              ]}
               extra={
                 <img
                   width={272}

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
-import { Layout, List, Space, Avatar, Radio, message } from 'antd';
+import { Layout, List, Avatar, Radio, message } from 'antd';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/page_header';
 import axios from 'axios';
 import RecommendationButton from '../components/recommendation_button';
+import moment from 'moment'
 
 const { Content, Footer } = Layout;
 
@@ -75,7 +75,18 @@ export default function LandingPage() {
         .then((response) => response.data)
         .then((data) => {
           if (data.resultStatus === 'SUCCESS') {
-            setEventList(data.message);
+            const wholeList = data.message
+            let futureList = []
+            const curTime = moment()
+            wholeList.forEach(
+              i => {
+                const iFinishTime = moment(i.end_date + ' ' + i.end_time)
+                if (iFinishTime.isAfter(curTime)){
+                  futureList.push(i)
+                }
+              }
+            )
+            setEventList(futureList);
           }
         });
     } else if (
@@ -90,7 +101,18 @@ export default function LandingPage() {
         .then((response) => response.data)
         .then((data) => {
           if (data.resultStatus === 'SUCCESS') {
-            setEventList(data.event_details);
+            const wholeList = data.event_details
+            let futureList = []
+            const curTime = moment()
+            wholeList.forEach(
+              i => {
+                const iFinishTime = moment(i.end_date + ' ' + i.end_time)
+                if (iFinishTime.isAfter(curTime)){
+                  futureList.push(i)
+                }
+              }
+            )
+            setEventList(futureList);
           } else {
             message.warning(data.message);
             setEventList([]);
@@ -108,7 +130,18 @@ export default function LandingPage() {
         .then((response) => response.data)
         .then((data) => {
           if (data.length !==0) {
-            setEventList(data);
+            const wholeList = data
+            let futureList = []
+            const curTime = moment()
+            wholeList.forEach(
+              i => {
+                const iFinishTime = moment(i.end_date + ' ' + i.end_time)
+                if (iFinishTime.isAfter(curTime)){
+                  futureList.push(i)
+                }
+              }
+            )
+            setEventList(futureList);
           } else {
             message.warning('No event from watched users!');
             setEventList([]);
@@ -118,13 +151,6 @@ export default function LandingPage() {
       message.warning('Filter type not available yet!');
     }
   }, [filter]);
-
-  const IconText = ({ icon, text }) => (
-    <Space>
-      {React.createElement(icon)}
-      {text}
-    </Space>
-  );
 
   return (
     <div>
@@ -163,23 +189,6 @@ export default function LandingPage() {
             renderItem={(item) => (
               <List.Item
                 key={item.id}
-                actions={[
-                  <IconText
-                    icon={StarOutlined}
-                    text='114'
-                    key='list-vertical-star-o'
-                  />,
-                  <IconText
-                    icon={LikeOutlined}
-                    text='514'
-                    key='list-vertical-like-o'
-                  />,
-                  <IconText
-                    icon={MessageOutlined}
-                    text='1919'
-                    key='list-vertical-message'
-                  />,
-                ]}
                 extra={
                   <img
                     width={272}

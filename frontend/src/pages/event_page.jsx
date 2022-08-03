@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Descriptions, Rate, Collapse, Modal } from 'antd';
 import PageHeader from '../components/page_header';
-import { Col, Row, Statistic, Button, Divider, message } from 'antd';
+import { Col, Row, Button, Divider, message } from 'antd';
 import axios from 'axios'
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -181,9 +181,6 @@ export default function EventPage () {
 				href={'/buyticket/' + eventInfo.id}>
 					Buy A Ticket
 				</Button>
-			</Col>
-			<Col span={12}>
-				<Statistic title="Unmerged" value={93} suffix="/ 100" />
 			</Col>
 		</Row>
 	);
