@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, List, Button, Space, message, Spin, Card, Avatar } from 'antd';
+import { Layout, List, Button, message, Spin, Card, Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/page_header';
@@ -62,7 +62,7 @@ export default function Watchlist() {
         setLoad(tempload);
         setFollow(tempfollow);
       });
-  }, []);
+  }, [usertoken]);
 
   return (
     <div>

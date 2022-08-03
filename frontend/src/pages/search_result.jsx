@@ -26,6 +26,7 @@ export default function SearchResult() {
       .then(data => {
         if(data.resultStatus === "SUCCESS") {
           //setSearchResult(data.message)
+          console.log(data)
           const wholeList = data.message
             let futureList = []
             const curTime = moment()
@@ -48,42 +49,65 @@ export default function SearchResult() {
     <>
       <Layout>
         <PageHeader />
-        <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
-          <div style={{
-              fontSize:'300%', 
-              fontWeight:'bold',
-              fontFamily:'Arial, Helvetica, sans-serif'
-            }}>Results of searching {decodeURIComponent(searchParams.get("keyword"))}: </div>
-          <List
-          itemLayout="vertical"
-          size="large"
-          dataSource={searchResult}
-          renderItem={(item) => (
-            <List.Item
-              key={item.id}
-              extra={
-                <img
-                  width={272}
-                  alt="logo"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-                />
-              }
-            >
-              <List.Item.Meta
-                avatar={<Avatar src={'https://joeschmoe.io/api/v1/random'}></Avatar>}
-                title={<Link to={"/event?event_id="+item.id}>{item.event_name}</Link>}
-                description={<Link to={"/user?userId="+item.host}>{item.host_username}</Link>}
-              />
-              {"Event date: " + item.start_date}
-            </List.Item>
-            )}
+        <Content
+          className='site-layout'
+          style={{ padding: '0 50px', marginTop: 64 }}
+        >
+          <div
+            style={{
+              fontSize: '300%',
+              fontWeight: 'bold',
+              fontFamily: 'Arial, Helvetica, sans-serif',
+            }}
           >
-          </List>
+            Results of searching{' '}
+            {decodeURIComponent(searchParams.get('keyword'))}:{' '}
+          </div>
+          <List
+            itemLayout='vertical'
+            size='large'
+            dataSource={searchResult}
+            renderItem={(item) => (
+              <List.Item
+                key={item.id}
+                extra={
+                  item.image === 'default' ? (
+                    <img
+                      width={272}
+                      alt='placeholder'
+                      src='https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png'
+                    />
+                  ) : (
+                    <img
+                      style={{ maxWidth: 272, maxHeight: 168 }}
+                      alt='event image'
+                      src={item.image}
+                    />
+                  )
+                }
+              >
+                <List.Item.Meta
+                  avatar={
+                    <Avatar src={'https://joeschmoe.io/api/v1/random'}></Avatar>
+                  }
+                  title={
+                    <Link to={'/event?event_id=' + item.id}>
+                      {item.event_name}
+                    </Link>
+                  }
+                  description={
+                    <Link to={'/user?userId=' + item.host}>
+                      {item.host_username}
+                    </Link>
+                  }
+                />
+                {'Event date: ' + item.start_date}
+              </List.Item>
+            )}
+          ></List>
         </Content>
-        <Footer style={{textAlign:'center'}}>
-          9900-H16Q-404
-        </Footer>
+        <Footer style={{ textAlign: 'center' }}>9900-H16Q-404</Footer>
       </Layout>
     </>
-  )
+  );
 }

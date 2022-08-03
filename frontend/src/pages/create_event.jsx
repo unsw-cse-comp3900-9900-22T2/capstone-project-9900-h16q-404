@@ -255,7 +255,6 @@ export default function CreateEvent() {
                 <Option value={'Film'}>Film</Option>
                 <Option value={'Festival'}>Festival</Option>
                 <Option value={'Funeral'}>Funeral</Option>
-                <Option value={'Holiday'}>Holiday</Option>
                 <Option value={'Other'}>Other</Option>
               </Select>
             </Space>

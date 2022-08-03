@@ -8,7 +8,7 @@ import {
   MoreOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import { Modal, Space } from 'antd';
+import { Modal } from 'antd';
 import DescriptionsItem from 'antd/lib/descriptions/Item';
 
 const { Content, Footer } = Layout;
@@ -35,13 +35,6 @@ export default function MyTicket() {
         }
       });
   }, []);
-
-  const IconText = ({ icon, text }) => (
-    <Space>
-      {React.createElement(icon)}
-      {text}
-    </Space>
-  );
 
   let today = new Date();
   let sevenDaysBefore = new Date();

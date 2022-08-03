@@ -44,11 +44,9 @@ export default function UserButton() {
     // also store userId in localStorage
     <Dropdown.Button onClick={userButtonOnClick} overlay={menu} type='primary'>
       {localStorage.getItem('userIcon') === 'default' ||
+      localStorage.getItem('userIcon') === 'null' ||
       localStorage.getItem('userIcon') === null ? (
-        <Avatar
-          size={24}
-          icon={<UserOutlined />}
-        />
+        <Avatar size={24} icon={<UserOutlined />} />
       ) : (
         <Avatar size={24} src={localStorage.getItem('userIcon')} />
       )}
