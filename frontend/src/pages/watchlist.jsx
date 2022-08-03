@@ -10,22 +10,6 @@ import './watchlist.css';
 const spinIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const { Content, Footer } = Layout;
 
-const data_empty = [];
-const data1 = [
-  {
-    user_name: 'test1',
-    user_id: 1,
-  },
-  {
-    user_name: 'test2',
-    user_id: 2,
-  },
-  {
-    user_name: 'test3',
-    user_id: 3,
-  },
-];
-
 function get_list(token) {
   axios
     .get('http://127.0.0.1:5000/mywatchlist', {
