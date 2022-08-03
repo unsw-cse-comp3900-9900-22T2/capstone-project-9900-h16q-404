@@ -57,3 +57,9 @@ I plan to work out the follow/watchlist feature
 week 9
 Working on follow button and watchlist. After merging the backend it seems to be work with some minor bugs, I fixed them.
 I tested the ways to add images to the current website. Later on I need to put it to the right place and add the same stuff to user profile.
+A team member got covid, which slowed our progress a bit.
+
+week 10
+We refactor the backend and frontend together. We talked about the recommendation system. After the image function tested well, I add the event image to the landing page and user icon to the buttons and watchlist so that users can distinguish one event or user from others.
+During the final phase of development I fixed some minor bugs (mostly in frontend). I also add the token generation to the backend, and the backend will update the token every time the user login and send the the token to frontend which will store it locally.
+Write the report.
