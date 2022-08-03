@@ -6,7 +6,6 @@ This file handles the API requests for getting, editing and deleting event infor
 """
 # import third party libraries
 from flask_restful import Resource, reqparse
-from matplotlib.axis import Tick
 
 # import custom classes used to interact with the DB
 from db.db_events import EventsDB
