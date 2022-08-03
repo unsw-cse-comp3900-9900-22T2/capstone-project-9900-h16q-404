@@ -111,7 +111,6 @@ class Recommendations(Resource):
                     recommended_eventid_bydesc.add(future_event_id[future_event])
         
         recommended_eventids = list(recommended_eventid_bytype | recommended_eventid_byhost | recommended_eventid_bydesc)
-        print(recommended_eventid_bydesc)
         
         recommended_events = []
         
