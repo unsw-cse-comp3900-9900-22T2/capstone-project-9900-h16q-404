@@ -48,17 +48,20 @@ class Recommendations(Resource):
         current_day = datetime.datetime.now();
         
         for event in events_booked:
-            get_event = reviews_db.select_event_byId(event)[0]
-            
-            event_end_time = get_event['end_date'] + " " + get_event['end_time'];
-            event_time_stamp = datetime.datetime.strptime(event_end_time, "%Y-%m-%d %H:%M:%S")
-            
-            # get data only from past events i.e. before today
-            if (event_time_stamp < current_day):
-                attended_event_type.add(get_event['type'])
-                if (get_event['host_username'] != username):
-                    attended_event_host.add(get_event['host_username'])
-                attended_event_description.add(get_event['description'].lower())
+            try: 
+                get_event = reviews_db.select_event_byId(event)[0]
+                
+                event_end_time = get_event['end_date'] + " " + get_event['end_time'];
+                event_time_stamp = datetime.datetime.strptime(event_end_time, "%Y-%m-%d %H:%M:%S")
+                
+                # get data only from past events i.e. before today
+                if (event_time_stamp < current_day):
+                    attended_event_type.add(get_event['type'])
+                    if (get_event['host_username'] != username):
+                        attended_event_host.add(get_event['host_username'])
+                    attended_event_description.add(get_event['description'].lower())
+            except:
+                pass
         
         attended_event_description = list(attended_event_description)
         
