@@ -100,6 +100,15 @@ class TicketsDB:
         result = self.temp_db.engine.execute(update_query)
         return result
 
+    def refund_all_tickets_deleted_event(self, eventID):
+        update_query = (
+            self.temp_db.tickets.update()
+            .values(purchased=db.false(), user_id=db.null(), card_number=db.null())
+            .where(self.temp_db.tickets.c.event_id == eventID)
+        )
+        result = self.temp_db.engine.execute(update_query)
+        return result
+
     # Helper functions
 
     def pre_fill_tickets(self, data):

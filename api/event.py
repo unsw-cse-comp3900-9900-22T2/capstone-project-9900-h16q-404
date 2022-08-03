@@ -6,9 +6,11 @@ This file handles the API requests for getting, editing and deleting event infor
 """
 # import third party libraries
 from flask_restful import Resource, reqparse
+from matplotlib.axis import Tick
 
 # import custom classes used to interact with the DB
 from db.db_events import EventsDB
+from db.db_tickets import TicketsDB
 
 
 class Event(Resource):
@@ -40,7 +42,7 @@ class Event(Resource):
 
         # parse request
         parser = reqparse.RequestParser()
-        parser.add_argument("token", type=str)
+        parser.add_argument("token", type=str, location='headers')
         parser.add_argument("detail", type=dict)
         parser.add_argument("event_id", type=str)
         args = parser.parse_args()
@@ -69,6 +71,7 @@ class Event(Resource):
 
         # create db engine
         events_db = EventsDB()
+        tickets_db = TicketsDB()
 
         if event_id:
             # if event_id provided
@@ -83,6 +86,9 @@ class Event(Resource):
 
         if result == True:
             # If result is True, return SUCCESS and event details
+            # Also cancel all tickets associated with this event
+            tickets_db.refund_all_tickets_deleted_event(event_id)
+
             return {
                 "resultStatus": "SUCCESS",
                 "event": event_details,

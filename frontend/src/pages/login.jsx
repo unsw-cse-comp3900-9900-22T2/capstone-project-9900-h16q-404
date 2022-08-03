@@ -3,7 +3,7 @@ import { Button, Form, Input, message, Layout } from 'antd';
 import PageHeader from '../components/page_header';
 import logo from '../static/picacg.jpeg';
 import axios from 'axios';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 const LoginBox = styled.div`
@@ -17,51 +17,59 @@ const LoginBox = styled.div`
   border-radius: 5px;
   align-items: center;
   justify-content: center;
-`
+`;
 
 const { Content, Footer } = Layout;
 
 const LoginForm = () => {
   let navigate = useNavigate();
   const onFinish = (values) => {
-    // console.log('Input:', values);
     axios
       .post('http://127.0.0.1:5000/login', {
         username: values.username,
         password: values.password,
       })
       .then((res) => {
-        //console.log(res.data);
         let status = res.data.status;
         // changed var name to use message function
         let info = res.data.message;
-        if (status==='Error') {
+        if (status === 'Error') {
           // change alert to antd message
           message.error(info);
-        }
-        else{
-          //console.log(JSON.stringify(res.data))
+        } else {
           localStorage.setItem('username', info.email);
           localStorage.setItem('token', info.token);
           localStorage.setItem('userId', info.userId);
-          message.success("Login Successful!",2)
-            .then(navigate('/'));
+          localStorage.setItem('userIcon', info.image);
+          message.success('Login Successful!', 2).then(navigate('/'));
         }
       }, []);
-    }
+  };
 
   const onFinishFailed = (errorInfo) => {
-    //console.log('Failed:', errorInfo);
-    message.error(errorInfo)
+    message.error(errorInfo);
   };
 
   return (
     <>
       <Layout>
         <PageHeader />
-        <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64, display: 'flex', alignItems:'center', flexDirection:'column' }}>
+        <Content
+          className='site-layout'
+          style={{
+            padding: '0 50px',
+            marginTop: 64,
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
           <LoginBox>
-            <img src={logo} alt="logo" style={{width:'100px', height:'100px', marginBottom:'20px'}}></img>
+            <img
+              src={logo}
+              alt='logo'
+              style={{ width: '100px', height: '100px', marginBottom: '20px' }}
+            ></img>
             <Form
               name='basic'
               labelCol={{
@@ -113,16 +121,15 @@ const LoginForm = () => {
                   Login
                 </Button>
                 <br />
-                Don't have an account? <br /> <a href='register'>Click here to Register!</a>
+                Don't have an account? <br />{' '}
+                <a href='register'>Click here to Register!</a>
               </Form.Item>
             </Form>
           </LoginBox>
         </Content>
-        <Footer style={{textAlign:'center'}}>
-          9900-H16Q-404
-        </Footer>
+        <Footer style={{ textAlign: 'center' }}>9900-H16Q-404</Footer>
       </Layout>
-    </>   
+    </>
   );
 };
 

@@ -22,7 +22,10 @@ export default function UserProfilePage() {
     // compare the userId in params with userId in localStorage
     if (searchParams.get('userId') === localStorage.getItem('userId')) {
       setSelfProfile(true);
-    } else if ( searchParams.get('userId') || searchParams.get('userId') !== localStorage.getItem('userId')) {
+    } else if (
+      searchParams.get('userId') ||
+      searchParams.get('userId') !== localStorage.getItem('userId')
+    ) {
       // not logged in or not self profile
       setSelfProfile(false);
     } else {
@@ -39,18 +42,15 @@ export default function UserProfilePage() {
       })
       .then((res) => res.data.message)
       .then((data) => {
-        //console.log(data.events);
         setDetails(data);
         let dataPastEvent = [];
         let dataUCEvent = [];
-        for (const event of data.events){
-          //console.log(event);
+        for (const event of data.events) {
           const today = new Date();
           const eventDay = Date.parse(event.startDate);
           if (today <= eventDay) {
             dataUCEvent.push(event);
-          }
-          else {
+          } else {
             dataPastEvent.push(event);
           }
         }
@@ -60,7 +60,10 @@ export default function UserProfilePage() {
   }, [searchParams]);
 
   let fullname = '';
-  if (details.firstname === null && details.lastname === null) {
+  if (
+    (details.firstname === null && details.lastname === null) ||
+    (details.firstname === '' && details.lastname === '')
+  ) {
     fullname = 'Anonymous user';
   } else {
     fullname = details.firstname + ' ' + details.lastname;
@@ -95,16 +98,24 @@ export default function UserProfilePage() {
               </h3>
             </div>
             <div className='picture-zone'>
-              <Avatar
-                size={128}
-                icon={<UserOutlined />}
-                style={{ marginTop: '20px' }}
-              />
+              {details.image === 'default' || details.image === null ? (
+                <Avatar
+                  size={128}
+                  icon={<UserOutlined />}
+                  style={{ marginTop: '20px' }}
+                />
+              ) : (
+                <Avatar
+                  size={128}
+                  src={details.image}
+                  style={{ marginTop: '20px' }}
+                />
+              )}
               {FollowButton(searchParams.get('userId'))}
             </div>
           </div>
           <div className='rating-zone'>
-            <Divider orientation="left">Rating for past events</Divider>
+            <Divider orientation='left'>Rating for past events</Divider>
             <UserRating />
           </div>
 

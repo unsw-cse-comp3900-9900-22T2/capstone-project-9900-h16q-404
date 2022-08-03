@@ -27,7 +27,6 @@ export default function FollowButton(userId) {
     ) {
       setFollow(false);
     } else {
-      console.log(localStorage.getItem('token'));
       axios
         .get('http://127.0.0.1:5000/follow', {
           headers: {
@@ -37,14 +36,13 @@ export default function FollowButton(userId) {
           params: { target_id: userId },
         })
         .then((res) => {
-          // console.log(res.data);
           setFollow(res.data);
         })
         .catch((err) => {
           message.error(err.data);
         });
     }
-  }, [userId]);
+  }, [token]);
   if (
     localStorage.getItem('userId') === undefined ||
     localStorage.getItem('userId') === null
@@ -54,8 +52,7 @@ export default function FollowButton(userId) {
         <Button
           type='primary'
           onClick={() => {
-            console.log('Please login to do this');
-            message.warning('Please login to do this');
+            message.error('Please login to do this');
           }}
         >
           Follow
@@ -66,10 +63,7 @@ export default function FollowButton(userId) {
     return (
       <>
         {selfId === userId ? (
-          <Button
-            style={{ width: 100 }}
-            href={'/watchlist'}
-          >
+          <Button style={{ width: 100 }} href={'/watchlist'}>
             Watchlist
           </Button>
         ) : load ? (
@@ -89,13 +83,11 @@ export default function FollowButton(userId) {
               axios
                 .put('http://127.0.0.1:5000/follow', data, { headers })
                 .then((res) => {
-                  // console.log(res);
                   message.success('Successfully unfollow the user');
                   setFollow(false);
                   setLoad(false);
                 })
                 .catch((err) => {
-                  // console.log(err);
                   message.error(err.data);
                 });
             }}

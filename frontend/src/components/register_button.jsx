@@ -8,10 +8,10 @@ import { Button } from 'antd';
  * @returns the button component
  */
 
-export default function RegisterButton () {
+export default function RegisterButton() {
   return (
     <Link to='/register'>
       <Button>Register</Button>
     </Link>
-  )
+  );
 }

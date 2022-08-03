@@ -56,6 +56,7 @@ class InitDB:
             db.Column("silver_price", db.Float(), nullable=True),
             db.Column("bronze_num", db.Integer(), nullable=True),
             db.Column("bronze_price", db.Float(), nullable=True),
+            db.Column("image", db.TEXT(), nullable=True),
         )
 
         # define the users tables
@@ -73,6 +74,7 @@ class InitDB:
             db.Column("gender", db.String(255), nullable=True),
             db.Column("phone", db.String(255), nullable=True),
             db.Column("vaccinated", db.Boolean(), nullable=True),
+            db.Column("image", db.TEXT(), nullable=True),
         )
 
         # define the tickets table
@@ -131,10 +133,13 @@ class InitDB:
         # from those CSVs into the relevant tables
 
         # read in dummy data from CSVs
-        dummy_events_df = pd.read_csv("db/dummy_data/dummy_events.csv")
-        dummy_users_df = pd.read_csv("db/dummy_data/dummy_users.csv")
-        dummy_tickets_df = pd.read_csv("db/dummy_data/dummy_tickets.csv")
-        dummy_reviews_df = pd.read_csv("db/dummy_data/dummy_reviews.csv")
+        dummy_events_df = pd.read_csv("db/dummy_data/dummy_events.csv", delimiter="|")
+        dummy_users_df = pd.read_csv(
+            "db/dummy_data/dummy_users.csv", delimiter="|")
+        dummy_tickets_df = pd.read_csv(
+            "db/dummy_data/dummy_tickets.csv", delimiter="|")
+        dummy_reviews_df = pd.read_csv(
+            "db/dummy_data/dummy_reviews.csv", delimiter="|")
 
         # Iterate through events pandas DF and insert each row into table using
         # insert function
@@ -164,6 +169,7 @@ class InitDB:
                 "silver_price": row.silver_price,
                 "bronze_num": row.bronze_num,
                 "bronze_price": row.bronze_price,
+                "image": row.image,
             }
             result = self.insert_events(data)
             if result is None or result == -1:
@@ -184,6 +190,7 @@ class InitDB:
                 "gender": "",
                 "phone": "",
                 "vaccinated": row.vac,
+                "image": row.image,
             }
             self.insert_users(data, True)
 
@@ -275,6 +282,7 @@ class InitDB:
                 silver_price=data["silver_price"],
                 bronze_num=data["bronze_num"],
                 bronze_price=data["bronze_price"],
+                image=data["image"],
             )
             try:
                 result = self.engine.execute(query).inserted_primary_key

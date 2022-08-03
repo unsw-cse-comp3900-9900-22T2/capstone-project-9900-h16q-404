@@ -223,11 +223,19 @@ export default function LandingPage() {
               <List.Item
                 key={item.id}
                 extra={
-                  <img
-                    width={272}
-                    alt='logo'
-                    src='https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png'
-                  />
+                  item.image === 'default' ? (
+                    <img
+                      width={272}
+                      alt='placeholder'
+                      src='https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png'
+                    />
+                  ) : (
+                    <img
+                      style={{ maxWidth: 272, maxHeight: 168 }}
+                      alt='event image'
+                      src={item.image}
+                    />
+                  )
                 }
               >
                 <List.Item.Meta

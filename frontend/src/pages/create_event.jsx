@@ -1,11 +1,10 @@
-import React, { useEffect, useState, } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Layout,
   Button,
   Input,
   Checkbox,
   DatePicker,
-  TimePicker,
   Space,
   message,
   Col,
@@ -17,42 +16,14 @@ import PageHeader from '../components/page_header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
+import { uploadImg } from '../components/image';
 
 import './create_event.css';
-import PropTypes from 'prop-types';
+import { InputComp } from '../components/InputComp';
 
 const { Content, Footer } = Layout;
 const { TextArea } = Input;
 const { Option } = Select;
-
-function fileToDataURL(setImage, file) {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = function () {
-    setImage(reader.result);
-    console.log(reader.result);
-  };
-  reader.onerror = function (error) {
-    alert(`Invalid image type. Please try again. Error: ${error}`);
-  };
-}
-
-export const uploadImg = (setImage) => {
-  return (
-    <>
-      (Optional) Upload an image for your event:
-      <div id='upload-question-img' className='input-group'>
-        <Input
-          type='file'
-          onChange={(e) => {
-            const [file] = e.target.files;
-            fileToDataURL(setImage, file);
-          }}
-        />
-      </div>
-    </>
-  );
-};
 
 /*
 Event name
@@ -72,12 +43,15 @@ End time
 Location
 Tickets
 Description
-Pictures (optional - if we have time and its easy)
+Pictures
 */
+
 export default function CreateEvent() {
   const [token, setToken] = useState();
   const [title, setTitle] = useState();
   const [type, setType] = useState('Other');
+  const gutter = 16;
+  const span = 6;
 
   const [startDate, setStartDate] = useState();
   const [startTime, setStartTime] = useState();
@@ -85,7 +59,7 @@ export default function CreateEvent() {
   const [endTime, setEndTime] = useState();
   const [location, setLocation] = useState();
   const [desc, setDesc] = useState();
-  const [image, setImage] = useState();
+  const [image, setImage] = useState('default');
 
   const [ticket, setTicket] = useState({
     gold: { number: 0, price: 0 },
@@ -93,24 +67,40 @@ export default function CreateEvent() {
     bronze: { number: 0, price: 0 },
   });
 
-  const dateFormat = 'YYYY-MM-DD';
-  const timeFormat = 'HH:mm';
-
   const [adultEvent, setAdult] = useState(false);
   const [vaxReq, setVax] = useState(false);
 
   const navigate = useNavigate();
-  const test = () => {
-    setTitle('testtitle');
-    setType('Other');
-    setStartDate('2020-01-01');
-    setStartTime('01:01');
-    setEndDate('2020-01-02');
-    setEndTime('02:02');
-    setLocation('here');
-    setAdult(true);
-    setDesc('testdesc');
+
+  const ticketRow = (classString, type) => {
+    return (
+      <Row className='ticket-row' gutter={gutter} style={{ marginTop: 6 }}>
+        <Col span={4}>{classString}</Col>
+        <Col span={span}>
+          <InputNumber
+            min={0}
+            addonBefore={'Amount'}
+            defaultValue={0}
+            onChange={(value) => {
+              type.number = value;
+            }}
+          />
+        </Col>
+        <Col span={span}>
+          <InputNumber
+            min={0}
+            addonBefore={'Price'}
+            addonAfter={'$'}
+            defaultValue={0}
+            onChange={(value) => {
+              type.price = value;
+            }}
+          />
+        </Col>
+      </Row>
+    );
   };
+
   useEffect(() => {
     if (localStorage.getItem('token')) {
       setToken(localStorage.getItem('token'));
@@ -142,7 +132,7 @@ export default function CreateEvent() {
       return false;
     }
 
-    if (moment((startDate+startTime), 'YYYY-MM-DDHH:mm') <= moment()){
+    if (moment(startDate + startTime, 'YYYY-MM-DDHH:mm') <= moment()) {
       message.warning('Please select a start time later than now!');
       return false;
     }
@@ -190,8 +180,10 @@ export default function CreateEvent() {
       adult: adultEvent,
       vax: vaxReq,
     };
-    let requestbody = {
+    let headers = {
       token: token,
+    };
+    let requestbody = {
       detail: {
         title: title,
         type: type,
@@ -208,23 +200,23 @@ export default function CreateEvent() {
         bronze_num: ticket.bronze.number,
         bronze_price: ticket.bronze.price,
         desc: desc,
+        image: image,
       },
     };
-    console.log(requestbody);
-    axios.post('http://127.0.0.1:5000/create', requestbody).then((res) => {
-      console.log(res.data);
-      let status = res.data.status;
-      let id = res.data.new_event_id[0];
-      if (status !== 'ERROR') {
-        console.log(id);
-        message.success(`Successfully create event ${title} with id ${id}`);
-        navigate(`/event?event_id=${id}`);
-      } else {
-        message.error(
-          `There is something wrong when creating the event.\nMessage: ${res.data.message}`
-        );
-      }
-    });
+    axios
+      .post('http://127.0.0.1:5000/create', requestbody, { headers })
+      .then((res) => {
+        let status = res.data.status;
+        let id = res.data.new_event_id[0];
+        if (status !== 'ERROR') {
+          message.success(`Successfully create event ${title} with id ${id}`);
+          navigate(`/event?event_id=${id}`);
+        } else {
+          message.error(
+            `There is something wrong when creating the event.\nMessage: ${res.data.message}`
+          );
+        }
+      });
   };
 
   return (
@@ -232,7 +224,7 @@ export default function CreateEvent() {
       <Layout>
         <PageHeader />
         <Content
-          className='create_content'
+          className='site-layout'
           style={{ padding: '0 50px', marginTop: 64 }}
         >
           <div className='new_event'>
@@ -263,7 +255,6 @@ export default function CreateEvent() {
                 <Option value={'Film'}>Film</Option>
                 <Option value={'Festival'}>Festival</Option>
                 <Option value={'Funeral'}>Funeral</Option>
-                <Option value={'Holiday'}>Holiday</Option>
                 <Option value={'Other'}>Other</Option>
               </Select>
             </Space>
@@ -329,78 +320,9 @@ export default function CreateEvent() {
                 Caution: After creating the event you will not be able to edit
                 the infomation of tickets!
               </h4>
-              <Row className='ticket-row' gutter={16}>
-                <Col span={4}>Gold tier</Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Amount'}
-                    defaultValue={0}
-                    onChange={(value) => {
-                      ticket.gold.number = value;
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Price'}
-                    addonAfter={'$'}
-                    defaultValue={0}
-                    onChange={(value) => {
-                      ticket.gold.price = value;
-                    }}
-                  />
-                </Col>
-              </Row>
-              <Row className='ticket-row' gutter={16}>
-                <Col span={4}>Silver tier</Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Amount'}
-                    defaultValue={0}
-                    onChange={(value) => {
-                      ticket.silver.number = value;
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Price'}
-                    addonAfter={'$'}
-                    defaultValue={0}
-                    onChange={(value) => {
-                      ticket.silver.price = value;
-                    }}
-                  />
-                </Col>
-              </Row>
-              <Row className='ticket-row' gutter={16}>
-                <Col span={4}>Bronze tier</Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Amount'}
-                    defaultValue={0}
-                    onChange={(value) => {
-                      ticket.bronze.number = value;
-                    }}
-                  />
-                </Col>
-                <Col span={6}>
-                  <InputNumber
-                    min={0}
-                    addonBefore={'Price'}
-                    addonAfter={'$'}
-                    defaultValue={0}
-                    onChange={(value) => {
-                      ticket.bronze.price = value;
-                    }}
-                  />
-                </Col>
-              </Row>
+              {ticketRow('Gold Tier', ticket.gold)}
+              {ticketRow('Silver Tier', ticket.silver)}
+              {ticketRow('Bronze Tier', ticket.bronze)}
             </div>
 
             <h3>Description</h3>
@@ -413,11 +335,30 @@ export default function CreateEvent() {
                 setDesc(e.target.value);
               }}
             />
-            <h3>Image section currently WIP</h3>
-            <img src={image} />
-            {uploadImg(setImage)}
 
-            <div className='ButtonSet'>
+            <div>
+              {uploadImg(
+                setImage,
+                '(Optional) Upload an image for your event:'
+              )}
+              {image !== null && image !== 'default' ? (
+                <div>
+                  <img src={image} style={{ maxWidth: 800, maxHeight: 600 }} />
+                </div>
+              ) : (
+                <></>
+              )}
+              <Button
+                style={{ margin: 4 }}
+                onClick={() => {
+                  setImage('default');
+                }}
+              >
+                Clear
+              </Button>
+            </div>
+
+            <div className='ButtonSet' style={{ marginBottom: 6 }}>
               <Space>
                 <Button onClick={create} type='primary' className='Sendbutton'>
                   Send
@@ -429,35 +370,8 @@ export default function CreateEvent() {
             </div>
           </div>
         </Content>
-        <Footer style={{textAlign:'center'}}>
-          9900-H16Q-404
-        </Footer>
+        <Footer style={{ textAlign: 'center' }}>9900-H16Q-404</Footer>
       </Layout>
     </div>
   );
 }
-
-export const InputComp = ({ addon, defValue, value, placeholder, setter }) => {
-  return (
-    <>
-      <Input
-        className={'InputComp'}
-        addonBefore={addon}
-        defaultValue={defValue}
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => {
-          setter(e.target.value);
-        }}
-      />
-    </>
-  );
-};
-
-InputComp.protTypes = {
-  addon: PropTypes.string,
-  defValue: PropTypes.string,
-  value: PropTypes.string,
-  placeholder: PropTypes.string,
-  setter: PropTypes.func,
-};

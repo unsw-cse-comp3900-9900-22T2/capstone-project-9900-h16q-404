@@ -70,7 +70,9 @@ export default function BuyTicket() {
       setToken(localStorage.getItem('token'));
     } else {
       message.error('You must log in to do this!');
-      navigate(-1);
+      setTimeout(() => {
+        navigate(-1);
+      }, 2000);
     }
 
     axios
@@ -81,7 +83,6 @@ export default function BuyTicket() {
       })
       .then((res) => {
         if (res.data.resultStatus === 'SUCCESS') {
-          // console.log(res.data.message);
           const newdata = {};
           for (const value of res.data.message.result) {
             const combine = [
@@ -136,7 +137,6 @@ export default function BuyTicket() {
         }
       }
     }
-    // console.log(tickets);
     return tickets;
   }
 
@@ -156,10 +156,9 @@ export default function BuyTicket() {
   const onFinish = (values) => {
     const tickets = convertForm(values);
     if (tickets.length === 0) {
-      message.warning('At least 1 ticket');
+      message.warning('Please buy at least 1 ticket');
       return;
     }
-    console.log(tickets);
     axios
       .post(`http://127.0.0.1:5000/buytickets`, {
         token: token,

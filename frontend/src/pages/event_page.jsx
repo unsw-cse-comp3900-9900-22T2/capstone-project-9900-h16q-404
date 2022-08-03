@@ -8,144 +8,160 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import BroadCast from '../components/broadcast_button';
 import ReviewList from '../components/review_list';
 import PastEventBuyTicketMask from '../components/past_event_buy_ticket_mask';
-import moment from 'moment'
+import moment from 'moment';
+import FollowButton from '../components/follow_button';
 
 const { confirm } = Modal;
 
-// Content and Footer 
+// Content and Footer
 const { Content, Footer } = Layout;
 
 // To return event page
-export default function EventPage () {
-
-	const [searchParams] = useSearchParams();
+export default function EventPage() {
+  const [searchParams] = useSearchParams();
   const [eventInfo, setEventInfo] = useState({});
   const [usrInfo, setUsrInfo] = useState({});
-	// a switch to distinguish past event and upcoming event
-	const [eventFinished, setEventFinished] = useState(false);
-	const [rating, setRating] = useState(0.0);
+  // a switch to distinguish past event and upcoming event
+  const [eventFinished, setEventFinished] = useState(false);
+  const [rating, setRating] = useState(0.0);
 
-	useEffect(() => {
-		var requestURL = 
-				'http://127.0.0.1:5000/event?event_id=' + searchParams.get("event_id");
-		axios.get(requestURL)
-			.then(res => res.data.event_details)
-			.then(data => {
-				setEventInfo(data[0]);
-				// set eventFinished based on event start date
-				const today = moment()
-				const endDate = moment(data[0].end_date + ' ' + data[0].end_time)
-				if (endDate.isBefore(today)) {
-					setEventFinished(true);
-				}
-				else {
-					setEventFinished(false);
-				}
-				return;
-			})
-			.catch(error => {
-				message.error("This event does not exist...", 5);
-			});
+  useEffect(() => {
+    var requestURL =
+      'http://127.0.0.1:5000/event?event_id=' + searchParams.get('event_id');
+    axios
+      .get(requestURL)
+      .then((res) => res.data.event_details)
+      .then((data) => {
+        setEventInfo(data[0]);
+        // set eventFinished based on event start date
+        const today = moment();
+        const endDate = moment(data[0].end_date + ' ' + data[0].end_time);
+        if (endDate.isBefore(today)) {
+          setEventFinished(true);
+        } else {
+          setEventFinished(false);
+        }
+        return;
+      })
+      .catch((error) => {
+        message.error('This event does not exist...', 5);
+      });
 
-			const getRatingURL = "http://127.0.0.1:5000/eventratings?eventId=" + searchParams.get("event_id");
-			axios.get(getRatingURL)
-				.then(response => response.data)
-				.then(data => {
-					if (data.resultStatus === "SUCCESS"){
-						let rate = parseFloat(data.message["Average Rating"]);
-						rate = Math.round(rate*2)/2;
-						setRating(rate)
-					}
-				})
-			
-		if(localStorage.getItem('userId') != null)
-		{
-			requestURL =
-			'http://127.0.0.1:5000/user?userId=' + localStorage.getItem('userId');
-			axios.get(requestURL, {
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			.then((res) => res.data.message)
-			.then((data) => {
-				setUsrInfo(data);
-			})
-			.catch((error) => {
-			});
-			
-		}
-		}, [searchParams]);
+    const getRatingURL =
+      'http://127.0.0.1:5000/eventratings?eventId=' +
+      searchParams.get('event_id');
+    axios
+      .get(getRatingURL)
+      .then((response) => response.data)
+      .then((data) => {
+        if (data.resultStatus === 'SUCCESS') {
+          let rate = parseFloat(data.message['Average Rating']);
+          rate = Math.round(rate * 2) / 2;
+          setRating(rate);
+        }
+      });
 
-	let navigate = useNavigate();
+    if (localStorage.getItem('userId') != null) {
+      requestURL =
+        'http://127.0.0.1:5000/user?userId=' + localStorage.getItem('userId');
+      axios
+        .get(requestURL, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((res) => res.data.message)
+        .then((data) => {
+          setUsrInfo(data);
+        })
+        .catch((error) => {});
+    }
+  }, [searchParams]);
 
-	const deleteConfirm = () => {
-		confirm({
-			title: 'Warning',
-			icon: <ExclamationCircleOutlined />,
-			content: 'Are you sure you want to delete this event?',
+  let navigate = useNavigate();
 
-			onOk() {
-				axios.delete('http://127.0.0.1:5000/event?event_id=' + searchParams.get("event_id"))
-    			.then(() => {
-						console.log("successfully delete this event.");
-						message.success("This event has been deleted.",2)
+  const deleteConfirm = () => {
+    confirm({
+      title: 'Warning',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Are you sure you want to delete this event?',
+
+      onOk() {
+        axios
+          .delete(
+            'http://127.0.0.1:5000/event?event_id=' +
+              searchParams.get('event_id')
+          )
+          .then(() => {
+            // console.log('successfully delete this event.');
+            message.success('This event has been deleted.', 2);
             navigate('/');
-					})
-					.catch(() =>{
-						message.error("Something goes wrong.",5);
-					});
-				},
+          })
+          .catch(() => {
+            message.error('Something goes wrong.', 5);
+          });
+      },
 
-			onCancel() {},
-		});
-	};
-	
-	let time = eventInfo.start_date + " " + eventInfo.start_time + " to " + 
-						eventInfo.end_date + " " + eventInfo.end_time;
+      onCancel() {},
+    });
+  };
 
-	function usrIsNotAdult() {
-		let date = new Date(usrInfo.dateOfBirth);
-		var diff_ms = Date.now() - date.getTime();
-		var age_dt = new Date(diff_ms); 
-		var year = Math.abs(age_dt.getUTCFullYear() - 1970);
-		if (year < 18) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+  let time =
+    eventInfo.start_date +
+    ' ' +
+    eventInfo.start_time +
+    ' to ' +
+    eventInfo.end_date +
+    ' ' +
+    eventInfo.end_time;
 
-	// Component of event Description
-	const EventInfoBlock = () => (
-		<>
-			<Divider orientation='left'>Event Information</Divider>
-			<Descriptions>
-				<Descriptions.Item label="Event Name">{eventInfo.event_name}</Descriptions.Item>
-				<Descriptions.Item label="Type">{eventInfo.type}</Descriptions.Item>
-				<Descriptions.Item label="Host">
-					<Button 
-					type="link"
-					href={"user?userId=" + eventInfo.host}>{eventInfo.host_username}</Button>
-				</Descriptions.Item>
-				<Descriptions.Item label="location">{eventInfo.location}</Descriptions.Item>
-				<Descriptions.Item label="Rating"><Rate disabled allowHalf defaultValue={rating}/></Descriptions.Item>
-				<Descriptions.Item label="Time">{time}</Descriptions.Item>
-			</Descriptions>
-		</>
-		
-	);
+  function usrIsNotAdult() {
+    let date = new Date(usrInfo.dateOfBirth);
+    var diff_ms = Date.now() - date.getTime();
+    var age_dt = new Date(diff_ms);
+    var year = Math.abs(age_dt.getUTCFullYear() - 1970);
+    if (year < 18) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-	// Component of special Consideration Collapse
-	const { Panel } = Collapse;
+  // Component of event Description
+  const EventInfoBlock = () => (
+    <>
+      <Divider orientation='left'>Event Information</Divider>
+      <Descriptions>
+        <Descriptions.Item label='Event Name'>
+          {eventInfo.event_name}
+        </Descriptions.Item>
+        <Descriptions.Item label='Type'>{eventInfo.type}</Descriptions.Item>
+        <Descriptions.Item label='Host'>
+          <Button type='link' href={'user?userId=' + eventInfo.host}>
+            {eventInfo.host_username}
+          </Button>
+          {FollowButton(eventInfo.host)}
+        </Descriptions.Item>
+        <Descriptions.Item label='location'>
+          {eventInfo.location}
+        </Descriptions.Item>
+        <Descriptions.Item label='Rating'>
+          <Rate disabled allowHalf defaultValue={rating} />
+        </Descriptions.Item>
+        <Descriptions.Item label='Time'>{time}</Descriptions.Item>
+      </Descriptions>
+    </>
+  );
 
-	const VacReq = `
+  // Component of special Consideration Collapse
+  const { Panel } = Collapse;
+
+  const VacReq = `
 		A Vaccination requirement is needed for this
 		Event.
 	`;
 
-	const AdultReq = `
+  const AdultReq = `
 		This Event required guest to be at least 18
 		years old.
 	`;
@@ -199,9 +215,20 @@ export default function EventPage () {
 
 					<Divider orientation='left' >Event Description</Divider>
 
-					<p>
-						{eventInfo.description}
-					</p>
+					<div>
+            <p>{eventInfo.description}</p>
+            {eventInfo.image !== 'default' && eventInfo.image !== null ? (
+              <p>
+                <img
+                  src={eventInfo.image}
+                  alt={eventInfo.image}
+                  style={{ maxWidth: '100%' }}
+                />
+              </p>
+            ) : (
+              <></>
+            )}
+          </div>
 
 					<Divider orientation='left'>Buy Ticket</Divider>
 

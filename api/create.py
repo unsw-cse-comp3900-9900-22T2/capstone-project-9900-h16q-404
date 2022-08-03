@@ -16,7 +16,7 @@ class Create(Resource):
 
         # parse the event_id and/or event_name arguments
         parser = reqparse.RequestParser()
-        parser.add_argument("token", type=str)
+        parser.add_argument("token", type=str, location='headers')
         parser.add_argument("detail", type=dict)
         args = parser.parse_args()
 

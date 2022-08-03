@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from 'antd';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import logo from '../static/picacg.jpeg';
 import LoginButton from '../components/login_button';
 import UserButton from '../components/user_button';
@@ -13,7 +13,7 @@ const { Header } = Layout;
 export default function PageHeader() {
   const [username, setUsername] = useState('');
   // fix: add a [] in useEffect hook
-  useEffect(()=>{
+  useEffect(() => {
     setUsername(localStorage.getItem('username'));
   }, []);
   return (
@@ -35,7 +35,7 @@ export default function PageHeader() {
           textAlign: 'center',
         }}
       >
-        <Link to="/">
+        <Link to='/'>
           <img
             src={logo}
             alt='Logo'
@@ -45,7 +45,7 @@ export default function PageHeader() {
         <h1 style={{ color: 'white', fontSize: 'bold', marginRight: '15px' }}>
           LiveKnight
         </h1>
-        <div style={{marginTop:'15px'}}>
+        <div style={{ marginTop: '15px' }}>
           <SearchInput />
         </div>
       </div>
@@ -62,20 +62,20 @@ export default function PageHeader() {
       >
         {username ? (
           <>
-            <div style={{margin:"0 5px"}}>
-              <UserButton  />
+            <div style={{ margin: '0 5px' }}>
+              <UserButton />
             </div>
-            <div style={{margin:"0 5px"}}>
-              <LogoutButton  />
+            <div style={{ margin: '0 5px' }}>
+              <LogoutButton />
             </div>
           </>
         ) : (
           <>
-            <div style={{margin:"0 5px"}}>
-              <LoginButton  />
+            <div style={{ margin: '0 5px' }}>
+              <LoginButton />
             </div>
             <div>
-              <RegisterButton style={{margin:"0 5px"}} />
+              <RegisterButton style={{ margin: '0 5px' }} />
             </div>
           </>
         )}

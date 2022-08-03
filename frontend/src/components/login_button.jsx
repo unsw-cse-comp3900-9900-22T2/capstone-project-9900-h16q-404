@@ -8,12 +8,12 @@ import { Button } from 'antd';
  * @returns the button component
  */
 
-export default function LoginButton () {
-  return(
+export default function LoginButton() {
+  return (
     <>
-      <Link to="/login">
+      <Link to='/login'>
         <Button type='primary'>Login</Button>
       </Link>
     </>
-  )
+  );
 }

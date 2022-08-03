@@ -42,6 +42,7 @@ class MyWatchlist(Resource):
             user_dict = {}
             user_dict['user_id'] = i[0]
             user_dict['user_name'] = i[1]
+            user_dict['image'] = i[11]
             return_users.append(user_dict)
 
         return return_users

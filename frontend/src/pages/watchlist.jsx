@@ -1,27 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, List, Button, Space, message, Spin, Card } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import PageHeader from '../components/page_header';
+import { Layout, List, Button, message, Spin, Card, Avatar } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import PageHeader from '../components/page_header';
 import axios from 'axios';
 import { LoadingOutlined } from '@ant-design/icons';
 import './watchlist.css';
 
 const spinIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 const { Content, Footer } = Layout;
-
-function get_list(token) {
-  axios
-    .get('http://127.0.0.1:5000/mywatchlist', {
-      headers: {
-        'Content-Type': 'application/json',
-        token: token,
-      },
-    })
-    .then((res) => {
-      return res;
-    });
-}
 
 export default function Watchlist() {
   const usertoken = localStorage.getItem('token');
@@ -60,12 +47,12 @@ export default function Watchlist() {
         },
       })
       .then((res) => {
-        console.log(res.data);
         for (const item of res.data) {
           tempdata.push({
             key: count,
             user_name: item.user_name,
             user_id: item.user_id,
+            image: item.image,
           });
           count++;
           tempfollow.push(true);
@@ -75,7 +62,7 @@ export default function Watchlist() {
         setLoad(tempload);
         setFollow(tempfollow);
       });
-  }, []);
+  }, [usertoken]);
 
   return (
     <div>
@@ -86,95 +73,125 @@ export default function Watchlist() {
           style={{ padding: '0 50px', marginTop: 64 }}
         >
           <h1>My Watchlist</h1>
-          <ul></ul>
           <List
+            grid={{
+              gutter: 16,
+              xs: 1,
+              sm: 2,
+              md: 2,
+              lg: 3,
+              xl: 4,
+              xxl: 4,
+            }}
             locale={{ emptyText: "You haven't followed anyone yet!" }}
             split={true}
             itemLayout='vertical'
             dataSource={data}
             renderItem={(item) => (
-              <Card
+              <List.Item
                 style={{
-                  width: 300,
-                  marginTop: 10,
-                  marginBottom: 10,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
                 }}
               >
-                <Space size={'large'}>
-                  <Link
-                    to={`/user?userId=${item.user_id}`}
-                    className='username'
+                <Card
+                  style={{
+                    marginTop: 10,
+                    marginBottom: 10,
+                    borderColor: 'grey',
+                  }}
+                  hoverable={true}
+                  size={'small'}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                    }}
                   >
-                    {item.user_name}
-                  </Link>
-                  {load[item.key] ? (
-                    <Button
-                      style={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
+                    {item.image === 'default' || item.image === null ? (
+                      <Avatar
+                        size={64}
+                        icon={<UserOutlined />}
+                      />
+                    ) : (
+                      <Avatar size={64} src={item.image} />
+                    )}
+                    <Link
+                      to={`/user?userId=${item.user_id}`}
+                      className='username'
                     >
-                      <Spin indicator={spinIcon} />
-                    </Button>
-                  ) : follow[item.key] ? (
-                    <Button
-                      style={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
-                      type='primary'
-                      onClick={() => {
-                        setLoadArray(item.key, true);
-                        console.log(`Unfollow ${item.user_name}`);
-                        let headers = {
-                          'Content-Type': 'application/json',
-                          token: usertoken,
-                        };
-                        let data = { target_id: item.user_id };
-                        axios
-                          .put('http://127.0.0.1:5000/follow', data, {
-                            headers,
-                          })
-                          .then((res) => {
-                            message.success('Successfully unfollow the user');
-                            setFollowArray(item.key, false);
-                            setLoadArray(item.key, false);
-                          })
-                          .catch((err) => {
-                            message.error(err.data);
-                          });
-                      }}
-                    >
-                      Unfollow
-                    </Button>
-                  ) : (
-                    <Button
-                      style={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
-                      onClick={() => {
-                        setLoadArray(item.key, true);
-                        setFollowArray(item.key, true);
-                        console.log(`Follow ${item.user_name}`);
-                        let headers = {
-                          'Content-Type': 'application/json',
-                          token: usertoken,
-                        };
-                        let data = {
-                          target_id: item.user_id,
-                        };
-                        axios
-                          .post('http://127.0.0.1:5000/follow', data, {
-                            headers,
-                          })
-                          .then((res) => {
-                            message.success(res.data);
-                            setFollowArray(item.key, true);
-                            setLoadArray(item.key, false);
-                          })
-                          .catch((err) => {
-                            message.error(err.data);
-                          });
-                        setLoadArray(item.key, false);
-                      }}
-                    >
-                      Follow
-                    </Button>
-                  )}
-                </Space>
-              </Card>
+                      {item.user_name}
+                    </Link>
+                    {load[item.key] ? (
+                      <Button
+                        style={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
+                      >
+                        <Spin indicator={spinIcon} />
+                      </Button>
+                    ) : follow[item.key] ? (
+                      <Button
+                        style={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
+                        type='primary'
+                        onClick={() => {
+                          setLoadArray(item.key, true);
+                          let headers = {
+                            'Content-Type': 'application/json',
+                            token: usertoken,
+                          };
+                          let data = { target_id: item.user_id };
+                          axios
+                            .put('http://127.0.0.1:5000/follow', data, {
+                              headers,
+                            })
+                            .then((res) => {
+                              message.success('Successfully unfollow the user');
+                              setFollowArray(item.key, false);
+                              setLoadArray(item.key, false);
+                            })
+                            .catch((err) => {
+                              message.error(err.data);
+                            });
+                        }}
+                      >
+                        Unfollow
+                      </Button>
+                    ) : (
+                      <Button
+                        style={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
+                        onClick={() => {
+                          setLoadArray(item.key, true);
+                          setFollowArray(item.key, true);
+                          let headers = {
+                            'Content-Type': 'application/json',
+                            token: usertoken,
+                          };
+                          let data = {
+                            target_id: item.user_id,
+                          };
+                          axios
+                            .post('http://127.0.0.1:5000/follow', data, {
+                              headers,
+                            })
+                            .then((res) => {
+                              message.success(res.data);
+                              setFollowArray(item.key, true);
+                              setLoadArray(item.key, false);
+                            })
+                            .catch((err) => {
+                              message.error(err.data);
+                            });
+                          setLoadArray(item.key, false);
+                        }}
+                      >
+                        Follow
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              </List.Item>
             )}
           />
         </Content>
