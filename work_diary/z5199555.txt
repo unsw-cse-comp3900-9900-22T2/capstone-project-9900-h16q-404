@@ -21,3 +21,25 @@ Week5
 Program sprint 1 start.
 Get to know what the structure the web is and try to make some contribute to next print.
 Demo 1 in this week as well.
+
+Week 6
+My task is to make a event page.
+Start learning on HTML, CSS, and javascript.
+Also learn basic idea of React.
+Try to make a static website page for event page.
+
+Week 7
+The event page frontend is done.
+Next task to make a my ticket page.
+Learn more on ANTD we used.
+
+Week 8
+My ticket page is done.
+Also demo works fine.
+
+Week 9
+I got Covid this week so can not do all works.
+The task of mine is now braodcast backend.
+
+Week 10
+Merge current works and repare for demo and report.
