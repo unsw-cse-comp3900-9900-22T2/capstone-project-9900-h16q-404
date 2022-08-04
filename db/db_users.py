@@ -108,6 +108,18 @@ class UsersDB:
         except BaseException:
             return -1
 
+    def update_user_token(self, params, username):
+        update_query = (
+            self.temp_db.users.update()
+            .values(params)
+            .where(self.temp_db.users.c.username == username)
+        )
+
+        try:
+            return self.temp_db.engine.execute(update_query)
+        except BaseException:
+            return -1
+
     # Helper functions
 
     def check_user_exists(self, username):

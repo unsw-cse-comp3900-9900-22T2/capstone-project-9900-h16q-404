@@ -38,7 +38,6 @@ class FollowDB:
                 self.temp_db.engine.execute(query).inserted_primary_key
                 return "Success: Added to watchlist"
             except:
-                print(6)
                 return "ERROR: Could not add to watchlist"
         else:
             return "ERROR: Already a follower"

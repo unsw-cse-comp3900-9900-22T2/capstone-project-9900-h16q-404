@@ -72,11 +72,9 @@ class Recommendations(Resource):
         recommended_eventids = set()
         # find the recommended event in future by type
         recommended_eventid_bytype = recommendations_db.get_recommend_event_bytype(attended_event_type)
-        # print(recommended_eventid_bytype)
         
         # find the recommended event in future by host
         recommended_eventid_byhost = recommendations_db.get_recommend_event_byhost(attended_event_host)
-        # print(recommended_eventid_byhost)
         
         # find the recommended event by similarity in description
         future_events = recommendations_db.get_future_events()
@@ -106,7 +104,7 @@ class Recommendations(Resource):
             for future_event in range(len(future_event_description)):
                 get_score = self.get_similarity_score(attended_event_description[attended_event],
                                                  future_event_description[future_event])
-                # print(get_score)
+
                 if (get_score >= 0.4):
                     recommended_eventid_bydesc.add(future_event_id[future_event])
         
