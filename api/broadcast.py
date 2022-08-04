@@ -1,5 +1,6 @@
 # import custom classes used to interact with the DB
 from db.db_broadcast import BroadcastDB
+from db.db_events import EventsDB
 from api.exceptions import DatabaseExecutionError
 
 # import third party libaries
@@ -25,6 +26,7 @@ class Broadcast(Resource):
         
         # create db engine
         broadcast_db = BroadcastDB()
+        events_db = EventsDB()
         
         
         # post message to broadcast table
@@ -51,10 +53,17 @@ class Broadcast(Resource):
         #to_emails = "g.jayaraman@student.unsw.edu.au"
         sender_email = os.environ.get('MAIL_DEFAULT_SENDER')
         sender_name = os.environ.get('MAIL_SENDER_NAME')
-
+        # Email Subject compose
+        get_event = events_db.select_event_id(eventId)
+        
+        try:
+            subject_msg = "Update For " + get_event[0]['event_name'] + " (From Group:404 Platform)"
+        except:
+            subject_msg = 'Hello'
+        
         message = Mail(
         from_email=(sender_email, sender_name),
-        subject='Hello',
+        subject=subject_msg,
         plain_text_content=messageToBroadcast,
         to_emails=to_emails,
         is_multiple=True)
