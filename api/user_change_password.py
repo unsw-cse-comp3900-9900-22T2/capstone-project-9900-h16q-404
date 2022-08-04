@@ -37,7 +37,9 @@ class UserChangePassword(Resource):
         else:
             return {"status": "Error", "message": "User Old Password was not Sent"}
 
-        password_match = users_db.check_passwords_match(user_token, old_password)
+        user_name = token_db.get_host_username_from_token(user_token)
+
+        password_match = users_db.check_passwords_match(user_name, old_password)
         if password_match == False:
             return {"status": "Error", "message": "Old password is not correct"}
 
