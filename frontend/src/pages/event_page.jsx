@@ -192,7 +192,8 @@ export default function EventPage() {
 				type="primary"
 				disabled={
 					(usrInfo.vac !== true && eventInfo.vax_only) ||
-					(usrIsNotAdult() && eventInfo.adult_only)
+					(usrIsNotAdult() && eventInfo.adult_only) ||
+					(localStorage.getItem("token") === null)
 				}
 				href={'/buyticket/' + eventInfo.id}>
 					Buy A Ticket
