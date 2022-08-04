@@ -116,10 +116,14 @@ export default function EventPage() {
     eventInfo.end_time;
 
   function usrIsNotAdult() {
+    if (usrInfo.dateOfBirth === null || usrInfo.dateOfBirth === undefined) {
+      return true;
+    }
     let date = new Date(usrInfo.dateOfBirth);
     var diff_ms = Date.now() - date.getTime();
     var age_dt = new Date(diff_ms);
     var year = Math.abs(age_dt.getUTCFullYear() - 1970);
+    
     if (year < 18) {
       return true;
     } else {
@@ -192,9 +196,8 @@ export default function EventPage() {
 				type="primary"
 				disabled={
 					(usrInfo.vac !== true && eventInfo.vax_only) ||
-					(usrIsNotAdult() && eventInfo.adult_only) ||
-					(localStorage.getItem("token") === null) ||
-          (!usrInfo.dateOfBirth)
+					(usrIsNotAdult() && eventInfo.adult_only ) ||
+					(localStorage.getItem("token") === null)
 				}
 				href={'/buyticket/' + eventInfo.id}>
 					Buy A Ticket
