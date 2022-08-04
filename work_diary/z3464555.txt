@@ -79,3 +79,20 @@ Week 8 (Sunday 17th July - Thursday 21st July):
 - Facilitiated and organised the Tuesday co-dev session where frontend and backend work was linked 
 - Planned the code refactor 
 - Facilitated the co-dev frontend and backend unification
+
+Week 8 (Thursday 21st July - Sunday 24th July):
+- Implemented the watchlist backend functionality
+- Faciliated the sprint retro session and submitted the sprint retro report
+- Facilitated sprint planning and updated JIRA cards
+
+Week 9 (Sunday 24th July - Thursday 28th July):
+- Performed a major refactor of the code and split the backend files into class-specific files
+- Worked with Karl to perform the token update
+
+Week 9 (Thursday 28th July - Sunday 31st July):
+- Facilitated sprint planning and updated the JIRA cards
+- Implemented the linter and performed a major review of the code and implemented several linter recommened changes.
+
+Week 10 (Sunday 31st July - Friday 5th August):
+- HUGE team effort from Tuesday to Thursday to complete the final pull requests, prepare for the demo and complete the report
+- Performed the final report review
